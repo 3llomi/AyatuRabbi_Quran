@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/mainFragment">
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="com.devlomi.ayaturabbi.ui.main.SplashFragment"
+        android:label="main_fragment"
+        tools:layout="@layout/splash_fragment">
+        <action
+            android:id="@+id/action_mainFragment_to_downloadFragment"
+            app:destination="@id/downloadFragment"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit"
+            app:popUpTo="@navigation/nav_graph"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_mainFragment_to_quranPage"
+            app:destination="@id/quranPage"
+            app:popUpTo="@navigation/nav_graph"
+            app:popUpToInclusive="true"/>
+    </fragment>
+    <fragment
+        android:id="@+id/downloadFragment"
+        android:name="com.devlomi.ayaturabbi.ui.download.DownloadFragment"
+        android:label="DownloadFragment">
+        <action
+            android:id="@+id/action_downloadFragment_to_quranPage"
+            app:destination="@id/quranPage"
+            app:popUpTo="@navigation/nav_graph"
+            app:popUpToInclusive="true"/>
+    </fragment>
+    <fragment
+        android:id="@+id/quranPage"
+        android:name="com.devlomi.ayaturabbi.ui.quran_page.QuranPageFragment"
+        android:label="quran_page_fragment"
+        tools:layout="@layout/quran_page_fragment"
+        app:popUpTo="@navigation/nav_graph"
+        app:popUpToInclusive="true"/>
+</navigation>

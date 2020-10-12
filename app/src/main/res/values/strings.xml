@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">AyatuRabbi</string>
+    <string name="downloading_files">جاري تحميل الملفات</string>
+    <string name="app_name_ar">آياتٌ ربي</string>
+    <string name="cancel">Cancel</string>
+</resources>
