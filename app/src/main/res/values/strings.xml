@@ -3,4 +3,158 @@
     <string name="downloading_files">جاري تحميل الملفات</string>
     <string name="app_name_ar">آياتٌ ربي</string>
     <string name="cancel">Cancel</string>
+    <string name="aljuzoa">الجزء %s</string>
+    <string name="surah">سورة %s</string>
+    <string name="search">بحث</string>
+
+    <string-array name="surah_names">
+        <item>الفاتحة</item>
+        <item>البقرة</item>
+        <item>آل عمران</item>
+        <item>النساء</item>
+        <item>المائدة</item>
+        <item>الأنعام</item>
+        <item>الأعراف</item>
+        <item>الأنفال</item>
+        <item>التوبة</item>
+        <item>يونس</item>
+        <item>هود</item>
+        <item>يوسف</item>
+        <item>الرعد</item>
+        <item>إبراهيم</item>
+        <item>الحجر</item>
+        <item>النحل</item>
+        <item>الإسراء</item>
+        <item>الكهف</item>
+        <item>مريم</item>
+        <item>طه</item>
+        <item>الأنبياء</item>
+        <item>الحج</item>
+        <item>المؤمنون</item>
+        <item>النور</item>
+        <item>الفرقان</item>
+        <item>الشعراء</item>
+        <item>النمل</item>
+        <item>القصص</item>
+        <item>العنكبوت</item>
+        <item>الروم</item>
+        <item>لقمان</item>
+        <item>السجدة</item>
+        <item>الأحزاب</item>
+        <item>سبأ</item>
+        <item>فاطر</item>
+        <item>يس</item>
+        <item>الصافات</item>
+        <item>ص</item>
+        <item>الزمر</item>
+        <item>غافر</item>
+        <item>فصلت</item>
+        <item>الشورى</item>
+        <item>الزخرف</item>
+        <item>الدخان</item>
+        <item>الجاثية</item>
+        <item>الأحقاف</item>
+        <item>محمد</item>
+        <item>الفتح</item>
+        <item>الحجرات</item>
+        <item>ق</item>
+        <item>الذاريات</item>
+        <item>الطور</item>
+        <item>النجم</item>
+        <item>القمر</item>
+        <item>الرحمن</item>
+        <item>الواقعة</item>
+        <item>الحديد</item>
+        <item>المجادلة</item>
+        <item>الحشر</item>
+        <item>الممتحنة</item>
+        <item>الصف</item>
+        <item>الجمعة</item>
+        <item>المنافقون</item>
+        <item>التغابن</item>
+        <item>الطلاق</item>
+        <item>التحريم</item>
+        <item>الملك</item>
+        <item>القلم</item>
+        <item>الحاقة</item>
+        <item>المعارج</item>
+        <item>نوح</item>
+        <item>الجن</item>
+        <item>المزمل</item>
+        <item>المدثر</item>
+        <item>القيامة</item>
+        <item>الإنسان</item>
+        <item>المرسلات</item>
+        <item>النبأ</item>
+        <item>النازعات</item>
+        <item>عبس</item>
+        <item>التكوير</item>
+        <item>الانفطار</item>
+        <item>المطففين</item>
+        <item>الانشقاق</item>
+        <item>البروج</item>
+        <item>الطارق</item>
+        <item>الأعلى</item>
+        <item>الغاشية</item>
+        <item>الفجر</item>
+        <item>البلد</item>
+        <item>الشمس</item>
+        <item>الليل</item>
+        <item>الضحى</item>
+        <item>الشرح</item>
+        <item>التين</item>
+        <item>العلق</item>
+        <item>القدر</item>
+        <item>البينة</item>
+        <item>الزلزلة</item>
+        <item>العاديات</item>
+        <item>القارعة</item>
+        <item>التكاثر</item>
+        <item>العصر</item>
+        <item>الهمزة</item>
+        <item>الفيل</item>
+        <item>قريش</item>
+        <item>الماعون</item>
+        <item>الكوثر</item>
+        <item>الكافرون</item>
+        <item>النصر</item>
+        <item>المسد</item>
+        <item>الإخلاص</item>
+        <item>الفلق</item>
+        <item>الناس</item>
+    </string-array>
+
+
+    <string-array name="ajzaa_number_text">
+        <item>الأول</item>
+        <item>الثاني</item>
+        <item>الثالث</item>
+        <item>الرابع</item>
+        <item>الخامس</item>
+        <item>السادس</item>
+        <item>السابع</item>
+        <item>الثامن</item>
+        <item>التاسع</item>
+        <item>العاشر</item>
+        <item>الحادي عشر</item>
+        <item>الثاني عشر</item>
+        <item>الثالث عشر</item>
+        <item>الرابع عشر</item>
+        <item>االخامس عشر</item>
+        <item>السادس عشر</item>
+        <item>السابع عشر</item>
+        <item>الثامن عشر</item>
+        <item>التاسع عشر</item>
+        <item>العشرون</item>
+        <item>العادي والعشرون</item>
+        <item>الثاني والعشرون</item>
+        <item>الثالث والعشرون</item>
+        <item>الرابع والعشرون</item>
+        <item>الخامس والعشرون</item>
+        <item>السادس والعشرون</item>
+        <item>السابع والعشرون</item>
+        <item>الثامن والعشرون</item>
+        <item>التاسع والعشرون</item>
+        <item>الثلاثون</item>
+    </string-array>
 </resources>

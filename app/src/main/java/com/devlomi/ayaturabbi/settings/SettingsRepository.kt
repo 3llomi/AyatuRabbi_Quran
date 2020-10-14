@@ -2,6 +2,7 @@ package com.devlomi.ayaturabbi.settings
 
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import com.devlomi.ayaturabbi.ColorItem
 import javax.inject.Inject
 
 class SettingsRepository @Inject constructor(private val sharedPreferences: SharedPreferences) {
@@ -23,4 +24,22 @@ class SettingsRepository @Inject constructor(private val sharedPreferences: Shar
             putBoolean("files_downloaded", b)
         }
     }
+
+
+    fun saveBackgroundColor(backgroundColorName: String) {
+        sharedPreferences.edit {
+            putString("bgColorName", backgroundColorName)
+        }
+    }
+
+    fun getBackgroundColorName() = sharedPreferences.getString("bgColorName",ColorItem.DKGRAY.name)!!
+    fun saveCurrentIndex(currentIndex: Int) {
+        sharedPreferences.edit {
+            putInt("current_index", currentIndex)
+        }
+    }
+
+    fun getCurrentIndex() = sharedPreferences.getInt("current_index", 0)
+
+
 }

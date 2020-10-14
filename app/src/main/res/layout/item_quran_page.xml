@@ -3,52 +3,60 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
+    android:layout_height="match_parent"
+    android:rotationY="180">
+    <!--    android:rotationY="180"
+    -->
     <TextView
         android:id="@+id/tv_surah_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:layout_marginRight="8dp"
         android:fontFamily="@font/naskh_font"
         android:textColor="@color/colorOnBackground"
+        android:textSize="18sp"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="سورة الأعراف" />
+        tools:text="سورة البقرة" />
 
     <TextView
         android:id="@+id/tv_juzoa_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:fontFamily="@font/naskh_font"
         android:textColor="@color/colorOnBackground"
+        android:textSize="18sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="الجزء الثامن" />
+        tools:text="الجزء الأول" />
 
     <ImageView
         android:id="@+id/img_quran"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:layout_marginBottom="32dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="30dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        tools:text="١١٥"
-        android:textColor="@color/colorOnBackground"
-        android:gravity="center_horizontal"
         android:id="@+id/tv_page_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:fontFamily="@font/naskh"
+        android:gravity="center_horizontal"
+        android:textColor="@color/colorOnBackground"
+        android:textSize="24sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginBottom="32dp"/>
+        app:layout_constraintTop_toBottomOf="@id/img_quran"
+        tools:text="١١٥" />
+
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
