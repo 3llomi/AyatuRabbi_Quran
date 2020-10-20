@@ -32,7 +32,9 @@ class SettingsRepository @Inject constructor(private val sharedPreferences: Shar
         }
     }
 
-    fun getBackgroundColorName() = sharedPreferences.getString("bgColorName",ColorItem.DKGRAY.name)!!
+    fun getBackgroundColorName() =
+        sharedPreferences.getString("bgColorName", ColorItem.DKGRAY.name)!!
+
     fun saveCurrentIndex(currentIndex: Int) {
         sharedPreferences.edit {
             putInt("current_index", currentIndex)
@@ -40,6 +42,13 @@ class SettingsRepository @Inject constructor(private val sharedPreferences: Shar
     }
 
     fun getCurrentIndex() = sharedPreferences.getInt("current_index", 0)
+
+    fun preventScreenlock() = sharedPreferences.getBoolean("prevent_screen_lock", true)
+    fun setPreventScreenlock(boolean: Boolean) {
+        sharedPreferences.edit {
+            putBoolean("prevent_screen_lock", boolean)
+        }
+    }
 
 
 }

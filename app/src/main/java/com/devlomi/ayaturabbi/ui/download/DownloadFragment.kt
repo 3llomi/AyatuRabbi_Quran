@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import com.devlomi.ayaturabbi.R
 import com.devlomi.ayaturabbi.extensions.deviceWidthPixels
 import com.devlomi.ayaturabbi.extensions.navigateSafely
@@ -84,7 +85,7 @@ class DownloadFragment : Fragment(R.layout.download_fragment) {
                     viewModel.downloadFinished()
 
                     Log.d("3llomi", "SUCCESS :) ")
-                    Navigation.findNavController(this.requireView()).navigateSafely(R.id.quranPage,R.id.action_downloadFragment_to_quranPage)
+                    findNavController().navigateSafely(R.id.quranPage,R.id.action_downloadFragment_to_quranPage)
                 }
             }
 

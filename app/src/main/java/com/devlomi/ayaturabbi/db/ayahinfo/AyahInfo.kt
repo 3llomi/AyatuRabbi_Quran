@@ -1,5 +1,6 @@
 package com.devlomi.ayaturabbi.db.ayahinfo
 
+import android.graphics.RectF
 import androidx.room.*
 
 
@@ -32,5 +33,16 @@ data class AyahInfo(
 //    @ColumnInfo(name = "max_y")
     val max_y: Int,
 
-    )
+    ) {
+    fun getBounds() = RectF(min_x.toFloat(), min_y.toFloat(), max_x.toFloat(), max_y.toFloat())
+    fun engulf(other: RectF) = getBounds().union(other)
+    fun withBounds(other: RectF): AyahInfo {
+        return this.copy(
+            min_x = other.left.toInt(),
+            min_y = other.top.toInt(),
+            max_x = other.right.toInt(),
+            max_y = other.bottom.toInt()
+        )
+    }
+}
 

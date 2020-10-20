@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorSecondaryVariant"
+    tools:context=".ui.bookmarks.BookmarksFragment">
+
+    <TextView
+        android:id="@+id/tv_bookmarks_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:drawableRight="@drawable/ic_bookmarks"
+        android:drawablePadding="8dp"
+        android:fontFamily="@font/cairo_bold"
+        android:text="@string/saved_bookmarks"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_bookmarks"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_bookmarks_title" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

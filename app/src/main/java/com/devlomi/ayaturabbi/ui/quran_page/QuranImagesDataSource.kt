@@ -23,7 +23,7 @@ class QuranImagesDataSource @Inject constructor(
 //        return list
 //    }
 
-    fun getQuranImagesPaths(pageNumber: Int): String {
+    fun getQuranImagesPathForPage(pageNumber: Int): String {
         val number = getNumber(pageNumber)
         val fileName = "${PAGE_PREFIX}${number}$EXTENSION"
         val path = "${quranImagesPath.path}/$fileName"

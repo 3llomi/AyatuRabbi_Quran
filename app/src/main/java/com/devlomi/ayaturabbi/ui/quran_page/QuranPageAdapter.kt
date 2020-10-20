@@ -1,10 +1,7 @@
 package com.devlomi.ayaturabbi.ui.quran_page
 
-import android.graphics.Color
 import android.graphics.ColorMatrixColorFilter
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
@@ -13,6 +10,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.devlomi.ayaturabbi.R
+import com.devlomi.ayaturabbi.util.WhiteColorFilter
 import kotlinx.android.synthetic.main.item_quran_page.view.*
 
 class QuranPageAdapter(
@@ -41,9 +39,37 @@ class QuranPageAdapter(
     inner class QuranPageHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         init {
-            itemView.setOnClickListener {
-                adapterListener?.onClick(adapterPosition, getItem(adapterPosition))
+
+
+            val gestureListener: GestureDetector.SimpleOnGestureListener =
+                object : GestureDetector.SimpleOnGestureListener() {
+                    override fun onSingleTapUp(e: MotionEvent?): Boolean {
+                        adapterListener?.onClick(adapterPosition, getItem(adapterPosition))
+                        return super.onSingleTapUp(e)
+                    }
+
+                    override fun onLongPress(e: MotionEvent) {
+                        super.onLongPress(e)
+                        adapterListener?.onLongClick(adapterPosition, getItem(adapterPosition), e)
+
+                    }
+
+                    override fun onDown(e: MotionEvent?): Boolean {
+                        return true
+                    }
+                }
+            val gestureDetector = GestureDetector(itemView.context, gestureListener)
+
+            val onTouchListener = View.OnTouchListener { v, event ->
+                return@OnTouchListener gestureDetector.onTouchEvent(
+                    event
+                )
+
             }
+
+
+
+            itemView.setOnTouchListener(onTouchListener)
         }
 
         fun bind(quranPageItem: QuranPageItem) {
@@ -91,31 +117,8 @@ class QuranPageAdapter(
         private fun setColorFilterForText(
             imgView: ImageView
         ) {
-            val nightModeTextBrightness = 255f
 
-            val matrix = floatArrayOf(
-                -1f,
-                0f,
-                0f,
-                0f,
-                nightModeTextBrightness,
-                0f,
-                -1f,
-                0f,
-                0f,
-                nightModeTextBrightness,
-                0f,
-                0f,
-                -1f,
-                0f,
-                nightModeTextBrightness,
-                0f,
-                0f,
-                0f,
-                1f,
-                0f
-            )
-            imgView.colorFilter = ColorMatrixColorFilter(matrix)
+            imgView.colorFilter = ColorMatrixColorFilter(WhiteColorFilter.matrix)
         }
 
     }
@@ -124,4 +127,5 @@ class QuranPageAdapter(
 
 interface AdapterListener {
     fun onClick(pos: Int, quranPageItem: QuranPageItem)
+    fun onLongClick(pos: Int, quranPageItem: QuranPageItem, motionEvent: MotionEvent)
 }

@@ -1,7 +1,6 @@
 package com.devlomi.ayaturabbi.ui.quran_page
 
 import android.content.Context
-import android.util.Log
 import com.devlomi.ayaturabbi.R
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.text.DecimalFormat
@@ -122,7 +121,7 @@ class QuranPageDataSource @Inject constructor(
         val pageNumber = index + 1
 
         val imageFilePath =
-            quranImagesDataSource.getQuranImagesPaths(pageNumber)
+            quranImagesDataSource.getQuranImagesPathForPage(pageNumber)
         //if it's the current pageNumber fetch full data
         val surahNumber = getSuraForPageArray()[index]
         val surahName = surahsNames[surahNumber - 1]

@@ -6,6 +6,7 @@ import com.devlomi.ayaturabbi.settings.SettingsRepository
 import com.devlomi.ayaturabbi.db.DBFileNames
 import com.devlomi.ayaturabbi.db.ayahinfo.AyahInfoDB
 import com.devlomi.ayaturabbi.db.ayahinfo.AyahInfoDao
+import com.devlomi.ayaturabbi.db.bookmark.BookmarkDB
 import com.devlomi.ayaturabbi.db.quran_ar.QuranDB
 import com.devlomi.ayaturabbi.db.quran_ar.QuranDBDao
 import dagger.Module
@@ -62,5 +63,17 @@ object DBModule {
         return quranDb.quranDBDao()
     }
 
+
+    @Singleton
+    @Provides
+    fun provideBookmarkDb(@ApplicationContext context: Context) =
+        Room.databaseBuilder(context, BookmarkDB::class.java, BookmarkDB.DB_NAME)
+            .fallbackToDestructiveMigration()
+            .build()
+
+
+    @Singleton
+    @Provides
+    fun provideBookmarkDao(bookmarkDB: BookmarkDB) = bookmarkDB.bookmarkDao()
 
 }

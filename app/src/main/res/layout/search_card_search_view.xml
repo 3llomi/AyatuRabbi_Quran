@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_search"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="#ffffff"
+    app:cardCornerRadius="32dp"
+    app:cardElevation="8dp">
+
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/et_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="8dp"
+        android:background="@null"
+        android:drawableRight="@drawable/ic_search"
+        android:drawablePadding="4dp"
+        android:drawableTint="@color/dkgray"
+        android:fontFamily="@font/cairo_font"
+        android:gravity="right"
+        android:hint="@string/search_for_surah"
+        android:padding="4dp"
+        android:textColor="@color/black"
+        android:textColorHint="@color/dkgray" />
+
+
+</androidx.cardview.widget.CardView>
+
