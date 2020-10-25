@@ -13,10 +13,11 @@ interface QuranDBDao {
     suspend fun searchForAyah(query: String): List<VersesContentEntity>
 
 
+
     //get all ayat that that matches sura & aya number
-    @Query("SELECT text FROM share_text WHERE sura == :surahNumber AND ayah IN (:ayatNumbersIntPage) ")
+    @Query("SELECT * FROM share_text WHERE sura IN (:surahNumbers) AND ayah IN (:ayatNumbersIntPage) ORDER BY sura ")
     suspend fun getShareTextBySurah(
-        surahNumber: Int,
+        surahNumbers: List<Int>,
         ayatNumbersIntPage: List<Int>
-    ): List<String>
+    ): List<ShareTextEntity>
 }

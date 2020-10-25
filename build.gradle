@@ -6,6 +6,7 @@ buildscript {
         jcenter()
     }
     dependencies {
+        classpath 'com.google.gms:google-services:4.3.3'
         def hilt_version = "2.28-alpha"
 
         classpath 'com.android.tools.build:gradle:4.1.0'

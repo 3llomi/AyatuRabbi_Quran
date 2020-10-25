@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#0F3250</color>
-    <color name="colorPrimaryVariant">@color/dkblue</color>
-    <color name="colorSecondaryVariant">#07223C</color>
-    <color name="colorSurface">#ADADAD</color>
+    <color name="colorPrimaryVariant">#0B263C</color>
+    <color name="colorSecondary">#1CAD91</color>
+    <color name="colorSecondaryVariant">#16856F</color>
+<!--    <color name="colorSurface">#ADADAD</color>-->
     <color name="colorOnPrimary">#98ABBE</color>
-    <color name="colorOnSecondary">#1CAD91</color>
+    <color name="colorOnSecondary">#FFFFFF</color>
     <color name="colorOnBackground">#FFFFFF</color>
     <color name="colorOnError">#C50D28</color>
-    <color name="colorOnSurface">@color/black</color>
+    <color name="onCard">#ADADAD</color>
+
+
 
 
     <color name="beige">#F5F5DC</color>
@@ -16,4 +19,5 @@
     <color name="white">#FFFFFF</color>
     <color name="dkblue">#0C2942</color>
     <color name="dkgray">#8F8F8F</color>
+    <color name="bg_panel">#264B6A</color>
 </resources>

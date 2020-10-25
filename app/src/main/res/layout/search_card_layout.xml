@@ -6,8 +6,8 @@
     android:layout_height="wrap_content"
     android:padding="8dp"
     app:cardBackgroundColor="#ffffff"
-    app:cardElevation="8dp"
-    app:cardCornerRadius="16dp">
+    app:cardCornerRadius="16dp"
+    app:cardElevation="8dp">
 
 
     <TextView
@@ -18,13 +18,12 @@
         android:layout_marginRight="8dp"
         android:drawableRight="@drawable/ic_search"
         android:drawablePadding="4dp"
-        android:drawableTint="@color/colorSurface"
+        android:drawableTint="@color/onCard"
         android:fontFamily="@font/naskh"
         android:gravity="center_vertical"
         android:text="@string/search"
-        android:textColor="@color/colorSurface"
+        android:textColor="@color/onCard"
         android:textSize="16sp" />
-
 
 </androidx.cardview.widget.CardView>
 

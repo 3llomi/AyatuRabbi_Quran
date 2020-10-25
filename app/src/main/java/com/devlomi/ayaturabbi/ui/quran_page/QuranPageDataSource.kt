@@ -28,7 +28,7 @@ class QuranPageDataSource @Inject constructor(
 
     }
 
-    private fun getSuraForPageArray() = intArrayOf(
+     fun getSuraForPageArray() = intArrayOf(
         1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
         2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
         2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
@@ -77,29 +77,7 @@ class QuranPageDataSource @Inject constructor(
         return 30
     }
 
-//    fun getData(quranDataDirectory: String, currentPageNumber: Int): List<QuranPageItem> {
-//        val list = mutableListOf<QuranPageItem>()
-//        for (i in 0 until PAGES_COUNT) {
-//            val pageNumber = i + 1
-//
-//            val imageFilePath =
-//                quranImagesDataSource.getQuranImagesPaths(pageNumber, quranDataDirectory)
-//
-//            val quranPageItem =
-//                if (pageNumber == currentPageNumber) getQuranPageItemByIndex(
-//                    i,
-//                    quranDataDirectory
-//                ) else {
-//                    QuranPageItem(imageFilePath = imageFilePath, pageNumber = pageNumber)
-//                }
-//
-//            list.add(quranPageItem)
-//
-//        }
-//        return list
-//    }
 
-    //TODO CONSIDER LOADING ALL DATA OR JUST LAZY LOADING?
     fun getData(): List<QuranPageItem> {
         val list = mutableListOf<QuranPageItem>()
         for (i in 0 until PAGES_COUNT) {

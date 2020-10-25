@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devlomi.ayaturabbi.settings.SettingsRepository
+import com.devlomi.ayaturabbi.ui.quran_page.ShareType
 import com.devlomi.ayaturabbi.util.ProperSizeCalc
 import kotlinx.coroutines.launch
 
@@ -21,10 +22,11 @@ class MainViewModel @ViewModelInject constructor(
     val hideUI: LiveData<Unit> get() = _hideUI
 
 
+
+
     fun loadKeepScreenOn() {
         _keepScreenOn.value = settingsRepository.preventScreenlock()
     }
-
 
     fun hasDownloadedFiles() = settingsRepository.hasDownloadedFiles()
 
@@ -35,5 +37,7 @@ class MainViewModel @ViewModelInject constructor(
     fun hideUI() {
         _hideUI.value = Unit
     }
+
+
 
 }

@@ -23,7 +23,7 @@
         android:id="@+id/options_menu_panel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorSecondaryVariant"
+        android:background="@color/bg_panel"
         android:clickable="true"
         android:paddingTop="16dp"
         app:layout_constraintBottom_toBottomOf="parent"

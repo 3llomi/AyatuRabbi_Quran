@@ -1,6 +1,7 @@
 package com.devlomi.ayaturabbi.ui.suras
 
 import android.content.Context
+import android.text.TextUtils
 import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
@@ -35,6 +36,22 @@ class SurasViewModel @ViewModelInject constructor(@ApplicationContext private va
             _filterdSuras.value =
                 _suras.value?.filter { it.surahName.contains(query) }?.sortedBy { it.surahNumber }
         }
+    }
+
+    fun isPageNumberValid(page: String): Boolean {
+        if (page.trim().isEmpty())
+            return false
+
+        if (TextUtils.isDigitsOnly(page)) {
+            val allowedNumbers = (1..604)
+            Log.d("3llomi","allowedNumbers $allowedNumbers")
+            val pageNumber = page.toInt()
+            if (allowedNumbers.contains(pageNumber)) {
+                return true
+            }
+        }
+
+        return false
     }
 
 

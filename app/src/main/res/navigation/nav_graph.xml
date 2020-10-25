@@ -45,8 +45,6 @@
         android:id="@+id/quranPage"
         android:name="com.devlomi.ayaturabbi.ui.quran_page.QuranPageFragment"
         android:label="quran_page_fragment"
-        app:popUpTo="@navigation/nav_graph"
-        app:popUpToInclusive="true"
         tools:layout="@layout/quran_page_fragment">
         <action
             android:id="@+id/action_quranPage_to_surasFragment"
@@ -54,7 +52,8 @@
             app:enterAnim="@anim/fragment_open_enter"
             app:exitAnim="@anim/fragment_open_exit"
             app:popEnterAnim="@anim/fragment_open_enter"
-            app:popExitAnim="@anim/fragment_open_exit" />
+            app:popExitAnim="@anim/fragment_open_exit"
+            />
         <action
             android:id="@+id/action_quranPage_to_bookmarksFragment"
             app:destination="@id/bookmarksFragment"
@@ -90,13 +89,13 @@
         android:label="suras_fragment"
         tools:layout="@layout/suras_fragment">
         <action
-
             android:id="@+id/action_surasFragment_to_quranPage"
             app:destination="@id/quranPage"
             app:enterAnim="@anim/fragment_open_enter"
             app:exitAnim="@anim/fragment_open_exit"
             app:popEnterAnim="@anim/fragment_open_enter"
             app:popExitAnim="@anim/fragment_open_exit"
+            app:launchSingleTop="true"
             app:popUpTo="@id/quranPage"
             app:popUpToInclusive="true" />
     </fragment>

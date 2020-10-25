@@ -1,6 +1,7 @@
 package com.devlomi.ayaturabbi.di
 
 import android.content.Context
+import android.util.Log
 import androidx.room.Room
 import com.devlomi.ayaturabbi.settings.SettingsRepository
 import com.devlomi.ayaturabbi.db.DBFileNames
@@ -30,7 +31,8 @@ object DBModule {
     ): AyahInfoDB {
         val width = settingsRepository.deviceWidth()
 
-        val file = File(context.filesDir, DBFileNames.ayahInfoNameDbFile(width))
+        val file = File(context.filesDir, DBFileNames.ayahInfoNameDbPath(width))
+        Log.d("3llomi","file path ${file.path}")
         return Room.databaseBuilder(context, AyahInfoDB::class.java, AyahInfoDB.DB_NAME)
             .fallbackToDestructiveMigration()
             .createFromFile(file)

@@ -7,10 +7,10 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.devlomi.ayaturabbi.ColorItem
 import com.devlomi.ayaturabbi.R
-import com.devlomi.ayaturabbi.constants.Constants
 import com.devlomi.ayaturabbi.db.bookmark.BookmarkRepository
 import com.devlomi.ayaturabbi.db.quran_ar.QuranRepository
 import com.devlomi.ayaturabbi.settings.SettingsRepository
+import com.devlomi.ayaturabbi.util.ProgressMapper
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
@@ -52,33 +52,70 @@ class QuranPageViewModel @ViewModelInject constructor(
     private var backgroundColorItem =
         ColorItem.fromName(settingsRepository.getBackgroundColorName())
 
+    private val _pageScale = MutableLiveData<Float>()
+    val pageScale: LiveData<Float> get() = _pageScale
+
+
+    private val quranPageItemsDataSource =
+        quranPageDataSource.getData()
+
+    private val _showZoomSheet = MutableLiveData<Int?>()
+    val showZoomSheet: LiveData<Int?> get() = _showZoomSheet
+
+    private var currentScale = settingsRepository.getScale()
 
     fun loadData(surahNumber: Int?, pageNumber: Int?) {
-        val quranPageItemsDataSource =
-            quranPageDataSource.getData()
 
         _quranPages.value?.addAll(quranPageItemsDataSource)
 
-//        quranPageItems.addAll(quranPageItemsDataSource)
         _quranPages.value = quranPageItemsDataSource.toMutableList()
 
+        _pageScale.value = currentScale
 
-        if (surahNumber == null || surahNumber == Constants.DEFAULT_INDEX) {
-            if (pageNumber != null) {
+//        if (surahNumber == null) {
+//            if (pageNumber != null) {
+//                _currentIndex.value = pageNumber - 1
+//            } else {
+//                _currentIndex.value = _currentIndex.value
+//                indexChanged()
+//            }
+//        } else {
+//            viewModelScope.launch(IO) {
+//                val foundPageNumber = ayahInfoRepository.getPageNumberBySurahNumber(surahNumber)
+//                withContext(Main) {
+//                    _currentIndex.value = foundPageNumber - 1
+//                    indexChanged()
+//                }
+//            }
+//        }
+
+        when {
+            surahNumber != null -> {
+                viewModelScope.launch(IO) {
+                    val foundPageNumber = ayahInfoRepository.getPageNumberBySurahNumber(surahNumber)
+                    withContext(Main) {
+                        _currentIndex.value = foundPageNumber - 1
+                        indexChanged()
+                    }
+                }
+
+            }
+            pageNumber != null -> {
                 _currentIndex.value = pageNumber - 1
-            } else {
+                indexChanged()
+
+            }
+            else -> {
                 _currentIndex.value = _currentIndex.value
                 indexChanged()
-            }
-        } else {
-            viewModelScope.launch(IO) {
-                val foundPageNumber = ayahInfoRepository.getPageNumberBySurahNumber(surahNumber)
-                withContext(Main) {
-                    _currentIndex.value = foundPageNumber - 1
-                    indexChanged()
-                }
+
             }
         }
+
+        Log.d(
+            "3llomi",
+            "loadData  surahNumber $surahNumber pageNumber $pageNumber _currentIndex.value ${_currentIndex.value} "
+        )
 
 
 
@@ -99,6 +136,7 @@ class QuranPageViewModel @ViewModelInject constructor(
     }
 
     fun onPageChanged(newIndex: Int) {
+        Log.d("3llomi", "onPageChanged $newIndex")
         _currentIndex.value = newIndex
         indexChanged()
     }
@@ -146,6 +184,7 @@ class QuranPageViewModel @ViewModelInject constructor(
         _currentIndex.value?.let {
             settingsRepository.saveCurrentIndex(it)
         }
+        settingsRepository.setScale(currentScale)
     }
 
     private fun updateBackgroundAndTextColors() {
@@ -165,13 +204,17 @@ class QuranPageViewModel @ViewModelInject constructor(
     }
 
     fun shareTypeChosen(shareType: ShareType) {
-        currentIndex.value?.let { index ->
-            val pageNumber = index + 1
+        val index = _currentIndex.value!!
+        Log.d("3llomi", "share type chosen")
+        val pageNumber = index + 1
+        quranPageDataSource.getSuraForPageArray().getOrNull(index)?.let { surahNumber ->
+
 
             when (shareType) {
                 ShareType.TEXT -> {
                     viewModelScope.launch(IO) {
-                        val shareText = quranRepository.getShareTextForPage(pageNumber)
+                        val shareText =
+                            quranRepository.getShareTextForPage(pageNumber)
                         withContext(Main) {
                             _shareText.value = shareText
                         }
@@ -186,17 +229,19 @@ class QuranPageViewModel @ViewModelInject constructor(
                         UUID.randomUUID().toString() + ".png"
                     )
 
-                    val quranImageWithBacgkround = ShareImageBackground.addBackgroundColorToImage(
-                        quranImageFile,
-                        ContextCompat.getColor(context, getBackgroundColorResource()),
-                        useWhiteTextColor(),
-                        finalFile
-                    )
+                    val quranImageWithBacgkround =
+                        ShareImageBackground.addBackgroundColorToImage(
+                            quranImageFile,
+                            ContextCompat.getColor(context, getBackgroundColorResource()),
+                            useWhiteTextColor(),
+                            finalFile
+                        )
                     _shareImage.value = quranImageWithBacgkround
                 }
             }
 
         }
+
 
     }
 
@@ -219,12 +264,35 @@ class QuranPageViewModel @ViewModelInject constructor(
 
         }
 
+
+    }
+
+    //prevent multiple calls when Fragment is re-created
+    fun shareDone() {
+        _shareText.value = null
+        _shareImage.value = null
+    }
+
+    fun zoomDone(){
+        _showZoomSheet.value = null
     }
 
     override fun onCleared() {
         super.onCleared()
-        Log.d("3llomi","onCleared ")
+        Log.d("3llomi", "onCleared ")
     }
+
+    fun setPageScale(thumbPosition: Int) {
+        val scale = ProgressMapper.mapToScale(thumbPosition)
+        currentScale = scale
+        _pageScale.value = scale
+    }
+
+    fun btnZoomClicked() {
+        val mapToView = ProgressMapper.mapToView(currentScale)
+        _showZoomSheet.value = mapToView
+    }
+
 }
 
 

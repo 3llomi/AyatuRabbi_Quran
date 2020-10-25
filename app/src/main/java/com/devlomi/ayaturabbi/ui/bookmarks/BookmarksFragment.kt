@@ -46,7 +46,6 @@ class BookmarksFragment : Fragment(R.layout.bookmarks_fragment) {
             override fun onDeleteClick(position: Int, bookmark: Bookmark) {
                 MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT))
 
-                    //TODO CHANGE COLORS FOR BUTTONS
                     .show {
                         lifecycleOwner(viewLifecycleOwner)
                         title(R.string.delete_bookmark_confirmation)

@@ -9,7 +9,6 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
         android:fontFamily="@font/cairo_black"
         android:text="@string/choose_share_type"
         android:textSize="18sp"

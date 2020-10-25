@@ -7,11 +7,10 @@ import com.devlomi.ayaturabbi.db.quran_ar.entities.*
 
 @Database(
     entities = [
-        ArabicTextEntity::class, /*PropertiesEntity::class,*/ ShareTextEntity::class,
-        VersesContentEntity::class, VersesSegDirEntity::class, VersesSegmentsEntity::class
+        ArabicTextEntity::class, ShareTextEntity::class, VersesContentEntity::class
     ], version = 1, exportSchema = false
 )
-abstract class QuranDB:RoomDatabase() {
+abstract class QuranDB : RoomDatabase() {
     companion object {
         const val DB_NAME = "QuranDB"
     }

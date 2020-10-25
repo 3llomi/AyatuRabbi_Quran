@@ -7,5 +7,5 @@ import androidx.room.PrimaryKey
 data class ShareTextEntity(
     val sura: Int,
     val ayah: Int,
-    val text: String?,
+    val text: String,
 )

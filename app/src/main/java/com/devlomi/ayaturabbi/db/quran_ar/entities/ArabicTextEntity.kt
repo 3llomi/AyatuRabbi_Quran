@@ -7,5 +7,5 @@ import androidx.room.PrimaryKey
 data class ArabicTextEntity(
     val sura: Int,
     val ayah: Int,
-    val text: String?,
+    val text: String,
 )

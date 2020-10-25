@@ -33,7 +33,7 @@ class SettingsRepository @Inject constructor(private val sharedPreferences: Shar
     }
 
     fun getBackgroundColorName() =
-        sharedPreferences.getString("bgColorName", ColorItem.DKGRAY.name)!!
+        sharedPreferences.getString("bgColorName", ColorItem.DKBLUE.name)!!
 
     fun saveCurrentIndex(currentIndex: Int) {
         sharedPreferences.edit {
@@ -47,6 +47,16 @@ class SettingsRepository @Inject constructor(private val sharedPreferences: Shar
     fun setPreventScreenlock(boolean: Boolean) {
         sharedPreferences.edit {
             putBoolean("prevent_screen_lock", boolean)
+        }
+    }
+
+    fun getScale(): Float {
+        return sharedPreferences.getFloat("scale", 1.0f)
+    }
+
+    fun setScale(scale: Float) {
+        sharedPreferences.edit {
+            putFloat("scale", scale)
         }
     }
 

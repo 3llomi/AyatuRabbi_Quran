@@ -65,8 +65,7 @@ class SettingsFragment : Fragment(R.layout.settings_fragment) {
         }
 
         tv_our_apps.setOnClickListener {
-            val devId = ""//TODO GET DEV ID
-            launchWebsite("http://play.google.com/store/apps/dev?id=$devId")
+            launchWebsite("https://play.google.com/store/apps/developer?id=AbdulAlim+Rajjoub+%28Devlomi%29")
         }
 
 

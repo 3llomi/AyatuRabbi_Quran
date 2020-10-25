@@ -4,18 +4,22 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.devlomi.ayaturabbi.extensions.unzip
+import com.google.firebase.storage.FileDownloadTask
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import okhttp3.ResponseBody
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
+import javax.inject.Inject
+import kotlin.coroutines.suspendCoroutine
 
-class DownloadRepository constructor(private val webService: APIWebService) {
-    companion object {
-        const val BASE_URL = "http://192.168.64.2/quran/"
-    }
+class DownloadRepository @Inject constructor() {
+
 
     private val _downloadLiveData = MutableLiveData<DownloadingResource>()
 
@@ -23,74 +27,44 @@ class DownloadRepository constructor(private val webService: APIWebService) {
         get() = _downloadLiveData
 
 
-    suspend fun download(width: Int, path: String) {
-        val url = "${BASE_URL}images_${width}.zip"
-        Log.d("3llomi", "url is $url")
-        val responseBody = webService.downloadFile(url).body()
-        saveFile(responseBody, path)
+    private var file: File? = null
+    private var task: FileDownloadTask? = null
+
+    fun cancelDownload() {
+        task?.cancel()
+        file?.delete()
     }
 
-    fun unZipFile(zipFilePath:String,targetLocation:String){
+    suspend fun downloadFB(width: Int, path: String) {
+        task?.cancel()
+
+        val ref = FirebaseStorage.getInstance().getReference("quran_files/data_${width}.zip")
+        file = File(path)
+
+        task = ref.getFile(file!!)
+        task?.addOnProgressListener {
+
+            val progressDouble = 100.0 * it.bytesTransferred / it.totalByteCount
+
+            //get progress
+            val progress = progressDouble.toInt()
+Log.d("3llomi","progress $progress")
+            _downloadLiveData.value = DownloadingResource.Loading(progress)
+
+        }?.addOnCanceledListener {
+            file?.delete()
+        }?.addOnFailureListener {
+            file?.delete()
+        }?.await()
+    }
+
+    fun unZipFile(zipFilePath: String, targetLocation: String) {
         val file = File(targetLocation)
-        if (file.exists()){
+        if (file.exists()) {
             file.mkdirs()
         }
-        Log.d("3llomi","zipFilePath $zipFilePath targetLocation $targetLocation")
         File(zipFilePath).unzip(File(targetLocation))
     }
 
 
-    private suspend fun saveFile(body: ResponseBody?, path: String) {
-        if (body == null) {
-
-            emitEventOnMainThread(
-                DownloadingResource.Error(
-                    IllegalArgumentException()
-                )
-            )//TODO CREATE NEW EXCEPTION CLASS HERE
-
-            return
-        }
-        var input: InputStream? = null
-        try {
-            input = body.byteStream()
-            val fullFileSize = body.contentLength()
-            //reset
-            emitEventOnMainThread(DownloadingResource.Loading(0))
-
-            val fos = FileOutputStream(path)
-            fos.use { output ->
-                val buffer = ByteArray(4 * 1024) // or other buffer size
-                var read: Int
-                var downloadedBytes = 0L
-                var lastProgress = -1
-                while (input.read(buffer).also { read = it } != -1) {
-                    output.write(buffer, 0, read)
-                    downloadedBytes += read
-
-                    val progress = (downloadedBytes * 100 / fullFileSize).toInt()
-                    //prevent duplicate progresses
-                    if (lastProgress != progress){
-                        delay(1000)
-                        emitEventOnMainThread(DownloadingResource.Loading(progress))
-                        lastProgress = progress
-                    }
-                }
-                output.flush()
-                emitEventOnMainThread(DownloadingResource.Success)
-
-            }
-        } catch (e: Exception) {
-            emitEventOnMainThread(DownloadingResource.Error(e))
-            Log.d("3llomi", "error $e")
-        } finally {
-            input?.close()
-        }
-    }
-
-    private suspend fun emitEventOnMainThread(event: DownloadingResource) {
-        withContext(Dispatchers.Main) {
-            _downloadLiveData.value = event
-        }
-    }
 }

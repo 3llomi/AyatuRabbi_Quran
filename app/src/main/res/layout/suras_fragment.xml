@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.suras.SurasFragment"
-    android:background="@color/colorPrimaryVariant">
+    android:background="@color/colorPrimaryVariant"
+    tools:context=".ui.suras.SurasFragment">
 
 
     <FrameLayout
@@ -23,15 +23,29 @@
 
     </FrameLayout>
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_go_to_page"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/go_to_page"
+        android:backgroundTint="@color/colorSecondary"
+        app:icon="@drawable/ic_article"
+        app:iconTint="@color/colorOnSecondary"
+        android:textColor="@color/colorOnSecondary"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layout_search" />
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_suras"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="28dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/layout_search" />
+        app:layout_constraintTop_toBottomOf="@id/btn_go_to_page" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

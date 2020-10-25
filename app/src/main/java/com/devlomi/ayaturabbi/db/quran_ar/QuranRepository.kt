@@ -16,11 +16,25 @@ class QuranRepository @Inject constructor(
 
     suspend fun getShareTextForPage(pageNumber: Int): String {
 
+        //first gell all ayat in a Page
         val ayatInPage = ayahInfoDao.getAyatInPage(pageNumber)
-        val surahNumber = 2 //TODO GET REAL SURAH NUMBER
-//            val ayatNumbers = ayatInPage.map { it.ayah_number }
-        val shareTextBySurah = quranDBDao.getShareTextBySurah(surahNumber, ayatInPage)
-        return shareTextBySurah.joinToString(separator = SEPARATOR)
+
+
+        /*
+        now group all ayat in this page with surah number
+        then remove duplicate ayah numbers
+        then getShareText for every ayah that that has the surah number
+        lastly convert listOfLists to a single List (Flatten)
+        and get the text out of it
+        at the end join it to a sharable string with a separator
+        */
+        return ayatInPage.groupBy {
+            it.sura_number
+        }.mapValues { it.value.map { ayahInfo -> ayahInfo.ayah_number }.distinct() }
+            .map {
+                quranDBDao.getShareTextBySurah(listOf(it.key), it.value)
+            }.flatten().map { it.text }.joinToString(separator = SEPARATOR)
+            .also { Log.d("3llomi", "it $it") }
 
 
     }
@@ -30,7 +44,7 @@ class QuranRepository @Inject constructor(
     }
 
     companion object {
-        const val SEPARATOR = " ✵ "
+        private const val SEPARATOR = " ✵ "
     }
 
 }

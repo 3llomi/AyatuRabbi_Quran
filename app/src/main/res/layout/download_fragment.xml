@@ -6,19 +6,44 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
-    tools:context=".ui.main.DownloadFragment">
+    tools:context=".ui.download.DownloadFragment">
+
+
+    <ImageView
+        android:id="@+id/img_splash"
+        android:layout_width="175dp"
+        android:layout_height="175dp"
+        android:src="@drawable/quran_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textView2" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:fontFamily="@font/sana_font"
+        android:text="@string/app_name_ar"
+        android:textColor="@color/colorOnBackground"
+        android:textSize="55sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
     <TextView
         android:id="@+id/tv_downloading"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
         android:fontFamily="@font/cairo_font"
         android:gravity="center_horizontal"
         android:text="@string/downloading_files"
         android:textColor="@color/colorOnBackground"
         android:textSize="25sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -31,49 +56,44 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
-        android:progress="50"
-        app:indicatorColor="@color/colorOnSecondary"
+        app:indicatorColor="@color/colorSecondary"
+        android:visibility="gone"
         app:indicatorCornerRadius="16dp"
         app:indicatorSize="13dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_downloading"
-        app:trackColor="@color/colorOnBackground" />
+        app:trackColor="@color/white"
+        tools:progress="50" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_cancel_retry"
-        android:textSize="18sp"
-        android:backgroundTint="@color/colorPrimaryVariant"
+        android:id="@+id/btn_download"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:backgroundTint="@color/colorPrimaryVariant"
+        android:elevation="16dp"
+        android:text="@string/download"
+        android:textSize="18sp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@id/progress_download"
+        app:layout_constraintStart_toStartOf="@id/progress_download"
+        app:layout_constraintTop_toBottomOf="@id/progress_download" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/colorPrimaryVariant"
         android:elevation="16dp"
         android:text="@string/cancel"
+        android:textSize="18sp"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="@id/progress_download"
         app:layout_constraintStart_toStartOf="@id/progress_download"
         app:layout_constraintTop_toBottomOf="@id/progress_download" />
 
 
-    <ImageView
-        android:id="@+id/img_splash"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/quran_image"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/sana_font"
-        android:text="@string/app_name_ar"
-        android:textColor="@color/colorOnBackground"
-        android:textSize="55sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/img_splash" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

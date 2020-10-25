@@ -5,11 +5,10 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "verses_content")
 data class VersesContentEntity(
-    //TODO CHANGE TO NOT NULLABLE
     @PrimaryKey
     val docid: Int,
-    val c0sura: String?,
-    val c1ayah: String?,
-    val c2text: String?,
+    val c0sura: String,
+    val c1ayah: String,
+    val c2text: String,
     val c3primary: String?,
 )

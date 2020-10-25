@@ -8,11 +8,11 @@
     android:clickable="true"
     android:focusable="true"
     android:paddingTop="8dp"
-    android:paddingBottom="8dp">
+    android:paddingBottom="8dp"
+    tools:background="@color/colorPrimary">
 
 
     <androidx.appcompat.widget.AppCompatTextView
-
         android:id="@+id/tv_surah_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -31,7 +31,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginRight="16dp"
-        android:drawableRight="@drawable/ic_reading_quran"
+        android:drawableRight="@drawable/ic_article"
         android:drawablePadding="8dp"
         android:fontFamily="@font/cairo_font"
         android:textColor="@color/colorOnSecondary"
@@ -69,10 +69,10 @@
         android:layout_marginLeft="32dp"
         android:layout_marginTop="16dp"
         android:layout_marginRight="32dp"
-        android:backgroundTint="@color/colorOnSecondary"
+        android:backgroundTint="@color/colorSecondary"
         android:paddingLeft="32dp"
         android:paddingRight="32dp"
-        android:text="@string/Delete"
+        android:text="@string/delete"
         android:textColor="@color/white"
         app:icon="@drawable/ic_clear"
         app:iconGravity="textEnd"
