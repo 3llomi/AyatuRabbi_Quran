@@ -29,26 +29,7 @@ class SearchResultsAdapter(val listener: (SearchResult) -> Unit) :
     override fun onBindViewHolder(holder: SearchResultHolder, position: Int) {
         holder.bind(getItem(position))
     }
-//
-//class SearchResultsAdapter(val listener: (SearchResult) -> Unit) :
-//    RecyclerView.Adapter<SearchResultsAdapter.SearchResultHolder>() {
-//
-//    private var list = mutableListOf<SearchResult>()
-//
-//    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchResultHolder {
-//        val row = LayoutInflater.from(parent.context).inflate(R.layout.item_search, parent, false)
-//        return SearchResultHolder(row)
-//    }
-//
-////    fun submitList(list: MutableList<SearchResult>) {
-////        this.list = list
-////        notifyDataSetChanged()
-////    }
-//
-//    override fun onBindViewHolder(holder: SearchResultHolder, position: Int) {
-//
-//        holder.bind(list[position])
-//    }
+
 
     inner class SearchResultHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         init {

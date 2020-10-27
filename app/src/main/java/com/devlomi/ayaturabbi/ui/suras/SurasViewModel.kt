@@ -8,9 +8,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.devlomi.ayaturabbi.R
+import com.devlomi.ayaturabbi.datasource.quran_datasource.QuranPageDataSource
 import dagger.hilt.android.qualifiers.ApplicationContext
 
-class SurasViewModel @ViewModelInject constructor(@ApplicationContext private val context: Context) :
+class SurasViewModel @ViewModelInject constructor(
+    @ApplicationContext private val context: Context,
+    private val quranPageDataSource: QuranPageDataSource
+) :
     ViewModel() {
 
     private val _suras = MutableLiveData<List<Surah>>()
@@ -44,7 +48,6 @@ class SurasViewModel @ViewModelInject constructor(@ApplicationContext private va
 
         if (TextUtils.isDigitsOnly(page)) {
             val allowedNumbers = (1..604)
-            Log.d("3llomi","allowedNumbers $allowedNumbers")
             val pageNumber = page.toInt()
             if (allowedNumbers.contains(pageNumber)) {
                 return true
@@ -52,6 +55,21 @@ class SurasViewModel @ViewModelInject constructor(@ApplicationContext private va
         }
 
         return false
+    }
+
+    fun getPageNumberByJuzoaIfValid(juzoa: String): Int? {
+        if (TextUtils.isDigitsOnly(juzoa)) {
+            val allowedNumbers = (1..30)
+            val juzoaNumber = juzoa.toInt()
+            if (allowedNumbers.contains(juzoaNumber)) {
+                try {
+                    //return page number if valid
+                    return quranPageDataSource.getPageForJuzArray()[juzoaNumber - 1]
+                } catch (e: Exception) { }
+            }
+        }
+        return null
+
     }
 
 

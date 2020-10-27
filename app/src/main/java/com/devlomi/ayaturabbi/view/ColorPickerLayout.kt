@@ -1,11 +1,10 @@
-package com.devlomi.ayaturabbi
+package com.devlomi.ayaturabbi.view
 
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
-import androidx.constraintlayout.widget.ConstraintLayout
-import kotlinx.android.synthetic.main.color_picker_layout.view.*
+import com.devlomi.ayaturabbi.R
 
 class ColorPickerLayout @JvmOverloads constructor(
     context: Context,
@@ -50,7 +49,7 @@ enum class ColorItem {
 
 
     companion object {
-        fun fromName(colorItemName: String):ColorItem{
+        fun fromName(colorItemName: String): ColorItem {
             return  when(colorItemName){
                 DKGRAY.name -> DKGRAY
                 BEIGE.name -> BEIGE

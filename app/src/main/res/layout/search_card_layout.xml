@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:padding="8dp"
     app:cardBackgroundColor="#ffffff"
-    app:cardCornerRadius="16dp"
+    app:cardCornerRadius="14dp"
     app:cardElevation="8dp">
 
 
@@ -19,7 +19,7 @@
         android:drawableRight="@drawable/ic_search"
         android:drawablePadding="4dp"
         android:drawableTint="@color/onCard"
-        android:fontFamily="@font/naskh"
+        android:fontFamily="@font/cairo_regular"
         android:gravity="center_vertical"
         android:text="@string/search"
         android:textColor="@color/onCard"

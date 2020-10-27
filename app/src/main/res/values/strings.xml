@@ -41,6 +41,9 @@
     <string name="download_notification">Download Notification</string>
     <string name="downloaded">Downloaded %d%% </string>
     <string name="downloading_quran_files">Downloading Quran Files</string>
+    <string name="go_to_juzoa">Go to Juzoa</string>
+    <string name="invalid_juzoa">Juzoa should be between 1-30</string>
+    <string name="juzoa_number">Juzoa Number</string>
 
     <string-array name="surah_names">
         <item>الفاتحة</item>

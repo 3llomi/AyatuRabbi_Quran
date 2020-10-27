@@ -1,4 +1,4 @@
-package com.devlomi.ayaturabbi.ui.quran_page
+package com.devlomi.ayaturabbi.db.ayahinfo
 
 import com.devlomi.ayaturabbi.db.ayahinfo.AyahInfoDao
 import com.devlomi.ayaturabbi.db.quran_ar.QuranDBDao

@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
-    <com.devlomi.ayaturabbi.ColorPickerLayout
+    <com.devlomi.ayaturabbi.view.ColorPickerLayout
 
         android:id="@+id/color_picker_layout"
         android:layout_width="match_parent"

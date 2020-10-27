@@ -1,11 +1,7 @@
 package com.devlomi.ayaturabbi.db.quran_ar
 
-import android.util.Log
-import androidx.room.Query
 import com.devlomi.ayaturabbi.db.ayahinfo.AyahInfoDao
-import com.devlomi.ayaturabbi.db.quran_ar.entities.ShareTextEntity
-import com.devlomi.ayaturabbi.ui.quran_page.QuranImagesDataSource
-import com.devlomi.ayaturabbi.ui.quran_page.QuranPageDataSource
+import com.devlomi.ayaturabbi.datasource.quran_datasource.QuranImagesDataSource
 import javax.inject.Inject
 
 class QuranRepository @Inject constructor(
@@ -34,7 +30,6 @@ class QuranRepository @Inject constructor(
             .map {
                 quranDBDao.getShareTextBySurah(listOf(it.key), it.value)
             }.flatten().map { it.text }.joinToString(separator = SEPARATOR)
-            .also { Log.d("3llomi", "it $it") }
 
 
     }

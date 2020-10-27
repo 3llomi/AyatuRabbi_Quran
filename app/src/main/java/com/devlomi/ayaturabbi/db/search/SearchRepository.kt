@@ -1,10 +1,10 @@
-package com.devlomi.ayaturabbi.ui.search
+package com.devlomi.ayaturabbi.db.search
 
 import android.content.Context
-import android.util.Log
 import com.devlomi.ayaturabbi.R
 import com.devlomi.ayaturabbi.db.ayahinfo.AyahInfoDao
 import com.devlomi.ayaturabbi.db.quran_ar.QuranDBDao
+import com.devlomi.ayaturabbi.ui.search.SearchResult
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 

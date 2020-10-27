@@ -5,6 +5,4 @@ import dagger.hilt.android.HiltAndroidApp
 
 
 @HiltAndroidApp
-class AyatuRabbiApp:Application() {
-
-}
+class AyatuRabbiApp:Application()

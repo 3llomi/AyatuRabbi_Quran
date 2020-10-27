@@ -32,7 +32,6 @@ object DBModule {
         val width = settingsRepository.deviceWidth()
 
         val file = File(context.filesDir, DBFileNames.ayahInfoNameDbPath(width))
-        Log.d("3llomi","file path ${file.path}")
         return Room.databaseBuilder(context, AyahInfoDB::class.java, AyahInfoDB.DB_NAME)
             .fallbackToDestructiveMigration()
             .createFromFile(file)

@@ -127,9 +127,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun setScreenOnFlags(keepScreenOn: Boolean) {
         if (keepScreenOn)
-            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         else
-            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
 
 

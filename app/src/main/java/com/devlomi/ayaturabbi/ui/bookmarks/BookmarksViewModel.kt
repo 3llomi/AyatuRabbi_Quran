@@ -22,21 +22,31 @@ class BookmarksViewModel @ViewModelInject constructor(
 
     fun loadBookmarks() {
         viewModelScope.launch(IO) {
-            val allBookmarks =
-                bookmarkDao.getAllBookmarks().sortedByDescending { it.timestamp }
-            withContext(Main) {
-                _bookmarks.value = allBookmarks.toMutableList()
+            try {
+                val allBookmarks =
+                    bookmarkDao.getAllBookmarks().sortedByDescending { it.timestamp }
+                withContext(Main) {
+                    _bookmarks.value = allBookmarks.toMutableList()
+                }
+            } catch (e: Exception) {
+
             }
         }
+
     }
 
     fun onDeleteClick(bookmark: Bookmark) {
         viewModelScope.launch(IO) {
-            bookmarkDao.unBookmark(bookmark)
-            withContext(Main) {
-                _bookmarks.value = _bookmarks.value?.removed(bookmark)
+            try {
+                bookmarkDao.unBookmark(bookmark)
+                withContext(Main) {
+                    _bookmarks.value = _bookmarks.value?.removed(bookmark)
+                }
+            } catch (e: Exception) {
+
             }
         }
+
     }
 
 

@@ -1,20 +1,14 @@
 package com.devlomi.ayaturabbi.ui.suras
 
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.text.InputType
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.LinearLayout
 import androidx.core.os.bundleOf
-import androidx.core.view.updatePadding
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.LayoutMode
@@ -26,10 +20,8 @@ import com.devlomi.ayaturabbi.R
 import com.devlomi.ayaturabbi.constants.BundleConstants
 import com.devlomi.ayaturabbi.util.KeyboardHelper
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.search_card_layout.*
 import kotlinx.android.synthetic.main.search_card_search_view.*
 import kotlinx.android.synthetic.main.suras_fragment.*
-import me.zhanghai.android.systemuihelper.SystemUiHelper
 
 @AndroidEntryPoint
 class SurasFragment : Fragment(R.layout.suras_fragment) {
@@ -69,11 +61,38 @@ class SurasFragment : Fragment(R.layout.suras_fragment) {
                             R.id.action_surasFragment_to_quranPage,
                             bundleOf(Pair(BundleConstants.PAGE_NUMBER_TAG, page.toInt()))
                         )
-                    }else{
+                    } else {
                         editText.error = getString(R.string.invalid_page)
                     }
                 }
-                negativeButton(R.string.cancel){dismiss()}
+                negativeButton(R.string.cancel) { dismiss() }
+            }
+
+        }
+
+        btn_go_to_juzoa.setOnClickListener {
+            val editText = EditText(requireContext())
+
+            editText.inputType = InputType.TYPE_CLASS_NUMBER
+            editText.hint = getString(R.string.juzoa_number)
+            MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+
+                noAutoDismiss()
+                lifecycleOwner(viewLifecycleOwner)
+                customView(view = editText)
+                positiveButton(R.string.go) {
+                    val juzoa = editText.text.toString()
+                    val pageNumber = viewModel.getPageNumberByJuzoaIfValid(juzoa)
+                    if (pageNumber != null) {
+                        findNavController().navigate(
+                            R.id.action_surasFragment_to_quranPage,
+                            bundleOf(Pair(BundleConstants.PAGE_NUMBER_TAG, pageNumber))
+                        )
+                    } else {
+                        editText.error = getString(R.string.invalid_juzoa)
+                    }
+                }
+                negativeButton(R.string.cancel) { dismiss() }
             }
 
         }

@@ -13,7 +13,7 @@ import com.devlomi.ayaturabbi.extensions.deviceWidthPixels
 import com.devlomi.ayaturabbi.extensions.navigateSafely
 import com.devlomi.ayaturabbi.network.DownloadingResource
 import com.devlomi.ayaturabbi.network.exceptions.UserCancelledException
-import com.devlomi.ayaturabbi.util.IntentConstants
+import com.devlomi.ayaturabbi.constants.IntentConstants
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.download_fragment.*
 import java.io.File
@@ -103,8 +103,6 @@ class DownloadFragment : Fragment(R.layout.download_fragment) {
                     tv_downloading.isVisible = true
                     btn_download.isVisible = true
                     btn_cancel.isVisible = false
-
-                    viewModel.downloadError()
 
                 }
                 is DownloadingResource.Success -> {

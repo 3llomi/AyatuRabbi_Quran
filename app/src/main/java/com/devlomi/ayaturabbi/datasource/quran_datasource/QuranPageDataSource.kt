@@ -1,7 +1,8 @@
-package com.devlomi.ayaturabbi.ui.quran_page
+package com.devlomi.ayaturabbi.datasource.quran_datasource
 
 import android.content.Context
 import com.devlomi.ayaturabbi.R
+import com.devlomi.ayaturabbi.ui.quran_page.QuranPageItem
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.text.DecimalFormat
 import java.text.NumberFormat
@@ -25,7 +26,6 @@ class QuranPageDataSource @Inject constructor(
 
     companion object {
         const val PAGES_COUNT = 604
-
     }
 
      fun getSuraForPageArray() = intArrayOf(
@@ -59,7 +59,7 @@ class QuranPageDataSource @Inject constructor(
         83, 85, 86, 87, 89, 89, 91, 92, 95, 97, 98, 100, 103, 106, 109, 112
     )
 
-    private fun getPageForJuzArray() = intArrayOf(
+     fun getPageForJuzArray() = intArrayOf(
         /*  1 - 10 */ 1, 22, 42, 62, 82, 102, 121, 142, 162, 182,
         /* 11 - 20 */ 201, 222, 242, 262, 282, 302, 322, 342, 362, 382,
         /* 21 - 30 */ 402, 422, 442, 462, 482, 502, 522, 542, 562, 582

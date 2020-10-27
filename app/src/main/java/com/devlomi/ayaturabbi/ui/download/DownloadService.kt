@@ -5,14 +5,13 @@ import android.app.NotificationManager
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.devlomi.ayaturabbi.R
-import com.devlomi.ayaturabbi.util.IntentConstants
+import com.devlomi.ayaturabbi.constants.IntentConstants
 import com.devlomi.ayaturabbi.ScopedService
 import com.devlomi.ayaturabbi.db.DBFileNames
 import com.devlomi.ayaturabbi.network.DownloadRepository
@@ -49,19 +48,19 @@ class DownloadService : ScopedService() {
     override fun onCreate() {
         super.onCreate()
         notificationManager = NotificationManagerCompat.from(this)
-        downloadRepository.downloadLiveData.observe(this, {
+        downloadRepository.downloadLiveData.observe(this) {
             if (it is DownloadingResource.Loading) {
                 if (!downloadCancelled) {
                     updateNotificationProgress(it.progress)
                     _downloadingLiveData.value = it
                 }
             }
-        })
+        }
     }
 
     private fun updateNotificationProgress(progress: Int) {
         notification?.let { notification ->
-            notification.setProgress(100, progress, false)
+            notification.setProgress(MAX_PROGRESS, progress, false)
             notification.setContentText(getString(R.string.downloaded, progress))
             notificationManager.notify(NOTIFICATION_ID, notification.build())
         }
@@ -74,7 +73,7 @@ class DownloadService : ScopedService() {
 
         private const val NOTIFICATION_CHANNEL_ID = "2"
         private const val NOTIFICATION_ID = 2
-
+        private const val MAX_PROGRESS = 100
 
     }
 
@@ -93,7 +92,7 @@ class DownloadService : ScopedService() {
                         .setContentTitle(getString(R.string.downloading_quran_files))
                         .setContentText(getString(R.string.downloaded, 0))
                         .setSmallIcon(R.drawable.ic_note)//TODO SET PROPER ICON
-                        .setProgress(100, 0, false)
+                        .setProgress(MAX_PROGRESS, 0, false)
                         .setNotificationSilent()
 
                 startForeground(NOTIFICATION_ID, notification!!.build())
@@ -145,41 +144,22 @@ class DownloadService : ScopedService() {
         downloadCancelled = false
         launch(IO) {
             try {
-                downloadRepository.downloadFB(width, filePath)
+                downloadRepository.download(width, filePath)
                 val temp = File("$cacheDir/quran_data/")
 
                 downloadRepository.unZipFile(filePath, temp.path)
 
 
-                File(temp, DBFileNames.ayahInfoNameDbPath(width)).copyTo(
-                    File(
-                        filesDir,
-                        DBFileNames.ayahInfoNameDbPath(width)
-                    ), overwrite = true
-                )
+                copyFiles(temp, width)
 
 
-                File(temp, DBFileNames.quranDbPath).copyTo(
-                    File(
-                        filesDir,
-                        DBFileNames.quranDbPath
-                    ), overwrite = true
-                )
-
-
-
-                File(temp, "width_$width").copyRecursively(
-                    File(filesDir, "quran_images"),
-                    overwrite = true
-                )
+                temp.deleteRecursively()
+                File(cacheDir, "data.zip").delete()
 
 
 
 
 
-
-
-                Log.d("3llomi", "finished download $filePath")
                 withContext(Dispatchers.Main) {
                     _downloadingLiveData.value = DownloadingResource.Success
                 }
@@ -194,6 +174,31 @@ class DownloadService : ScopedService() {
 
             }
         }
+    }
+
+
+    private fun copyFiles(temp: File, width: Int) {
+        File(temp, DBFileNames.ayahInfoNameDbPath(width)).copyTo(
+            File(
+                filesDir,
+                DBFileNames.ayahInfoNameDbPath(width)
+            ), overwrite = true
+        )
+
+
+        File(temp, DBFileNames.quranDbPath).copyTo(
+            File(
+                filesDir,
+                DBFileNames.quranDbPath
+            ), overwrite = true
+        )
+
+
+
+        File(temp, "width_$width").copyRecursively(
+            File(filesDir, "quran_images"),
+            overwrite = true
+        )
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {

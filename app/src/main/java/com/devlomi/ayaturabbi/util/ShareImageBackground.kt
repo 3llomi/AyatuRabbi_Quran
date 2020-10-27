@@ -1,7 +1,6 @@
-package com.devlomi.ayaturabbi.ui.quran_page
+package com.devlomi.ayaturabbi.util
 
 import android.graphics.*
-import com.devlomi.ayaturabbi.util.WhiteColorFilter
 import java.io.File
 import java.io.FileOutputStream
 

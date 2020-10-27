@@ -1,16 +1,18 @@
 package com.devlomi.ayaturabbi.ui.quran_page
 
 import android.content.Context
-import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
-import com.devlomi.ayaturabbi.ColorItem
+import com.devlomi.ayaturabbi.view.ColorItem
 import com.devlomi.ayaturabbi.R
+import com.devlomi.ayaturabbi.datasource.quran_datasource.QuranPageDataSource
+import com.devlomi.ayaturabbi.db.ayahinfo.AyahInfoRepository
 import com.devlomi.ayaturabbi.db.bookmark.BookmarkRepository
 import com.devlomi.ayaturabbi.db.quran_ar.QuranRepository
 import com.devlomi.ayaturabbi.settings.SettingsRepository
 import com.devlomi.ayaturabbi.util.ProgressMapper
+import com.devlomi.ayaturabbi.util.ShareImageBackground
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
@@ -72,22 +74,6 @@ class QuranPageViewModel @ViewModelInject constructor(
 
         _pageScale.value = currentScale
 
-//        if (surahNumber == null) {
-//            if (pageNumber != null) {
-//                _currentIndex.value = pageNumber - 1
-//            } else {
-//                _currentIndex.value = _currentIndex.value
-//                indexChanged()
-//            }
-//        } else {
-//            viewModelScope.launch(IO) {
-//                val foundPageNumber = ayahInfoRepository.getPageNumberBySurahNumber(surahNumber)
-//                withContext(Main) {
-//                    _currentIndex.value = foundPageNumber - 1
-//                    indexChanged()
-//                }
-//            }
-//        }
 
         when {
             surahNumber != null -> {
@@ -112,13 +98,6 @@ class QuranPageViewModel @ViewModelInject constructor(
             }
         }
 
-        Log.d(
-            "3llomi",
-            "loadData  surahNumber $surahNumber pageNumber $pageNumber _currentIndex.value ${_currentIndex.value} "
-        )
-
-
-
 
         updateBackgroundAndTextColors()
     }
@@ -127,16 +106,21 @@ class QuranPageViewModel @ViewModelInject constructor(
         viewModelScope.launch(IO) {
 
             currentIndex.value?.let { index ->
-                val isBookmarked = bookmarkRepository.bookmarkExists(index + 1)
-                withContext(Main) {
-                    _isBookmarked.value = isBookmarked
+                try {
+
+                    val isBookmarked = bookmarkRepository.bookmarkExists(index + 1)
+                    withContext(Main) {
+                        _isBookmarked.value = isBookmarked
+                    }
+                } catch (e: Exception) {
+
                 }
             }
+
         }
     }
 
     fun onPageChanged(newIndex: Int) {
-        Log.d("3llomi", "onPageChanged $newIndex")
         _currentIndex.value = newIndex
         indexChanged()
     }
@@ -151,29 +135,28 @@ class QuranPageViewModel @ViewModelInject constructor(
 
             _currentIndex.value?.let { index ->
                 viewModelScope.launch(IO) {
-                    if (isBookmarked) {
-                        bookmarkRepository.unBookmark(index + 1)
-                        withContext(Main) {
-                            _isBookmarked.value = false
-                        }
-                    } else {
-                        _quranPages.value?.getOrNull(index)?.let { quranPage ->
-                            bookmarkRepository.bookmark(
-                                quranPage.pageNumber,
-                                quranPage.surahName,
-                                null
-                            )
+                    try {
+                        if (isBookmarked) {
+                            bookmarkRepository.unBookmark(index + 1)
                             withContext(Main) {
-                                _isBookmarked.value = true
+                                _isBookmarked.value = false
+                            }
+                        } else {
+                            _quranPages.value?.getOrNull(index)?.let { quranPage ->
+                                bookmarkRepository.bookmark(
+                                    quranPage.pageNumber,
+                                    quranPage.surahName,
+                                    null
+                                )
+                                withContext(Main) {
+                                    _isBookmarked.value = true
+                                }
                             }
                         }
-
+                    } catch (e: Exception) {
 
                     }
-
                 }
-
-
             }
         }
     }
@@ -205,7 +188,6 @@ class QuranPageViewModel @ViewModelInject constructor(
 
     fun shareTypeChosen(shareType: ShareType) {
         val index = _currentIndex.value!!
-        Log.d("3llomi", "share type chosen")
         val pageNumber = index + 1
         quranPageDataSource.getSuraForPageArray().getOrNull(index)?.let { surahNumber ->
 
@@ -213,12 +195,17 @@ class QuranPageViewModel @ViewModelInject constructor(
             when (shareType) {
                 ShareType.TEXT -> {
                     viewModelScope.launch(IO) {
-                        val shareText =
-                            quranRepository.getShareTextForPage(pageNumber)
-                        withContext(Main) {
-                            _shareText.value = shareText
+                        try {
+                            val shareText =
+                                quranRepository.getShareTextForPage(pageNumber)
+                            withContext(Main) {
+                                _shareText.value = shareText
+                            }
+                        } catch (e: Exception) {
+
                         }
                     }
+
                 }
 
                 ShareType.IMAGE -> {
@@ -247,17 +234,19 @@ class QuranPageViewModel @ViewModelInject constructor(
 
     fun bookmarkWithNote(note: String) {
         _currentIndex.value?.let { index ->
-
             _quranPages.value?.getOrNull(index)?.let { quranPage ->
                 viewModelScope.launch(IO) {
+                    try {
+                        bookmarkRepository.bookmark(
+                            quranPage.pageNumber,
+                            quranPage.surahName,
+                            note
+                        )
+                        withContext(Main) {
+                            _isBookmarked.value = true
+                        }
+                    } catch (e: Exception) {
 
-                    bookmarkRepository.bookmark(
-                        quranPage.pageNumber,
-                        quranPage.surahName,
-                        note
-                    )
-                    withContext(Main) {
-                        _isBookmarked.value = true
                     }
                 }
             }
@@ -273,14 +262,10 @@ class QuranPageViewModel @ViewModelInject constructor(
         _shareImage.value = null
     }
 
-    fun zoomDone(){
+    fun zoomDone() {
         _showZoomSheet.value = null
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        Log.d("3llomi", "onCleared ")
-    }
 
     fun setPageScale(thumbPosition: Int) {
         val scale = ProgressMapper.mapToScale(thumbPosition)

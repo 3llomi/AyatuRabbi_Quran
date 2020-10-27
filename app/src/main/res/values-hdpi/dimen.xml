@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="page_number_mbottom">6dp</dimen>
+    <dimen name="search_card_padding">0dp</dimen>
+
+</resources>

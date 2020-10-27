@@ -22,8 +22,6 @@ class MainViewModel @ViewModelInject constructor(
     val hideUI: LiveData<Unit> get() = _hideUI
 
 
-
-
     fun loadKeepScreenOn() {
         _keepScreenOn.value = settingsRepository.preventScreenlock()
     }

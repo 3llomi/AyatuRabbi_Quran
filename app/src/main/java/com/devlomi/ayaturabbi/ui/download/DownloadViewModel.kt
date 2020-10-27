@@ -13,7 +13,6 @@ class DownloadViewModel @ViewModelInject constructor(
     private val properSizeCalc: ProperSizeCalc
 ) :
     ViewModel() {
-    private var downloadFinished = false
 
     private val _startDownloadLiveData = MutableLiveData<Int>()
     val startDownloadLiveData: LiveData<Int> get() = _startDownloadLiveData
@@ -33,13 +32,7 @@ class DownloadViewModel @ViewModelInject constructor(
 
     fun downloadFinished() {
         settingsRepository.setDownloadFinished(true)
-
     }
-
-    fun downloadError() {
-        downloadFinished = true
-    }
-
 
 
     fun setDeviceWidth(deviceWidthPixels: Int) {

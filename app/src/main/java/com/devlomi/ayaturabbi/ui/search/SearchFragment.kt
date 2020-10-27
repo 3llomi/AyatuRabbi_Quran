@@ -48,7 +48,6 @@ class SearchFragment : Fragment(R.layout.search_fragment) {
 
     private fun initAdapter() {
         adapter = SearchResultsAdapter { searchResult ->
-            Log.d("3llomi", "search result page number ${searchResult.pageNumber} ")
             KeyboardHelper.hideSoftKeyboard(requireContext(), et_search)
             findNavController().navigate(
                 R.id.action_searchFragment_to_quranPage,

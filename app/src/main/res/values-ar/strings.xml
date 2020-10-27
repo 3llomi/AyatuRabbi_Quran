@@ -36,7 +36,9 @@
     <string name="page_number">رقم الصفحة</string>
     <string name="go">إذهب</string>
     <string name="invalid_page">رقم الصفحة يجب أن يكون بين ١-٦٠٤</string>
-
+    <string name="go_to_juzoa">اذهب الى جزء</string>
+    <string name="invalid_juzoa">رقم الجزء يجب أن يكون بين ١-٣٠</string>
+    <string name="juzoa_number">رقم الجزء</string>
     <string name="download_failed">فشل التحميل</string>
     <string name="download_notification">إشعارات التحميل</string>
     <string name="downloaded">تم تحميل %d%% </string>

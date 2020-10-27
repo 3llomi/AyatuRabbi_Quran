@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     app:layout_constraintTop_toTopOf="parent">
 
-    <View
+    <ImageView
         android:id="@+id/color_dkgray"
         android:layout_width="35dp"
         android:layout_height="35dp"
@@ -18,10 +18,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <View
+    <ImageView
         android:id="@+id/color_beige"
-
-
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:background="@drawable/circle_bg"
@@ -33,10 +31,8 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 
-    <View
+    <ImageView
         android:id="@+id/color_white"
-
-
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:background="@drawable/circle_bg"
@@ -47,10 +43,8 @@
         app:layout_constraintStart_toEndOf="@+id/color_beige"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <View
-
+    <ImageView
         android:id="@+id/color_dkblue"
-
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:background="@drawable/circle_bg"

@@ -2,7 +2,7 @@ package com.devlomi.ayaturabbi.settings
 
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import com.devlomi.ayaturabbi.ColorItem
+import com.devlomi.ayaturabbi.view.ColorItem
 import javax.inject.Inject
 
 class SettingsRepository @Inject constructor(private val sharedPreferences: SharedPreferences) {

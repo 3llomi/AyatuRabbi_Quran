@@ -6,11 +6,8 @@ import android.content.pm.ResolveInfo
 import android.graphics.PorterDuff
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
-import android.view.MotionEvent
 import android.view.View
 import android.widget.EditText
-import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
@@ -30,11 +27,10 @@ import com.afollestad.materialdialogs.callbacks.onDismiss
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.devlomi.ayaturabbi.BuildConfig
-import com.devlomi.ayaturabbi.ColorItem
-import com.devlomi.ayaturabbi.ColorPickerListener
+import com.devlomi.ayaturabbi.view.ColorItem
+import com.devlomi.ayaturabbi.view.ColorPickerListener
 import com.devlomi.ayaturabbi.R
 import com.devlomi.ayaturabbi.constants.BundleConstants
-import com.devlomi.ayaturabbi.db.ayahinfo.AyahInfo
 import com.devlomi.ayaturabbi.extensions.getIntOrNull
 import com.devlomi.ayaturabbi.ui.main.MainViewModel
 import com.warkiz.tickseekbar.OnSeekChangeListener
@@ -71,7 +67,6 @@ class QuranPageFragment : Fragment(R.layout.quran_page_fragment), OnSeekChangeLi
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("3llomi", "onCreate")
         surahNumber = arguments?.getIntOrNull(BundleConstants.SURAH_NUMBER_TAG)
         pageNumber = arguments?.getIntOrNull(BundleConstants.PAGE_NUMBER_TAG)
     }
@@ -82,22 +77,7 @@ class QuranPageFragment : Fragment(R.layout.quran_page_fragment), OnSeekChangeLi
         mainViewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
 
 
-        adapter = QuranPageAdapter(viewLifecycleOwner, viewModel.useWhiteColor)
-        adapter.pageScale = viewModel.pageScale
-        adapter.adapterListener = object : AdapterListener {
-            override fun onClick(pos: Int, quranPageItem: QuranPageItem) {
-                isOptionPanelLayoutHidden = !isOptionPanelLayoutHidden
-                hideOrShowPanelLayout(!isOptionPanelLayoutHidden)
-            }
-        }
-
-        viewpager.adapter = adapter
-        viewpager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                super.onPageSelected(position)
-                viewModel.onPageChanged(position)
-            }
-        })
+        setupAdapter()
 
         subscribeObservers()
 
@@ -107,6 +87,7 @@ class QuranPageFragment : Fragment(R.layout.quran_page_fragment), OnSeekChangeLi
         //when going back from Fragment
         // bundle extras would still have value, therefore we need to clear these out after loading data
         clearArguments()
+
         btn_color_picker.setOnClickListener {
             isColorPanelHidden = !isColorPanelHidden
             hideOrShowColorLayout(!isColorPanelHidden)
@@ -140,7 +121,6 @@ class QuranPageFragment : Fragment(R.layout.quran_page_fragment), OnSeekChangeLi
         }
 
         btn_share.setOnClickListener {
-
             showShareDialog()
         }
 
@@ -150,13 +130,36 @@ class QuranPageFragment : Fragment(R.layout.quran_page_fragment), OnSeekChangeLi
 
         btn_zoom.setOnClickListener {
             viewModel.btnZoomClicked()
-
         }
 
 
         registerBackPressedCallback()
 
 
+        getOptionsMenuHeight()
+
+    }
+
+    private fun setupAdapter() {
+        adapter = QuranPageAdapter(viewLifecycleOwner, viewModel.useWhiteColor)
+        adapter.pageScale = viewModel.pageScale
+        adapter.adapterListener = object : AdapterListener {
+            override fun onClick(pos: Int, quranPageItem: QuranPageItem) {
+                isOptionPanelLayoutHidden = !isOptionPanelLayoutHidden
+                hideOrShowPanelLayout(!isOptionPanelLayoutHidden)
+            }
+        }
+
+        viewpager.adapter = adapter
+        viewpager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                viewModel.onPageChanged(position)
+            }
+        })
+    }
+
+    private fun getOptionsMenuHeight() {
         options_menu_panel.doOnPreDraw { view ->
             val height = view.height
 
@@ -174,29 +177,18 @@ class QuranPageFragment : Fragment(R.layout.quran_page_fragment), OnSeekChangeLi
             colorPickerHeight = height
             optionsPanelHeight = height
         }
-
     }
 
     private fun showZoomDialog(initialProgress: Int) {
 
         MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
 
-
+            lifecycleOwner(viewLifecycleOwner)
             customView(R.layout.zoom_options)
 
             val seekBar = this.findViewById<TickSeekBar>(R.id.seekbar)
             seekBar.setProgress(initialProgress.toFloat())
             seekBar.onSeekChangeListener = this@QuranPageFragment
-//                object : OnSeekChangeListener {
-//                override fun onSeeking(seekParams: SeekParams) {
-//                    Log.d("3llomi", "onScaling ")
-//                    viewModel.setPageScale(seekParams.thumbPosition)
-//                }
-//
-//                override fun onStartTrackingTouch(seekBar: TickSeekBar?) = Unit
-//
-//                override fun onStopTrackingTouch(seekBar: TickSeekBar) = Unit
-//            }
 
             onDismiss {
                 viewModel.zoomDone()
@@ -292,7 +284,6 @@ class QuranPageFragment : Fragment(R.layout.quran_page_fragment), OnSeekChangeLi
 
         viewModel.shareText.observe(viewLifecycleOwner) {
             it?.let { shareText ->
-
                 shareText(shareText)
                 viewModel.shareDone()
             }

@@ -23,7 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:fontFamily="@font/sana_font"
+        android:fontFamily="@font/sana_regular"
         android:text="@string/app_name_ar"
         android:textColor="@color/colorOnBackground"
         android:textSize="55sp"

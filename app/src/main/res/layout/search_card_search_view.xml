@@ -4,8 +4,9 @@
     android:id="@+id/card_search"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:padding="8dp"
     app:cardBackgroundColor="#ffffff"
-    app:cardCornerRadius="32dp"
+    app:cardCornerRadius="14dp"
     app:cardElevation="8dp">
 
 
@@ -17,11 +18,10 @@
         android:background="@null"
         android:drawableRight="@drawable/ic_search"
         android:drawablePadding="4dp"
-        android:drawableTint="@color/dkgray"
-        android:fontFamily="@font/cairo_font"
+        android:fontFamily="@font/cairo_regular"
         android:gravity="right"
+        android:padding="@dimen/search_card_padding"
         android:hint="@string/search_for_surah"
-        android:padding="4dp"
         android:textColor="@color/black"
         android:textColorHint="@color/dkgray" />
 

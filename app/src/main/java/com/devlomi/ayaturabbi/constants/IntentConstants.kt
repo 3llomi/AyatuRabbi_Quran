@@ -1,4 +1,4 @@
-package com.devlomi.ayaturabbi.util
+package com.devlomi.ayaturabbi.constants
 
 object IntentConstants {
     const val ACTION_START_DOWNLOAD = "action-start-download"

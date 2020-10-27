@@ -16,8 +16,6 @@ data class QuranPageItem(
         val diffCallback = object :
             DiffUtil.ItemCallback<QuranPageItem>() {
             override fun areItemsTheSame(oldItem: QuranPageItem, newItem: QuranPageItem): Boolean {
-                Log.d("3llomi","areItemsTheSame")
-
                 return oldItem.pageNumber == newItem.pageNumber
             }
 
@@ -25,7 +23,6 @@ data class QuranPageItem(
                 oldItem: QuranPageItem,
                 newItem: QuranPageItem
             ): Boolean {
-                Log.d("3llomi","old item is $oldItem newItem $newItem")
                 return oldItem == newItem
             }
 
