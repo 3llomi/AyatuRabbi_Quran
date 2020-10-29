@@ -91,7 +91,7 @@ class DownloadService : ScopedService() {
                     NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
                         .setContentTitle(getString(R.string.downloading_quran_files))
                         .setContentText(getString(R.string.downloaded, 0))
-                        .setSmallIcon(R.drawable.ic_note)//TODO SET PROPER ICON
+                        .setSmallIcon(R.drawable.ic_noti)
                         .setProgress(MAX_PROGRESS, 0, false)
                         .setNotificationSilent()
 

@@ -10,27 +10,17 @@
 
 
     <ImageView
+        android:layout_marginTop="32dp"
         android:id="@+id/img_splash"
-        android:layout_width="175dp"
-        android:layout_height="175dp"
-        android:src="@drawable/quran_image"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textView2" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:fontFamily="@font/sana_regular"
-        android:text="@string/app_name_ar"
-        android:textColor="@color/colorOnBackground"
-        android:textSize="55sp"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:src="@drawable/app_icon"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/white" />
+
 
 
     <TextView
@@ -56,8 +46,8 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
-        app:indicatorColor="@color/colorSecondary"
         android:visibility="gone"
+        app:indicatorColor="@color/colorSecondary"
         app:indicatorCornerRadius="16dp"
         app:indicatorSize="13dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -93,7 +83,6 @@
         app:layout_constraintEnd_toEndOf="@id/progress_download"
         app:layout_constraintStart_toStartOf="@id/progress_download"
         app:layout_constraintTop_toBottomOf="@id/progress_download" />
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
