@@ -1,18 +1,18 @@
 # Ayatu Rabbi - Quran | آياتُ ربي
 
-<img src="etc/logo.png" width="70%" height="70%" />
+<img src="etc/logo.png" width="30%" height="30%" />
 
 The Easiest app to Ready Holy Quran
 
-<a href='https://play.google.com/store/apps/details?id=com.devlomi.ayaturabbi&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'/></a>
+<a href='https://play.google.com/store/apps/details?id=com.devlomi.ayaturabbi&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'  width="60%" height="60%/></a>
 
 
 ## Screenshots
 <p float="left">
-  <img src="etc/screenshot1.png" width="225" /> 
-  <img src="etc/screenshot2.png" width="225" />
-  <img src="etc/screenshot3.png" width="225" />
-  <img src="etc/screenshot4.png" width="225" />
+  <img src="etc/screenshot_1.png" width="225" /> 
+  <img src="etc/screenshot_2.png" width="225" />
+  <img src="etc/screenshot_3.png" width="225" />
+  <img src="etc/screenshot_4.png" width="225" />
 </p>
 
 
@@ -21,11 +21,15 @@ The Easiest app to Ready Holy Quran
 
 ## Thanks/Credits
 [quran.com-images](https://github.com/quran/quran.com-images)
+
 [Quran_Android](https://github.com/quran/quran_android) 
 
 #Designers who volunteered:
+
 [Ahmed Magdy](https://www.behance.net/devilangil)
+
 [Asmaa Ahmed](https://www.behance.net/Smsmahmed18595)
+
 KA
 
 
