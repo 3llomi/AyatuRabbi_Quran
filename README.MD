@@ -24,7 +24,7 @@ The Easiest app to Ready Holy Quran
 
 [Quran_Android](https://github.com/quran/quran_android) 
 
-##Designers who volunteered:
+**Designers who volunteered:**
 
 [Ahmed Magdy](https://www.behance.net/devilangil)
 
