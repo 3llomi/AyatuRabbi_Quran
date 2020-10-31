@@ -112,16 +112,7 @@
             android:text="@string/rate_app" />
 
 
-        <TextView
-            android:id="@+id/tv_our_apps"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:drawableLeft="@drawable/ic_android"
-            android:drawablePadding="8dp"
-            android:fontFamily="@font/cairo_regular"
-            android:gravity="center_vertical"
-            android:text="@string/our_apps" />
+
 
 
     </LinearLayout>

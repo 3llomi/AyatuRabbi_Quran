@@ -64,9 +64,9 @@ class SettingsFragment : Fragment(R.layout.settings_fragment) {
             launchWebsite(getAppLink())
         }
 
-        tv_our_apps.setOnClickListener {
-            launchWebsite("https://play.google.com/store/apps/developer?id=AbdulAlim+Rajjoub+%28Devlomi%29")
-        }
+//        tv_our_apps.setOnClickListener {
+//            launchWebsite("https://play.google.com/store/apps/developer?id=AbdulAlim+Rajjoub+%28Devlomi%29")
+//        }
 
 
     }
