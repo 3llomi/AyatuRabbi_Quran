@@ -7,14 +7,14 @@ apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "29.0.3"
+    compileSdkVersion 33
+
 
     defaultConfig {
         applicationId "com.devlomi.ayaturabbi"
         minSdkVersion 21
-        targetSdkVersion 30
-        versionCode 4
+        targetSdkVersion 33
+        versionCode 5
         versionName "1.0.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
