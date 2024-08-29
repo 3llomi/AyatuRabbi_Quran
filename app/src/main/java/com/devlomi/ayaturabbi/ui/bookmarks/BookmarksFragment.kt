@@ -18,9 +18,9 @@ import com.afollestad.materialdialogs.bottomsheets.BottomSheet
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.devlomi.ayaturabbi.R
 import com.devlomi.ayaturabbi.constants.BundleConstants
+import com.devlomi.ayaturabbi.databinding.BookmarksFragmentBinding
 import com.devlomi.ayaturabbi.db.bookmark.Bookmark
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.bookmarks_fragment.*
 
 
 @AndroidEntryPoint
@@ -30,6 +30,17 @@ class BookmarksFragment : Fragment(R.layout.bookmarks_fragment) {
     private val viewModel: BookmarksViewModel by viewModels()
 
     private lateinit var adapter: BookmarkAdapter
+    private var _binding : BookmarksFragmentBinding? = null
+    private val binding: BookmarksFragmentBinding get() = _binding!!
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = BookmarksFragmentBinding.inflate(inflater, container, false)
+        return binding.root
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -65,8 +76,8 @@ class BookmarksFragment : Fragment(R.layout.bookmarks_fragment) {
                 )
             }
         }
-        rv_bookmarks.layoutManager = LinearLayoutManager(requireContext())
-        rv_bookmarks.adapter = adapter
+        binding.rvBookmarks.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvBookmarks.adapter = adapter
     }
 
     private fun subscribeObservers() {
@@ -75,4 +86,8 @@ class BookmarksFragment : Fragment(R.layout.bookmarks_fragment) {
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }

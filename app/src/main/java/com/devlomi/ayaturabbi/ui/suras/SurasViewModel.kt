@@ -2,16 +2,17 @@ package com.devlomi.ayaturabbi.ui.suras
 
 import android.content.Context
 import android.text.TextUtils
-import android.util.Log
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.devlomi.ayaturabbi.R
 import com.devlomi.ayaturabbi.datasource.quran_datasource.QuranPageDataSource
+import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
-class SurasViewModel @ViewModelInject constructor(
+@HiltViewModel
+class SurasViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val quranPageDataSource: QuranPageDataSource
 ) :

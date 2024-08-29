@@ -7,32 +7,24 @@
     tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
     <com.devlomi.ayaturabbi.view.ColorPickerLayout
-
         android:id="@+id/color_picker_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="24dp"
-        app:layout_constraintBottom_toTopOf="@id/search_layout"
+        app:layout_constraintBottom_toTopOf="@id/card_search_layout"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <include
-        android:id="@+id/search_layout"
         layout="@layout/search_card_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:layout_marginBottom="24dp"
-        app:layout_constraintBottom_toTopOf="@id/btn_settings" />
+        android:layout_height="wrap_content" />
 
     <include
         layout="@layout/options_buttons_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="16dp" />
-
+        android:layout_height="wrap_content" />
 
 </merge>

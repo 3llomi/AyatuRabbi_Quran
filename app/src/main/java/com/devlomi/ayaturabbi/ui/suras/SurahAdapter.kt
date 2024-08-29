@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.devlomi.ayaturabbi.R
-import kotlinx.android.synthetic.main.item_surah.view.*
+import com.devlomi.ayaturabbi.databinding.ItemSurahBinding
 
 class SurahAdapter(val listener: ((Surah) -> Unit)) :
     ListAdapter<Surah, SurahAdapter.SurahHolder>(Surah.diffCallback) {
@@ -22,6 +22,7 @@ class SurahAdapter(val listener: ((Surah) -> Unit)) :
     }
 
     inner class SurahHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val binding = ItemSurahBinding.bind(itemView)
         init {
             itemView.setOnClickListener {
                 listener(getItem(adapterPosition))
@@ -29,9 +30,9 @@ class SurahAdapter(val listener: ((Surah) -> Unit)) :
         }
 
         fun bind(surah: Surah) {
-            itemView.tv_surah_name.text = surah.surahName
+            binding.tvSurahName.text = surah.surahName
             val pos = surah.surahNumber
-            itemView.tv_page_number.text = pos.toString()
+            binding.tvPageNumber.text = pos.toString()
         }
     }
 

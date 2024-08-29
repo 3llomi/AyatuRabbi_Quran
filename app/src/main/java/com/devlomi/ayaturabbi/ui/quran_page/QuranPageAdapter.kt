@@ -12,8 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.Target.SIZE_ORIGINAL
 import com.devlomi.ayaturabbi.R
+import com.devlomi.ayaturabbi.databinding.ItemQuranPageBinding
 import com.devlomi.ayaturabbi.util.WhiteColorFilter
-import kotlinx.android.synthetic.main.item_quran_page.view.*
 
 class QuranPageAdapter(
     private val lifecycleOwner: LifecycleOwner,
@@ -40,6 +40,7 @@ class QuranPageAdapter(
 
 
     inner class QuranPageHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val binding = ItemQuranPageBinding.bind(itemView)
 
         init {
             itemView.setOnClickListener {
@@ -49,50 +50,50 @@ class QuranPageAdapter(
 
         fun bind(quranPageItem: QuranPageItem) {
             val imgPath = quranPageItem.imageFilePath
-            Glide.with(itemView.context).load(imgPath).into(itemView.img_quran)
+            Glide.with(itemView.context).load(imgPath).into(binding.imgQuran)
 
             pageScale?.observe(lifecycleOwner) { scale ->
-                if (itemView.img_quran.scaleX != scale) {
-                    itemView.img_quran.scaleX = scale
-                    itemView.img_quran.scaleY = scale
+                if (binding.imgQuran.scaleX != scale) {
+                    binding.imgQuran.scaleX = scale
+                    binding.imgQuran.scaleY = scale
                 }
             }
-            useWhiteColorLiveData.observe(lifecycleOwner, { useWhiteTextColor ->
+            useWhiteColorLiveData.observe(lifecycleOwner) { useWhiteTextColor ->
                 var tvTextColor = if (useWhiteTextColor) ContextCompat.getColor(
                     itemView.context,
                     R.color.white
                 ) else
                     ContextCompat.getColor(itemView.context, R.color.black)
 
-                itemView.tv_juzoa_name.setTextColor(tvTextColor)
-                itemView.tv_surah_name.setTextColor(tvTextColor)
-                itemView.tv_page_number.setTextColor(tvTextColor)
+                binding.tvJuzoaName.setTextColor(tvTextColor)
+                binding.tvSurahName.setTextColor(tvTextColor)
+                binding.tvPageNumber.setTextColor(tvTextColor)
 
                 if (useWhiteTextColor) {
 
-                    setColorFilterForText(itemView.img_quran)
+                    setColorFilterForText(binding.imgQuran)
                 } else {
-                    itemView.img_quran.clearColorFilter()
+                    binding.imgQuran.clearColorFilter()
                 }
-            })
+            }
 
 
 
-            itemView.tv_juzoa_name.text = String.format(
+            binding.tvJuzoaName.text = String.format(
                 itemView.context.resources.getString(
                     R.string.aljuzoa,
                     quranPageItem.juzoaNumberText
                 )
             )
 
-            itemView.tv_surah_name.text = String.format(
+            binding.tvSurahName.text = String.format(
                 itemView.context.resources.getString(
                     R.string.surah,
                     quranPageItem.surahName
                 )
             )
 
-            itemView.tv_page_number.text = quranPageItem.pageNumberLocalized
+            binding.tvPageNumber.text = quranPageItem.pageNumberLocalized
         }
 
         private fun setColorFilterForText(

@@ -2,7 +2,6 @@ package com.devlomi.ayaturabbi.ui.quran_page
 
 import android.content.Context
 import androidx.core.content.ContextCompat
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.devlomi.ayaturabbi.view.ColorItem
 import com.devlomi.ayaturabbi.R
@@ -13,6 +12,7 @@ import com.devlomi.ayaturabbi.db.quran_ar.QuranRepository
 import com.devlomi.ayaturabbi.settings.SettingsRepository
 import com.devlomi.ayaturabbi.util.ProgressMapper
 import com.devlomi.ayaturabbi.util.ShareImageBackground
+import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
@@ -20,8 +20,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.*
+import javax.inject.Inject
 
-class QuranPageViewModel @ViewModelInject constructor(
+@HiltViewModel
+class QuranPageViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val settingsRepository: SettingsRepository,
     private val quranPageDataSource: QuranPageDataSource,
@@ -45,11 +47,11 @@ class QuranPageViewModel @ViewModelInject constructor(
     private val _isBookmarked = MutableLiveData<Boolean>()
     val isBookmarked: LiveData<Boolean> get() = _isBookmarked
 
-    private val _shareText = MutableLiveData<String>()
-    val shareText: LiveData<String> get() = _shareText
+    private val _shareText = MutableLiveData<String?>()
+    val shareText: LiveData<String?> get() = _shareText
 
-    private val _shareImage = MutableLiveData<String>()
-    val shareImage: LiveData<String> get() = _shareImage
+    private val _shareImage = MutableLiveData<String?>()
+    val shareImage: LiveData<String?> get() = _shareImage
 
     private var backgroundColorItem =
         ColorItem.fromName(settingsRepository.getBackgroundColorName())

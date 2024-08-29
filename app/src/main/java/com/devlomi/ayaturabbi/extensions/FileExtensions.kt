@@ -1,5 +1,6 @@
 package com.devlomi.ayaturabbi.extensions
 
+import android.os.Build
 import java.io.File
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
@@ -15,6 +16,9 @@ fun File.unzip(unzipLocationRoot: File? = null) {
         rootFolder.mkdirs()
     }
 
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        dalvik.system.ZipPathValidator.clearCallback()
+    }
     ZipFile(this).use { zip ->
         zip
             .entries()

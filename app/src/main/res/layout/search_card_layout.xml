@@ -1,29 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/card_search"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp"
-    app:cardBackgroundColor="#ffffff"
-    app:cardCornerRadius="14dp"
-    app:cardElevation="8dp">
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
-
-    <TextView
-        android:id="@+id/tv_search"
-        android:layout_width="wrap_content"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_search_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:layout_marginRight="8dp"
-        android:drawableRight="@drawable/ic_search"
-        android:drawablePadding="4dp"
-        android:drawableTint="@color/onCard"
-        android:fontFamily="@font/cairo_regular"
-        android:gravity="center_vertical"
-        android:text="@string/search"
-        android:textColor="@color/onCard"
-        android:textSize="16sp" />
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginBottom="24dp"
+        android:padding="8dp"
+        app:cardBackgroundColor="#ffffff"
+        app:cardCornerRadius="14dp"
+        app:cardElevation="8dp"
+        app:layout_constraintBottom_toTopOf="@id/btn_settings"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
-</androidx.cardview.widget.CardView>
 
+        <TextView
+            android:id="@+id/tv_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginRight="8dp"
+            android:drawablePadding="4dp"
+            android:fontFamily="@font/cairo_regular"
+            android:gravity="center_vertical"
+            android:text="@string/search"
+            android:textColor="@color/onCard"
+            android:textSize="16sp"
+            app:drawableRightCompat="@drawable/ic_search"
+            app:drawableTint="@color/onCard" />
+
+    </androidx.cardview.widget.CardView>
+</merge>

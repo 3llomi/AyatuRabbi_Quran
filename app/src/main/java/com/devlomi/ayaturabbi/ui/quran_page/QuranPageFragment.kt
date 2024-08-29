@@ -6,7 +6,9 @@ import android.content.pm.ResolveInfo
 import android.graphics.PorterDuff
 import android.net.Uri
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
@@ -17,7 +19,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.afollestad.materialdialogs.LayoutMode
@@ -27,21 +28,20 @@ import com.afollestad.materialdialogs.callbacks.onDismiss
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.devlomi.ayaturabbi.BuildConfig
-import com.devlomi.ayaturabbi.view.ColorItem
-import com.devlomi.ayaturabbi.view.ColorPickerListener
 import com.devlomi.ayaturabbi.R
 import com.devlomi.ayaturabbi.constants.BundleConstants
+import com.devlomi.ayaturabbi.databinding.OptionsButtonsLayoutBinding
+import com.devlomi.ayaturabbi.databinding.OptionsPanelLayoutBinding
+import com.devlomi.ayaturabbi.databinding.QuranPageFragmentBinding
+import com.devlomi.ayaturabbi.databinding.SearchCardLayoutBinding
 import com.devlomi.ayaturabbi.extensions.getIntOrNull
 import com.devlomi.ayaturabbi.ui.main.MainViewModel
+import com.devlomi.ayaturabbi.view.ColorItem
+import com.devlomi.ayaturabbi.view.ColorPickerListener
 import com.warkiz.tickseekbar.OnSeekChangeListener
 import com.warkiz.tickseekbar.SeekParams
 import com.warkiz.tickseekbar.TickSeekBar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.options_buttons_layout.*
-import kotlinx.android.synthetic.main.options_panel_layout.*
-import kotlinx.android.synthetic.main.quran_page_fragment.*
-import kotlinx.android.synthetic.main.quran_page_fragment.quranPage_root
-import kotlinx.android.synthetic.main.quran_page_fragment.viewpager
 import java.io.File
 
 
@@ -65,10 +65,33 @@ class QuranPageFragment : Fragment(R.layout.quran_page_fragment), OnSeekChangeLi
     var surahNumber: Int? = null
     var pageNumber: Int? = null
 
+    private var _binding: QuranPageFragmentBinding? = null
+    private val binding: QuranPageFragmentBinding get() = _binding!!
+
+    private var _optionsPanelLayoutBinding: OptionsPanelLayoutBinding? = null
+    private val optionsPanelLayoutBinding: OptionsPanelLayoutBinding get() = _optionsPanelLayoutBinding!!
+    private var _optionsButtonsLayoutBinding: OptionsButtonsLayoutBinding? = null
+    private val optionsButtonsLayoutBinding: OptionsButtonsLayoutBinding get() = _optionsButtonsLayoutBinding!!
+    private var _searchCardBinding: SearchCardLayoutBinding? = null
+    private val searchCardBinding: SearchCardLayoutBinding get() = _searchCardBinding!!
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         surahNumber = arguments?.getIntOrNull(BundleConstants.SURAH_NUMBER_TAG)
         pageNumber = arguments?.getIntOrNull(BundleConstants.PAGE_NUMBER_TAG)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = QuranPageFragmentBinding.inflate(layoutInflater, container, false)
+        _optionsPanelLayoutBinding = OptionsPanelLayoutBinding.bind(binding.root)
+        _optionsButtonsLayoutBinding = OptionsButtonsLayoutBinding.bind(binding.root)
+        _searchCardBinding = SearchCardLayoutBinding.bind(binding.root)
+        return _binding?.quranPageRoot
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -87,48 +110,48 @@ class QuranPageFragment : Fragment(R.layout.quran_page_fragment), OnSeekChangeLi
         //when going back from Fragment
         // bundle extras would still have value, therefore we need to clear these out after loading data
         clearArguments()
-
-        btn_color_picker.setOnClickListener {
+        optionsButtonsLayoutBinding.btnColorPicker.setOnClickListener {
             isColorPanelHidden = !isColorPanelHidden
             hideOrShowColorLayout(!isColorPanelHidden)
         }
 
-        color_picker_layout.colorPickerListener = object : ColorPickerListener {
-            override fun onItemClick(colorItem: ColorItem) {
-                viewModel.colorPicked(colorItem)
+        optionsPanelLayoutBinding.colorPickerLayout.colorPickerListener =
+            object : ColorPickerListener {
+                override fun onItemClick(colorItem: ColorItem) {
+                    viewModel.colorPicked(colorItem)
+                }
             }
-        }
 
-        btn_suras.setOnClickListener {
+        optionsButtonsLayoutBinding.btnSuras.setOnClickListener {
             findNavController().navigate(R.id.action_quranPage_to_surasFragment)
         }
 
-        btn_bookmark.setOnClickListener {
+        optionsButtonsLayoutBinding.btnBookmark.setOnClickListener {
             viewModel.bookmarkClicked()
         }
 
-        btn_bookmark.setOnLongClickListener {
+        optionsButtonsLayoutBinding.btnBookmark.setOnLongClickListener {
             showBookmarkNoteDialog()
             true
         }
 
-        btn_bookmarked_pages.setOnClickListener {
+        optionsButtonsLayoutBinding.btnBookmarkedPages.setOnClickListener {
             findNavController().navigate(R.id.action_quranPage_to_bookmarksFragment)
         }
 
-        search_layout.setOnClickListener {
+        searchCardBinding.cardSearchLayout.setOnClickListener {
             findNavController().navigate(R.id.action_quranPage_to_searchFragment)
         }
 
-        btn_share.setOnClickListener {
+        optionsButtonsLayoutBinding.btnShare.setOnClickListener {
             showShareDialog()
         }
 
-        btn_settings.setOnClickListener {
+        optionsButtonsLayoutBinding.btnSettings.setOnClickListener {
             findNavController().navigate(R.id.action_quranPage_to_settingsFragment)
         }
 
-        btn_zoom.setOnClickListener {
+        optionsButtonsLayoutBinding.btnZoom.setOnClickListener {
             viewModel.btnZoomClicked()
         }
 
@@ -150,8 +173,8 @@ class QuranPageFragment : Fragment(R.layout.quran_page_fragment), OnSeekChangeLi
             }
         }
 
-        viewpager.adapter = adapter
-        viewpager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+        binding.viewpager.adapter = adapter
+        binding.viewpager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
                 viewModel.onPageChanged(position)
@@ -160,7 +183,7 @@ class QuranPageFragment : Fragment(R.layout.quran_page_fragment), OnSeekChangeLi
     }
 
     private fun getOptionsMenuHeight() {
-        options_menu_panel.doOnPreDraw { view ->
+        binding.optionsMenuPanel.doOnPreDraw { view ->
             val height = view.height
 
             if (isOptionPanelLayoutHidden) {
@@ -168,8 +191,8 @@ class QuranPageFragment : Fragment(R.layout.quran_page_fragment), OnSeekChangeLi
             }
 
             if (isColorPanelHidden) {
-                color_picker_layout.translationY = height.toFloat()
-                color_picker_layout.isVisible = false
+                optionsPanelLayoutBinding.colorPickerLayout.translationY = height.toFloat()
+                optionsPanelLayoutBinding.colorPickerLayout.isVisible = false
             } else {
                 setBtnColorFilter()
             }
@@ -267,19 +290,19 @@ class QuranPageFragment : Fragment(R.layout.quran_page_fragment), OnSeekChangeLi
         }
 
         viewModel.backgroundColor.observe(viewLifecycleOwner) { backgroundColorRes ->
-            quranPage_root.setBackgroundResource(backgroundColorRes)
+            binding.quranPageRoot.setBackgroundResource(backgroundColorRes)
         }
 
         viewModel.currentIndex.observe(viewLifecycleOwner) { index ->
-            if (index != viewpager.currentItem) {
-                viewpager.setCurrentItem(index, false)
+            if (index != binding.viewpager.currentItem) {
+                binding.viewpager.setCurrentItem(index, false)
             }
         }
 
         viewModel.isBookmarked.observe(viewLifecycleOwner) { isBookmarked ->
             val drawable =
                 if (isBookmarked) R.drawable.ic_bookmark_filled else R.drawable.ic_bookmark
-            btn_bookmark.setImageResource(drawable)
+            optionsButtonsLayoutBinding.btnBookmark.setImageResource(drawable)
         }
 
         viewModel.shareText.observe(viewLifecycleOwner) {
@@ -356,9 +379,9 @@ class QuranPageFragment : Fragment(R.layout.quran_page_fragment), OnSeekChangeLi
     private fun hideOrShowPanelLayout(hide: Boolean) {
 
         if (hide) {
-            options_menu_panel.animate().translationY(0f).duration = ANIMATION_DURATION
+            binding.optionsMenuPanel.animate().translationY(0f).duration = ANIMATION_DURATION
         } else {
-            options_menu_panel.animate().translationY(optionsPanelHeight.toFloat()).duration =
+            binding.optionsMenuPanel.animate().translationY(optionsPanelHeight.toFloat()).duration =
                 ANIMATION_DURATION
         }
 
@@ -370,21 +393,22 @@ class QuranPageFragment : Fragment(R.layout.quran_page_fragment), OnSeekChangeLi
         if (show) {
             setBtnColorFilter()
 
-            color_picker_layout.isVisible = true
-            color_picker_layout.animate().translationY(0f).duration = ANIMATION_DURATION
-        } else {
-            btn_color_picker.clearColorFilter()
-            color_picker_layout.animate().translationY(optionsPanelHeight.toFloat()).duration =
+            optionsPanelLayoutBinding.colorPickerLayout.isVisible = true
+            optionsPanelLayoutBinding.colorPickerLayout.animate().translationY(0f).duration =
                 ANIMATION_DURATION
-            color_picker_layout.isVisible = false
-
+        } else {
+            optionsButtonsLayoutBinding.btnColorPicker.clearColorFilter()
+            optionsPanelLayoutBinding.colorPickerLayout.animate()
+                .translationY(optionsPanelHeight.toFloat()).duration =
+                ANIMATION_DURATION
+            optionsPanelLayoutBinding.colorPickerLayout.isVisible = false
         }
 
 
     }
 
     private fun setBtnColorFilter() {
-        btn_color_picker.setColorFilter(
+        optionsButtonsLayoutBinding.btnColorPicker.setColorFilter(
             ContextCompat.getColor(
                 requireContext(),
                 R.color.colorSecondary
@@ -405,4 +429,14 @@ class QuranPageFragment : Fragment(R.layout.quran_page_fragment), OnSeekChangeLi
     override fun onStartTrackingTouch(seekBar: TickSeekBar?) = Unit
 
     override fun onStopTrackingTouch(seekBar: TickSeekBar?) = Unit
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+        _optionsButtonsLayoutBinding = null
+        _optionsPanelLayoutBinding = null
+        _searchCardBinding = null
+    }
 }
+
+
