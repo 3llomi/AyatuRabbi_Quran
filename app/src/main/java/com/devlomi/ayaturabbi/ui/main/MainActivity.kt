@@ -1,31 +1,23 @@
 package com.devlomi.ayaturabbi.ui.main
 
-import android.content.Intent
+import android.Manifest
 import android.content.pm.PackageManager
-import android.content.pm.ResolveInfo
-import android.net.Uri
 import android.os.Bundle
-import android.util.Log
-import android.view.View
 import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.FileProvider
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.updatePadding
-import androidx.lifecycle.observe
 import androidx.navigation.NavController
-import androidx.navigation.NavOptions
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
-import com.devlomi.ayaturabbi.BuildConfig
 import com.devlomi.ayaturabbi.R
+import com.devlomi.ayaturabbi.databinding.MainActivityBinding
 import com.devlomi.ayaturabbi.extensions.deviceWidthPixels
-import com.devlomi.ayaturabbi.extensions.navigateSafely
+import com.devlomi.ayaturabbi.util.isApi33OrAbove
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.main_activity.*
 import me.zhanghai.android.systemuihelper.SystemUiHelper
-import java.io.File
 
 
 @AndroidEntryPoint
@@ -38,6 +30,8 @@ class MainActivity : AppCompatActivity() {
 
     private var currentDestination = -1
 
+    private lateinit var binding: MainActivityBinding
+
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
         //hide system bars if the user presses the recent button or minimized the aoo
@@ -49,7 +43,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.main_activity)
+        binding = MainActivityBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         uiHelper = SystemUiHelper(
             this,
@@ -62,9 +57,10 @@ class MainActivity : AppCompatActivity() {
         viewModel.loadKeepScreenOn()
         viewModel.saveDeviceWidth(deviceWidthPixels())
 
+        requestNotificationsPermissions()
 
-        ViewCompat.setOnApplyWindowInsetsListener(frament_root) { view, insets ->
-            if (currentDestination == R.id.quranPage || currentDestination == R.id.shareTypeBottomSheet) {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.fragmentRoot) { view, insets ->
+            if (currentDestination == R.id.quranPage) {
                 view.updatePadding(bottom = 0, top = 0)
             } else {
                 view.updatePadding(
@@ -93,6 +89,20 @@ class MainActivity : AppCompatActivity() {
         }
 
 
+    }
+
+    private fun requestNotificationsPermissions() {
+        if (isApi33OrAbove() && ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                0
+            )
+        }
     }
 
 

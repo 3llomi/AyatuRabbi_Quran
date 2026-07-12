@@ -1,16 +1,16 @@
 package com.devlomi.ayaturabbi.ui.main
 
-import androidx.hilt.lifecycle.ViewModelInject
+
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.devlomi.ayaturabbi.settings.SettingsRepository
-import com.devlomi.ayaturabbi.ui.quran_page.ShareType
 import com.devlomi.ayaturabbi.util.ProperSizeCalc
-import kotlinx.coroutines.launch
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class MainViewModel @ViewModelInject constructor(
+@HiltViewModel
+class MainViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
     private val properSizeCalc: ProperSizeCalc
 ) : ViewModel() {

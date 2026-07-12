@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.devlomi.ayaturabbi.R
-import kotlinx.android.synthetic.main.item_search.view.*
+import com.devlomi.ayaturabbi.databinding.ItemSearchBinding
 
 class SearchResultsAdapter(val listener: (SearchResult) -> Unit) :
     ListAdapter<SearchResult, SearchResultsAdapter.SearchResultHolder>(
@@ -32,6 +32,7 @@ class SearchResultsAdapter(val listener: (SearchResult) -> Unit) :
 
 
     inner class SearchResultHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val binding = ItemSearchBinding.bind(itemView)
         init {
             itemView.setOnClickListener {
                 listener(getItem(adapterPosition))
@@ -51,12 +52,12 @@ class SearchResultsAdapter(val listener: (SearchResult) -> Unit) :
                 )
             }
 
-            itemView.tv_ayah.text = spannableString
+            binding.tvAyah.text = spannableString
 
 
-            itemView.tv_surah_name.text = searchResult.surahName
-            itemView.tv_ayah_number.text = searchResult.ayahNumber.toString()
-            itemView.tv_page_number.text = searchResult.pageNumber.toString()
+            binding.tvSurahName.text = searchResult.surahName
+            binding.tvAyahNumber.text = searchResult.ayahNumber.toString()
+            binding.tvPageNumber.text = searchResult.pageNumber.toString()
 
 
         }

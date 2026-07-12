@@ -1,30 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/card_search"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="8dp"
-    app:cardBackgroundColor="#ffffff"
-    app:cardCornerRadius="14dp"
-    app:cardElevation="8dp">
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-
-    <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/et_search"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_search"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginRight="8dp"
-        android:background="@null"
-        android:drawableRight="@drawable/ic_search"
-        android:drawablePadding="4dp"
-        android:fontFamily="@font/cairo_regular"
-        android:gravity="right"
-        android:padding="@dimen/search_card_padding"
-        android:hint="@string/search_for_surah"
-        android:textColor="@color/black"
-        android:textColorHint="@color/dkgray" />
+        android:padding="8dp"
+        app:cardBackgroundColor="#ffffff"
+        app:cardCornerRadius="14dp"
+        app:cardElevation="8dp">
 
 
-</androidx.cardview.widget.CardView>
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/et_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
+            android:background="@null"
+            android:drawableRight="@drawable/ic_search"
+            android:drawablePadding="4dp"
+            android:fontFamily="@font/cairo_regular"
+            android:gravity="right"
+            android:hint="@string/search_for_surah"
+            android:padding="@dimen/search_card_padding"
+            android:textColor="@color/black"
+            android:textColorHint="@color/dkgray" />
 
+
+    </androidx.cardview.widget.CardView>
+
+</merge>

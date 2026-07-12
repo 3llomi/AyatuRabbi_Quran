@@ -6,8 +6,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.devlomi.ayaturabbi.R
+import com.devlomi.ayaturabbi.databinding.ItemBookmarkBinding
 import com.devlomi.ayaturabbi.db.bookmark.Bookmark
-import kotlinx.android.synthetic.main.item_bookmark.view.*
 
 class BookmarkAdapter :
     ListAdapter<Bookmark, BookmarkAdapter.BookmarkHolder>(Bookmark.diffCallBack) {
@@ -26,21 +26,22 @@ class BookmarkAdapter :
 
 
     inner class BookmarkHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val binding = ItemBookmarkBinding.bind(itemView)
         init {
             itemView.setOnClickListener {
                 adapterListener?.onItemClick(adapterPosition, getItem(adapterPosition))
             }
 
-            itemView.btn_delete_bookmark.setOnClickListener {
+            binding.btnDeleteBookmark.setOnClickListener {
                 adapterListener?.onDeleteClick(adapterPosition, getItem(adapterPosition))
             }
         }
 
         fun bind(bookmark: Bookmark) {
-            itemView.tv_date.text = bookmark.formattedTimestamp
-            itemView.tv_note.text = bookmark.note
-            itemView.tv_surah_name.text = bookmark.surahName
-            itemView.tv_page_number.text = bookmark.pageNumber.toString()
+            binding.tvDate.text = bookmark.formattedTimestamp
+            binding.tvNote.text = bookmark.note
+            binding.tvSurahName.text = bookmark.surahName
+            binding.tvPageNumber.text = bookmark.pageNumber.toString()
         }
     }
 }

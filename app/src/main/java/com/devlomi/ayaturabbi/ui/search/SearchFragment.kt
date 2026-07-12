@@ -2,23 +2,23 @@ package com.devlomi.ayaturabbi.ui.search
 
 import android.os.Bundle
 import android.text.InputType
-import android.util.Log
-import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.devlomi.ayaturabbi.R
 import com.devlomi.ayaturabbi.constants.BundleConstants
+import com.devlomi.ayaturabbi.databinding.SearchCardSearchViewBinding
+import com.devlomi.ayaturabbi.databinding.SearchFragmentBinding
 import com.devlomi.ayaturabbi.util.KeyboardHelper
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.search_card_search_view.*
-import kotlinx.android.synthetic.main.search_fragment.*
 
 @AndroidEntryPoint
 class SearchFragment : Fragment(R.layout.search_fragment) {
@@ -27,6 +27,22 @@ class SearchFragment : Fragment(R.layout.search_fragment) {
 
     private val viewModel: SearchViewModel by viewModels()
 
+    private var _binding: SearchFragmentBinding? = null
+    private val binding: SearchFragmentBinding get() = _binding!!
+
+    private var _searchCardBinding : SearchCardSearchViewBinding? = null
+    private val searchCardBinding: SearchCardSearchViewBinding get() = _searchCardBinding!!
+
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = SearchFragmentBinding.inflate(inflater, container, false)
+        _searchCardBinding = SearchCardSearchViewBinding.bind(binding.root)
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -36,33 +52,39 @@ class SearchFragment : Fragment(R.layout.search_fragment) {
         subscribeObservers()
 
 
-        et_search.doOnTextChanged { text, start, before, count ->
+        searchCardBinding.etSearch.doOnTextChanged { text, start, before, count ->
             viewModel.searchForAyah(text.toString())
         }
     }
 
     private fun setSearchEditTextProperties() {
-        et_search.setRawInputType(InputType.TYPE_CLASS_TEXT);
-        et_search.imeOptions = EditorInfo.IME_ACTION_SEARCH
-        et_search.hint = getString(R.string.search_for_ayah)
+        searchCardBinding.etSearch.setRawInputType(InputType.TYPE_CLASS_TEXT);
+        searchCardBinding.etSearch.imeOptions = EditorInfo.IME_ACTION_SEARCH
+        searchCardBinding.etSearch.hint = getString(R.string.search_for_ayah)
     }
 
     private fun initAdapter() {
         adapter = SearchResultsAdapter { searchResult ->
-            KeyboardHelper.hideSoftKeyboard(requireContext(), et_search)
+            KeyboardHelper.hideSoftKeyboard(requireContext(), searchCardBinding.etSearch)
             findNavController().navigate(
                 R.id.action_searchFragment_to_quranPage,
                 bundleOf(Pair(BundleConstants.PAGE_NUMBER_TAG, searchResult.pageNumber))
             )
         }
-        rv_search_results.layoutManager = LinearLayoutManager(requireContext())
-        rv_search_results.adapter = adapter
+        binding.rvSearchResults.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvSearchResults.adapter = adapter
     }
 
     private fun subscribeObservers() {
         viewModel.searchResults.observe(viewLifecycleOwner) { searchResults ->
-            img_quran.isVisible = searchResults.isEmpty()
+            binding.imgQuran.isVisible = searchResults.isEmpty()
             adapter.submitList(searchResults)
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+        _searchCardBinding = null
     }
 }

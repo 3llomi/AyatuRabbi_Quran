@@ -3,15 +3,17 @@ package com.devlomi.ayaturabbi.ui.settings
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.devlomi.ayaturabbi.BuildConfig
 import com.devlomi.ayaturabbi.R
+import com.devlomi.ayaturabbi.databinding.SettingsFragmentBinding
 import com.devlomi.ayaturabbi.ui.main.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.settings_fragment.*
 
 @AndroidEntryPoint
 class SettingsFragment : Fragment(R.layout.settings_fragment) {
@@ -19,24 +21,34 @@ class SettingsFragment : Fragment(R.layout.settings_fragment) {
 
     private val viewModel: SettingsViewModel by viewModels()
 
+    private var _binding : SettingsFragmentBinding? = null
+    private val binding: SettingsFragmentBinding get() = _binding!!
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = SettingsFragmentBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        tv_version.text = BuildConfig.VERSION_NAME
+        binding.tvVersion.text = BuildConfig.VERSION_NAME
 
         subscribeObservers()
 
         val mainViewModel =  ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
 
 
-        switch_disable_screen_lock.setOnCheckedChangeListener { compoundButton, b ->
+        binding.switchDisableScreenLock.setOnCheckedChangeListener { compoundButton, b ->
             viewModel.onSwitchChange(b)
             mainViewModel.loadKeepScreenOn()
         }
 
-        tv_share_app.setOnClickListener {
-
-
+        binding.tvShareApp.setOnClickListener {
             val sendIntent = Intent()
             sendIntent.action = Intent.ACTION_SEND
             sendIntent.type = "text/plain"
@@ -48,19 +60,19 @@ class SettingsFragment : Fragment(R.layout.settings_fragment) {
             startActivity(sendIntent)
         }
 
-        tv_website.setOnClickListener {
+        binding.tvWebsite.setOnClickListener {
             launchWebsite("http://devlomi.com")
         }
 
-        tv_follow_us.setOnClickListener {
+        binding.tvFollowUs.setOnClickListener {
             launchWebsite("https://twitter.com/3llomi")
         }
 
-        tv_github.setOnClickListener {
+        binding.tvGithub.setOnClickListener {
             launchWebsite("https://github.com/3llomi/AyatuRabbi_Quran")
         }
 
-        tv_rate_app.setOnClickListener {
+        binding.tvRateApp.setOnClickListener {
             launchWebsite(getAppLink())
         }
 
@@ -78,13 +90,18 @@ class SettingsFragment : Fragment(R.layout.settings_fragment) {
 
     private fun subscribeObservers() {
         viewModel.preventScreenlock.observe(viewLifecycleOwner) { isEnabled ->
-            switch_disable_screen_lock.isChecked = isEnabled
+            binding.switchDisableScreenLock.isChecked = isEnabled
         }
     }
 
     private fun launchWebsite(url: String) {
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
         startActivity(intent)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
 }

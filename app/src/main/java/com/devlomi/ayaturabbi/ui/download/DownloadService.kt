@@ -1,13 +1,18 @@
 package com.devlomi.ayaturabbi.ui.download
 
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.app.ServiceCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.devlomi.ayaturabbi.R
@@ -17,6 +22,7 @@ import com.devlomi.ayaturabbi.db.DBFileNames
 import com.devlomi.ayaturabbi.network.DownloadRepository
 import com.devlomi.ayaturabbi.network.DownloadingResource
 import com.devlomi.ayaturabbi.network.exceptions.UserCancelledException
+import com.devlomi.ayaturabbi.util.isApi33OrAbove
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.IO
@@ -62,6 +68,14 @@ class DownloadService : ScopedService() {
         notification?.let { notification ->
             notification.setProgress(MAX_PROGRESS, progress, false)
             notification.setContentText(getString(R.string.downloaded, progress))
+
+            if (isApi33OrAbove() && ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                return
+            }
             notificationManager.notify(NOTIFICATION_ID, notification.build())
         }
     }
@@ -93,9 +107,14 @@ class DownloadService : ScopedService() {
                         .setContentText(getString(R.string.downloaded, 0))
                         .setSmallIcon(R.drawable.ic_noti)
                         .setProgress(MAX_PROGRESS, 0, false)
-                        .setNotificationSilent()
+                        .setSilent(true)
 
-                startForeground(NOTIFICATION_ID, notification!!.build())
+                ServiceCompat.startForeground(
+                    this,
+                    NOTIFICATION_ID,
+                    notification!!.build(),
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE
+                )
 
                 val width = intent?.getIntExtra(IntentConstants.EXTRA_WIDTH, 1260)!!
                 val filePath = intent?.getStringExtra(IntentConstants.EXTRA_DOWNLOAD_FILE_PATH)!!

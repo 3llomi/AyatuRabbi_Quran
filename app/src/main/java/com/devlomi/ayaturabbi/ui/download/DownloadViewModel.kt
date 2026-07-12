@@ -1,14 +1,16 @@
 package com.devlomi.ayaturabbi.ui.download
 
-import androidx.hilt.lifecycle.ViewModelInject
+
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.devlomi.ayaturabbi.network.DownloadingResource
 import com.devlomi.ayaturabbi.settings.SettingsRepository
 import com.devlomi.ayaturabbi.util.ProperSizeCalc
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class DownloadViewModel @ViewModelInject constructor(
+@HiltViewModel
+class DownloadViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
     private val properSizeCalc: ProperSizeCalc
 ) :

@@ -11,19 +11,19 @@
         <action
             android:id="@+id/action_mainFragment_to_downloadFragment"
             app:destination="@id/downloadFragment"
-            app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_open_exit"
-            app:popEnterAnim="@anim/fragment_open_enter"
-            app:popExitAnim="@anim/fragment_open_exit"
+            app:enterAnim="@animator/fragment_open_enter"
+            app:exitAnim="@animator/fragment_open_exit"
+            app:popEnterAnim="@animator/fragment_open_enter"
+            app:popExitAnim="@animator/fragment_open_exit"
             app:popUpTo="@navigation/nav_graph"
             app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_mainFragment_to_quranPage"
             app:destination="@id/quranPage"
-            app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_open_exit"
-            app:popEnterAnim="@anim/fragment_open_enter"
-            app:popExitAnim="@anim/fragment_open_exit"
+            app:enterAnim="@animator/fragment_open_enter"
+            app:exitAnim="@animator/fragment_open_exit"
+            app:popEnterAnim="@animator/fragment_open_enter"
+            app:popExitAnim="@animator/fragment_open_exit"
             app:popUpTo="@navigation/nav_graph"
             app:popUpToInclusive="true" />
     </fragment>
@@ -34,10 +34,10 @@
         <action
             android:id="@+id/action_downloadFragment_to_quranPage"
             app:destination="@id/quranPage"
-            app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_open_exit"
-            app:popEnterAnim="@anim/fragment_open_enter"
-            app:popExitAnim="@anim/fragment_open_exit"
+            app:enterAnim="@animator/fragment_open_enter"
+            app:exitAnim="@animator/fragment_open_exit"
+            app:popEnterAnim="@animator/fragment_open_enter"
+            app:popExitAnim="@animator/fragment_open_exit"
             app:popUpTo="@navigation/nav_graph"
             app:popUpToInclusive="true" />
     </fragment>
@@ -49,39 +49,32 @@
         <action
             android:id="@+id/action_quranPage_to_surasFragment"
             app:destination="@id/surasFragment"
-            app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_open_exit"
-            app:popEnterAnim="@anim/fragment_open_enter"
-            app:popExitAnim="@anim/fragment_open_exit"
+            app:enterAnim="@animator/fragment_open_enter"
+            app:exitAnim="@animator/fragment_open_exit"
+            app:popEnterAnim="@animator/fragment_open_enter"
+            app:popExitAnim="@animator/fragment_open_exit"
             />
         <action
             android:id="@+id/action_quranPage_to_bookmarksFragment"
             app:destination="@id/bookmarksFragment"
-            app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_open_exit"
-            app:popEnterAnim="@anim/fragment_open_enter"
-            app:popExitAnim="@anim/fragment_open_exit" />
+            app:enterAnim="@animator/fragment_open_enter"
+            app:exitAnim="@animator/fragment_open_exit"
+            app:popEnterAnim="@animator/fragment_open_enter"
+            app:popExitAnim="@animator/fragment_open_exit" />
         <action
             android:id="@+id/action_quranPage_to_searchFragment"
             app:destination="@id/searchFragment"
-            app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_open_exit"
-            app:popEnterAnim="@anim/fragment_open_enter"
-            app:popExitAnim="@anim/fragment_open_exit" />
-        <action
-            android:id="@+id/action_quranPage_to_shareTypeBottomSheet"
-            app:destination="@id/shareTypeBottomSheet"
-            app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_open_exit"
-            app:popEnterAnim="@anim/fragment_open_enter"
-            app:popExitAnim="@anim/fragment_open_exit" />
+            app:enterAnim="@animator/fragment_open_enter"
+            app:exitAnim="@animator/fragment_open_exit"
+            app:popEnterAnim="@animator/fragment_open_enter"
+            app:popExitAnim="@animator/fragment_open_exit" />
         <action
             android:id="@+id/action_quranPage_to_settingsFragment"
             app:destination="@id/settingsFragment"
-            app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_open_exit"
-            app:popEnterAnim="@anim/fragment_open_enter"
-            app:popExitAnim="@anim/fragment_open_exit" />
+            app:enterAnim="@animator/fragment_open_enter"
+            app:exitAnim="@animator/fragment_open_exit"
+            app:popEnterAnim="@animator/fragment_open_enter"
+            app:popExitAnim="@animator/fragment_open_exit" />
     </fragment>
     <fragment
         android:id="@+id/surasFragment"
@@ -91,10 +84,10 @@
         <action
             android:id="@+id/action_surasFragment_to_quranPage"
             app:destination="@id/quranPage"
-            app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_open_exit"
-            app:popEnterAnim="@anim/fragment_open_enter"
-            app:popExitAnim="@anim/fragment_open_exit"
+            app:enterAnim="@animator/fragment_open_enter"
+            app:exitAnim="@animator/fragment_open_exit"
+            app:popEnterAnim="@animator/fragment_open_enter"
+            app:popExitAnim="@animator/fragment_open_exit"
             app:launchSingleTop="true"
             app:popUpTo="@id/quranPage"
             app:popUpToInclusive="true" />
@@ -107,10 +100,10 @@
         <action
             android:id="@+id/action_bookmarksFragment_to_quranPage"
             app:destination="@id/quranPage"
-            app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_open_exit"
-            app:popEnterAnim="@anim/fragment_open_enter"
-            app:popExitAnim="@anim/fragment_open_exit"
+            app:enterAnim="@animator/fragment_open_enter"
+            app:exitAnim="@animator/fragment_open_exit"
+            app:popEnterAnim="@animator/fragment_open_enter"
+            app:popExitAnim="@animator/fragment_open_exit"
             app:popUpTo="@id/quranPage"
             app:popUpToInclusive="true" />
     </fragment>
@@ -122,17 +115,14 @@
         <action
             android:id="@+id/action_searchFragment_to_quranPage"
             app:destination="@id/quranPage"
-            app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_open_exit"
-            app:popEnterAnim="@anim/fragment_open_enter"
-            app:popExitAnim="@anim/fragment_open_exit"
+            app:enterAnim="@animator/fragment_open_enter"
+            app:exitAnim="@animator/fragment_open_exit"
+            app:popEnterAnim="@animator/fragment_open_enter"
+            app:popExitAnim="@animator/fragment_open_exit"
             app:popUpTo="@id/quranPage"
             app:popUpToInclusive="true" />
     </fragment>
-    <dialog
-        android:id="@+id/shareTypeBottomSheet"
-        android:name="com.devlomi.ayaturabbi.ui.quran_page.ShareTypeBottomSheet"
-        android:label="ShareTypeBottomSheet" />
+
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.devlomi.ayaturabbi.ui.settings.SettingsFragment"
