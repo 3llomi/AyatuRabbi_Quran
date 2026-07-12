@@ -1,2 +1,33 @@
-include ':app'
+pluginManagement {
+    repositories {
+        google {
+            mavenContent {
+                includeGroupAndSubgroups("androidx")
+                includeGroupAndSubgroups("com.android")
+                includeGroupAndSubgroups("com.google")
+            }
+        }
+        mavenCentral()
+        gradlePluginPortal()
+        maven{url "https://jitpack.io"}
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        google {
+            mavenContent {
+                includeGroupAndSubgroups("androidx")
+                includeGroupAndSubgroups("com.android")
+                includeGroupAndSubgroups("com.google")
+            }
+        }
+        mavenCentral()
+        maven{url "https://jitpack.io"}
+    }
+}
+
 rootProject.name = "AyatuRabbi"
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+include(":app")
+include ':shared'

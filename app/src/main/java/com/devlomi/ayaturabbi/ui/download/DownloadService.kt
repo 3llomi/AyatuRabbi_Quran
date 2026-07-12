@@ -8,36 +8,38 @@ import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.lifecycleScope
 import com.devlomi.ayaturabbi.R
 import com.devlomi.ayaturabbi.constants.IntentConstants
 import com.devlomi.ayaturabbi.ScopedService
-import com.devlomi.ayaturabbi.db.DBFileNames
-import com.devlomi.ayaturabbi.network.DownloadRepository
-import com.devlomi.ayaturabbi.network.DownloadingResource
-import com.devlomi.ayaturabbi.network.exceptions.UserCancelledException
+import com.devlomi.shared.network.DownloadRepository
+import com.devlomi.shared.network.DownloadingResource
+import com.devlomi.shared.network.exceptions.UserCancelledException
 import com.devlomi.ayaturabbi.util.isApi33OrAbove
-import dagger.hilt.android.AndroidEntryPoint
+import com.devlomi.shared.db.DBFileNames
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.koin.android.ext.android.inject
 import java.io.File
-import javax.inject.Inject
 
 
-@AndroidEntryPoint
 class DownloadService : ScopedService() {
-
-    @Inject
-    lateinit var downloadRepository: DownloadRepository
+//TODO RESOLVE CRASH:
+    // Reason: A foreground service of FOREGROUND_SERVICE_TYPE_SHORT_SERVICE did not stop within a timeout: ComponentInfo{com.devlomi.ayaturabbi/com.devlomi.ayaturabbi.ui.download.DownloadService}
+    val downloadRepository: DownloadRepository by inject()
 
 
     private var notification: NotificationCompat.Builder? = null
@@ -48,17 +50,20 @@ class DownloadService : ScopedService() {
     }
 
     private var downloadCancelled = false
+    private var downloadJob: Job?=null
 
     private lateinit var notificationManager: NotificationManagerCompat
 
     override fun onCreate() {
         super.onCreate()
         notificationManager = NotificationManagerCompat.from(this)
-        downloadRepository.downloadLiveData.observe(this) {
-            if (it is DownloadingResource.Loading) {
-                if (!downloadCancelled) {
-                    updateNotificationProgress(it.progress)
-                    _downloadingLiveData.value = it
+        lifecycleScope.launch {
+            downloadRepository.downloadResource.collectLatest {
+                if (it is DownloadingResource.Loading) {
+                    if (!downloadCancelled) {
+                        updateNotificationProgress(it.progress)
+                        _downloadState.value = it
+                    }
                 }
             }
         }
@@ -81,9 +86,9 @@ class DownloadService : ScopedService() {
     }
 
     companion object {
-        private val _downloadingLiveData = MutableLiveData<DownloadingResource>()
-        val downloadingLiveData: LiveData<DownloadingResource>
-            get() = _downloadingLiveData
+        private val _downloadState = MutableStateFlow<DownloadingResource>(DownloadingResource.None)
+        val downloadState: StateFlow<DownloadingResource>
+            get() = _downloadState
 
         private const val NOTIFICATION_CHANNEL_ID = "2"
         private const val NOTIFICATION_ID = 2
@@ -105,8 +110,9 @@ class DownloadService : ScopedService() {
                     NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
                         .setContentTitle(getString(R.string.downloading_quran_files))
                         .setContentText(getString(R.string.downloaded, 0))
-                        .setSmallIcon(R.drawable.ic_noti)
-                        .setProgress(MAX_PROGRESS, 0, false)
+//                        .setSmallIcon(R.drawable.ic_noti)//TODO
+                        .setSmallIcon(R.drawable.ic_note)//TODO
+//                        .setProgress(MAX_PROGRESS, 0, false)//TODO
                         .setSilent(true)
 
                 ServiceCompat.startForeground(
@@ -131,9 +137,10 @@ class DownloadService : ScopedService() {
 
     private fun cancelDownload() {
         downloadCancelled = true
+        downloadJob?.cancel()
         downloadRepository.cancelDownload()
         cancel("Cancelled by user")
-        _downloadingLiveData.value = DownloadingResource.Error(UserCancelledException())
+        _downloadState.value = DownloadingResource.Error(UserCancelledException())
         stopService()
     }
 
@@ -154,25 +161,35 @@ class DownloadService : ScopedService() {
 
     private fun stopService() {
         downloadCancelled = true
-        stopForeground(true)
+        stopForeground(STOP_FOREGROUND_REMOVE)
         notificationManager.cancel(NOTIFICATION_ID)
         stopSelf()
     }
 
     private fun startDownloading(width: Int, filePath: String) {
         downloadCancelled = false
-        launch(IO) {
+        downloadJob?.cancel()
+        //TODO RESOLVE A CRASH WHERE THE DOWNLOAD IS CANCELLED AND THE USER STARTS ANOTHER DOWNLOAD, IT CRASHES THE APP
+        // java.lang.IllegalStateException: Already resumed, but proposed with update Success(/data/user/0/com.devlomi.ayaturabbi/cache/data.zip)
+        // 	at kotlinx.coroutines.CancellableContinuationImpl.alreadyResumedError(CancellableContinuationImpl.kt:556)
+        // 	at kotlinx.coroutines.CancellableContinuationImpl.resumeImpl$kotlinx_coroutines_core(CancellableContinuationImpl.kt:521)
+        // 	at kotlinx.coroutines.CancellableContinuationImpl.resumeImpl$kotlinx_coroutines_core$default(CancellableContinuationImpl.kt:493)
+        // 	at kotlinx.coroutines.CancellableContinuationImpl.resumeWith(CancellableContinuationImpl.kt:359)
+        downloadJob = launch(IO) {
             try {
+                Log.d("DownloadService","Downloading... at filePath ${filePath}")
                 downloadRepository.download(width, filePath)
                 val temp = File("$cacheDir/quran_data/")
 
+                Log.d("DownloadService","Unzipping")
                 downloadRepository.unZipFile(filePath, temp.path)
 
-
+                Log.d("DownloadService","Copying files...")
                 copyFiles(temp, width)
 
-
+                Log.d("DownloadService","Deleting temp...")
                 temp.deleteRecursively()
+                Log.d("DownloadService","Copied files")
                 File(cacheDir, "data.zip").delete()
 
 
@@ -180,13 +197,13 @@ class DownloadService : ScopedService() {
 
 
                 withContext(Dispatchers.Main) {
-                    _downloadingLiveData.value = DownloadingResource.Success
+                    _downloadState.value = DownloadingResource.Success
                 }
                 stopService()
 
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    _downloadingLiveData.value = DownloadingResource.Error(e)
+                    _downloadState.value = DownloadingResource.Error(e)
                 }
 
                 stopService()

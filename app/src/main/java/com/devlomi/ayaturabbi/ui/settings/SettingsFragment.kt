@@ -7,21 +7,24 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.devlomi.ayaturabbi.BuildConfig
 import com.devlomi.ayaturabbi.R
 import com.devlomi.ayaturabbi.databinding.SettingsFragmentBinding
-import com.devlomi.ayaturabbi.ui.main.MainViewModel
-import dagger.hilt.android.AndroidEntryPoint
+import com.devlomi.shared.MainViewModel
+import com.devlomi.shared.SettingsViewModel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-@AndroidEntryPoint
 class SettingsFragment : Fragment(R.layout.settings_fragment) {
 
 
-    private val viewModel: SettingsViewModel by viewModels()
+    private val viewModel: SettingsViewModel by viewModel()
 
-    private var _binding : SettingsFragmentBinding? = null
+    private var _binding: SettingsFragmentBinding? = null
     private val binding: SettingsFragmentBinding get() = _binding!!
 
     override fun onCreateView(
@@ -40,7 +43,7 @@ class SettingsFragment : Fragment(R.layout.settings_fragment) {
 
         subscribeObservers()
 
-        val mainViewModel =  ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
+        val mainViewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
 
 
         binding.switchDisableScreenLock.setOnCheckedChangeListener { compoundButton, b ->
@@ -89,9 +92,12 @@ class SettingsFragment : Fragment(R.layout.settings_fragment) {
     }
 
     private fun subscribeObservers() {
-        viewModel.preventScreenlock.observe(viewLifecycleOwner) { isEnabled ->
-            binding.switchDisableScreenLock.isChecked = isEnabled
+        lifecycleScope.launch {
+            viewModel.preventScreenlock.flowWithLifecycle(lifecycle).collectLatest {
+                binding.switchDisableScreenLock.isChecked = it
+            }
         }
+
     }
 
     private fun launchWebsite(url: String) {

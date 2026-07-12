@@ -1,28 +1,52 @@
 package com.devlomi.ayaturabbi.ui.quran_page
 
 import android.graphics.ColorMatrixColorFilter
-import android.util.Log
 import android.view.*
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.Target.SIZE_ORIGINAL
 import com.devlomi.ayaturabbi.R
 import com.devlomi.ayaturabbi.databinding.ItemQuranPageBinding
-import com.devlomi.ayaturabbi.util.WhiteColorFilter
+import com.devlomi.shared.QuranPageItem
+import com.devlomi.shared.WhiteColorFilter
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+
 
 class QuranPageAdapter(
     private val lifecycleOwner: LifecycleOwner,
-    private val useWhiteColorLiveData: LiveData<Boolean>
+    private val useWhiteColorState: StateFlow<Boolean>
 ) :
-    ListAdapter<QuranPageItem, QuranPageAdapter.QuranPageHolder>(QuranPageItem.diffCallback) {
+    ListAdapter<QuranPageItem, QuranPageAdapter.QuranPageHolder>(diffCallback) {
+
+    companion object {
+        val diffCallback = object :
+            DiffUtil.ItemCallback<QuranPageItem>() {
+            override fun areItemsTheSame(oldItem: QuranPageItem, newItem: QuranPageItem): Boolean {
+                return oldItem.pageNumber == newItem.pageNumber
+            }
+
+            override fun areContentsTheSame(
+                oldItem: QuranPageItem,
+                newItem: QuranPageItem
+            ): Boolean {
+                return oldItem == newItem
+            }
+
+        }
+    }
 
     var adapterListener: AdapterListener? = null
-    var pageScale: LiveData<Float>? = null
+    var pageScale: StateFlow<Float>? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): QuranPageHolder {
         val row =
@@ -52,29 +76,41 @@ class QuranPageAdapter(
             val imgPath = quranPageItem.imageFilePath
             Glide.with(itemView.context).load(imgPath).into(binding.imgQuran)
 
-            pageScale?.observe(lifecycleOwner) { scale ->
-                if (binding.imgQuran.scaleX != scale) {
-                    binding.imgQuran.scaleX = scale
-                    binding.imgQuran.scaleY = scale
+
+            lifecycleOwner.lifecycleScope.launch {
+
+                lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    launch {
+                        pageScale?.collectLatest { scale ->
+                            if (binding.imgQuran.scaleX != scale) {
+                                binding.imgQuran.scaleX = scale
+                                binding.imgQuran.scaleY = scale
+                            }
+                        }
+                    }
+                    launch {
+
+                    useWhiteColorState.collectLatest { useWhiteTextColor ->
+                        var tvTextColor = if (useWhiteTextColor) ContextCompat.getColor(
+                            itemView.context,
+                            R.color.white
+                        ) else
+                            ContextCompat.getColor(itemView.context, R.color.black)
+
+                        binding.tvJuzoaName.setTextColor(tvTextColor)
+                        binding.tvSurahName.setTextColor(tvTextColor)
+                        binding.tvPageNumber.setTextColor(tvTextColor)
+
+                        if (useWhiteTextColor) {
+
+                            setColorFilterForText(binding.imgQuran)
+                        } else {
+                            binding.imgQuran.clearColorFilter()
+                        }
+                    }
                 }
-            }
-            useWhiteColorLiveData.observe(lifecycleOwner) { useWhiteTextColor ->
-                var tvTextColor = if (useWhiteTextColor) ContextCompat.getColor(
-                    itemView.context,
-                    R.color.white
-                ) else
-                    ContextCompat.getColor(itemView.context, R.color.black)
-
-                binding.tvJuzoaName.setTextColor(tvTextColor)
-                binding.tvSurahName.setTextColor(tvTextColor)
-                binding.tvPageNumber.setTextColor(tvTextColor)
-
-                if (useWhiteTextColor) {
-
-                    setColorFilterForText(binding.imgQuran)
-                } else {
-                    binding.imgQuran.clearColorFilter()
                 }
+
             }
 
 
@@ -82,7 +118,7 @@ class QuranPageAdapter(
             binding.tvJuzoaName.text = String.format(
                 itemView.context.resources.getString(
                     R.string.aljuzoa,
-                    quranPageItem.juzoaNumberText
+                    quranPageItem.juzoaNumberText,
                 )
             )
 

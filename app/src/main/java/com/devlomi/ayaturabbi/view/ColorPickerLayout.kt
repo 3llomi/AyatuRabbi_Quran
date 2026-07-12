@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
 import com.devlomi.ayaturabbi.R
+import com.devlomi.shared.ColorItem
 
 class ColorPickerLayout @JvmOverloads constructor(
     context: Context,
@@ -44,18 +45,3 @@ interface ColorPickerListener {
     fun onItemClick(colorItem: ColorItem)
 }
 
-enum class ColorItem {
-    DKGRAY, BEIGE, WHITE, DKBLUE;
-
-
-    companion object {
-        fun fromName(colorItemName: String): ColorItem {
-            return  when(colorItemName){
-                DKGRAY.name -> DKGRAY
-                BEIGE.name -> BEIGE
-                WHITE.name -> WHITE
-                else -> DKBLUE
-            }
-        }
-    }
-}

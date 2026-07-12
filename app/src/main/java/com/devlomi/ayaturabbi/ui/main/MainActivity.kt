@@ -10,21 +10,26 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.updatePadding
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.devlomi.ayaturabbi.R
 import com.devlomi.ayaturabbi.databinding.MainActivityBinding
 import com.devlomi.ayaturabbi.extensions.deviceWidthPixels
 import com.devlomi.ayaturabbi.util.isApi33OrAbove
-import dagger.hilt.android.AndroidEntryPoint
+import com.devlomi.shared.MainViewModel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import me.zhanghai.android.systemuihelper.SystemUiHelper
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
 
-    private val viewModel: MainViewModel by viewModels()
+    private val viewModel: MainViewModel by viewModel()
 
     private lateinit var uiHelper: SystemUiHelper
 
@@ -124,12 +129,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun subscribeObservers() {
-        viewModel.keepScreenOn.observe(this) { keepScreenOn ->
-            setScreenOnFlags(keepScreenOn)
-        }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED){
+                launch {
+                    viewModel.keepScreenOn.collectLatest{ keepScreenOn ->
+                        setScreenOnFlags(keepScreenOn)
+                    }
+                }
 
-        viewModel.hideUI.observe(this) {
-            uiHelper.hide()
+                launch {
+                    viewModel.hideUI.collectLatest {
+                        uiHelper.hide()
+                    }
+                }
+            }
         }
 
 

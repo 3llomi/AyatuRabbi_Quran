@@ -1,15 +1,14 @@
 package com.devlomi.ayaturabbi.ui.bookmarks
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.observe
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.LayoutMode
@@ -19,15 +18,17 @@ import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.devlomi.ayaturabbi.R
 import com.devlomi.ayaturabbi.constants.BundleConstants
 import com.devlomi.ayaturabbi.databinding.BookmarksFragmentBinding
-import com.devlomi.ayaturabbi.db.bookmark.Bookmark
-import dagger.hilt.android.AndroidEntryPoint
+import com.devlomi.shared.BookmarksViewModel
+import com.devlomi.shared.db.bookmark.Bookmark
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-@AndroidEntryPoint
 class BookmarksFragment : Fragment(R.layout.bookmarks_fragment) {
 
 
-    private val viewModel: BookmarksViewModel by viewModels()
+    private val viewModel: BookmarksViewModel by viewModel()
 
     private lateinit var adapter: BookmarkAdapter
     private var _binding : BookmarksFragmentBinding? = null
@@ -43,10 +44,8 @@ class BookmarksFragment : Fragment(R.layout.bookmarks_fragment) {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         initAdapter()
         subscribeObservers()
-        viewModel.loadBookmarks()
     }
 
 
@@ -62,7 +61,7 @@ class BookmarksFragment : Fragment(R.layout.bookmarks_fragment) {
                         title(R.string.delete_bookmark_confirmation)
                         message(R.string.delete_bookmark_message)
                         negativeButton(R.string.cancel)
-                        positiveButton( R.string.yes) {
+                        positiveButton(R.string.yes) {
                             viewModel.onDeleteClick(bookmark)
                         }
                     }
@@ -81,8 +80,11 @@ class BookmarksFragment : Fragment(R.layout.bookmarks_fragment) {
     }
 
     private fun subscribeObservers() {
-        viewModel.bookmarks.observe(viewLifecycleOwner) { bookmarks ->
-            adapter.submitList(bookmarks)
+        lifecycleScope.launch {
+            viewModel.bookmarks.flowWithLifecycle(lifecycle).collectLatest {
+                adapter.submitList(it)
+
+            }
         }
     }
 

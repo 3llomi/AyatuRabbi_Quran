@@ -3,15 +3,28 @@ package com.devlomi.ayaturabbi.ui.bookmarks
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.devlomi.ayaturabbi.R
 import com.devlomi.ayaturabbi.databinding.ItemBookmarkBinding
-import com.devlomi.ayaturabbi.db.bookmark.Bookmark
+import com.devlomi.shared.DateFormatter
+import com.devlomi.shared.db.bookmark.Bookmark
 
 class BookmarkAdapter :
-    ListAdapter<Bookmark, BookmarkAdapter.BookmarkHolder>(Bookmark.diffCallBack) {
+    ListAdapter<Bookmark, BookmarkAdapter.BookmarkHolder>(diffCallBack) {
 
+    companion object {
+        val diffCallBack = object : DiffUtil.ItemCallback<Bookmark>() {
+            override fun areContentsTheSame(oldItem: Bookmark, newItem: Bookmark): Boolean {
+                return oldItem == newItem
+            }
+
+            override fun areItemsTheSame(oldItem: Bookmark, newItem: Bookmark): Boolean {
+                return oldItem.pageNumber == newItem.pageNumber
+            }
+        }
+    }
     var adapterListener: AdapterListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BookmarkHolder {
@@ -38,7 +51,7 @@ class BookmarkAdapter :
         }
 
         fun bind(bookmark: Bookmark) {
-            binding.tvDate.text = bookmark.formattedTimestamp
+            binding.tvDate.text = DateFormatter.formatDate(bookmark.timestamp)
             binding.tvNote.text = bookmark.note
             binding.tvSurahName.text = bookmark.surahName
             binding.tvPageNumber.text = bookmark.pageNumber.toString()

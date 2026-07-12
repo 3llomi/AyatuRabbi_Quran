@@ -3,6 +3,7 @@ package com.devlomi.ayaturabbi.ui.quran_page
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
+import android.graphics.Color
 import android.graphics.PorterDuff
 import android.net.Uri
 import android.os.Bundle
@@ -17,8 +18,10 @@ import androidx.core.content.FileProvider
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.afollestad.materialdialogs.LayoutMode
@@ -35,17 +38,23 @@ import com.devlomi.ayaturabbi.databinding.OptionsPanelLayoutBinding
 import com.devlomi.ayaturabbi.databinding.QuranPageFragmentBinding
 import com.devlomi.ayaturabbi.databinding.SearchCardLayoutBinding
 import com.devlomi.ayaturabbi.extensions.getIntOrNull
-import com.devlomi.ayaturabbi.ui.main.MainViewModel
-import com.devlomi.ayaturabbi.view.ColorItem
+import com.devlomi.shared.MainViewModel
 import com.devlomi.ayaturabbi.view.ColorPickerListener
+import com.devlomi.shared.ColorItem
+import com.devlomi.shared.QuranPageItem
+import com.devlomi.shared.QuranPageViewModel
+import com.devlomi.shared.ShareType
 import com.warkiz.tickseekbar.OnSeekChangeListener
 import com.warkiz.tickseekbar.SeekParams
 import com.warkiz.tickseekbar.TickSeekBar
-import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
+import java.text.DecimalFormat
+import java.util.Locale
 
 
-@AndroidEntryPoint
 class QuranPageFragment : Fragment(R.layout.quran_page_fragment), OnSeekChangeListener {
 
     private val ANIMATION_DURATION: Long = 250
@@ -53,7 +62,7 @@ class QuranPageFragment : Fragment(R.layout.quran_page_fragment), OnSeekChangeLi
 
     private lateinit var adapter: QuranPageAdapter
 
-    private val viewModel: QuranPageViewModel by viewModels()
+    private val viewModel: QuranPageViewModel by viewModel()
 
 
     private lateinit var mainViewModel: MainViewModel
@@ -285,43 +294,63 @@ class QuranPageFragment : Fragment(R.layout.quran_page_fragment), OnSeekChangeLi
 
 
     private fun subscribeObservers() {
-        viewModel.quranPages.observe(viewLifecycleOwner) {
-            adapter.submitList(it)
-        }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.quranPages.collectLatest {
+                        adapter.submitList(it)
+                    }
+                }
+                launch {
+                    viewModel.backgroundColor.collectLatest { backgroundColorHex ->
+                        binding.quranPageRoot.setBackgroundColor(Color.parseColor(backgroundColorHex))
+                    }
+                }
 
-        viewModel.backgroundColor.observe(viewLifecycleOwner) { backgroundColorRes ->
-            binding.quranPageRoot.setBackgroundResource(backgroundColorRes)
-        }
+                launch {
+                    viewModel.currentIndex.collectLatest { index ->
+                        if (index != binding.viewpager.currentItem) {
+                            binding.viewpager.setCurrentItem(index, false)
+                        }
+                    }
+                }
 
-        viewModel.currentIndex.observe(viewLifecycleOwner) { index ->
-            if (index != binding.viewpager.currentItem) {
-                binding.viewpager.setCurrentItem(index, false)
-            }
-        }
+                launch {
+                    viewModel.isBookmarked.collectLatest { isBookmarked ->
+                        val drawable =
+                            if (isBookmarked) R.drawable.ic_bookmark_filled else R.drawable.ic_bookmark
+                        optionsButtonsLayoutBinding.btnBookmark.setImageResource(drawable)
+                    }
+                }
 
-        viewModel.isBookmarked.observe(viewLifecycleOwner) { isBookmarked ->
-            val drawable =
-                if (isBookmarked) R.drawable.ic_bookmark_filled else R.drawable.ic_bookmark
-            optionsButtonsLayoutBinding.btnBookmark.setImageResource(drawable)
-        }
+                launch {
+                    viewModel.shareText.collectLatest {
+                        it?.let { shareText ->
+                            shareText(shareText)
+                            viewModel.shareDone()
+                        }
+                    }
+                }
 
-        viewModel.shareText.observe(viewLifecycleOwner) {
-            it?.let { shareText ->
-                shareText(shareText)
-                viewModel.shareDone()
-            }
-        }
+                launch {
+                    viewModel.shareImage.collectLatest {
+                        it?.let { imageFilePath ->
+                            shareImage(imageFilePath)
+                            viewModel.shareDone()
+                        }
+                    }
+                }
 
-        viewModel.shareImage.observe(viewLifecycleOwner) {
-            it?.let { imageFilePath ->
-                shareImage(imageFilePath)
-                viewModel.shareDone()
-            }
-        }
+                launch {
+                    viewModel.showZoomSheet.collectLatest {
+                        it?.let { progress ->
+                            showZoomDialog(progress)
+                        }
 
-        viewModel.showZoomSheet.observe(viewLifecycleOwner) {
-            it?.let { progress ->
-                showZoomDialog(progress)
+                    }
+                }
+
+
             }
 
         }

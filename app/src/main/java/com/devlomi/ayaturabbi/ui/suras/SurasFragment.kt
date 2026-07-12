@@ -1,5 +1,6 @@
 package com.devlomi.ayaturabbi.ui.suras
 
+import com.devlomi.shared.SurasViewModel
 import android.os.Bundle
 import android.text.InputType
 import android.view.LayoutInflater
@@ -9,7 +10,9 @@ import android.view.ViewGroup
 import android.widget.EditText
 import androidx.core.os.bundleOf
 import androidx.core.widget.doOnTextChanged
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.LayoutMode
@@ -22,13 +25,14 @@ import com.devlomi.ayaturabbi.constants.BundleConstants
 import com.devlomi.ayaturabbi.databinding.SearchCardSearchViewBinding
 import com.devlomi.ayaturabbi.databinding.SurasFragmentBinding
 import com.devlomi.ayaturabbi.util.KeyboardHelper
-import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-@AndroidEntryPoint
 class SurasFragment : Fragment(R.layout.suras_fragment) {
 
 
-    private val viewModel: SurasViewModel by viewModels()
+    private val viewModel: SurasViewModel by viewModel()
 
     private lateinit var adapter: SurahAdapter
 
@@ -54,7 +58,7 @@ class SurasFragment : Fragment(R.layout.suras_fragment) {
 
 
         subscribeObservers()
-        viewModel.loadData()
+//        viewModel.loadData()//TODO DELETE IF NOT NEEDED
 
         searchCardBinding.etSearch.doOnTextChanged { text, start, before, count ->
             viewModel.searchForSura(text.toString())
@@ -128,13 +132,18 @@ class SurasFragment : Fragment(R.layout.suras_fragment) {
     }
 
     private fun subscribeObservers() {
-        viewModel.suras.observe(viewLifecycleOwner) { suras ->
-            adapter.submitList(suras)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED){
+                launch {
+                    viewModel.surasState.collectLatest { suras ->
+                        adapter.submitList(suras)
+                    }
+                }
+            }
         }
 
-        viewModel.filterdSuras.observe(viewLifecycleOwner) { filteredSuras ->
-            adapter.submitList(filteredSuras)
-        }
+
+
     }
 
     override fun onDestroyView() {
