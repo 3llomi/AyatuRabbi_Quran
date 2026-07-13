@@ -29,14 +29,7 @@ class SurasViewModel(
         _surasState.value = suras
     }
 
-    //TODO DELETE IF NOT NEEDED
-    fun loadData() {
-        val surahNames = sharedString.getStringArray(StringArrays.SurahNames)
-        val suras = surahNames.mapIndexed { index, surahName ->
-            Surah(surahName, index + 1)
-        }
-        _surasState.value = suras
-    }
+
 
     fun searchForSura(query: String) {
         if (query.trim().isEmpty()) {

@@ -274,7 +274,7 @@ abstract class SyncSharedStringsTask : DefaultTask() {
             |        val size = when (array) {
             |$arrayCountBranches
             |        }
-            |        return (0 until size).map { index -> localized("${'$'}prefix__${'$'}index") }
+                        |        return (0 until size).map { index -> localized("${'$'}{prefix}__${'$'}{index}") }
             |    }
             |
             |    private fun localized(key: String): String {
@@ -385,6 +385,7 @@ plugins {
     id("com.android.lint")
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.room) apply false
+    id("com.rickclephas.kmp.nativecoroutines") version "1.0.0-ALPHA-38"
 }
 
 
@@ -402,8 +403,6 @@ kotlin {
         androidResources {
             enable = true
         }
-
-
 
 
 //        withHostTestBuilder {
@@ -428,18 +427,37 @@ kotlin {
     iosX64 {
         binaries.framework {
             baseName = xcfName
+            isStatic = true
+            linkerOpts("-framework", "FirebaseCore")
+            linkerOpts("-framework", "FirebaseAuth")
+            linkerOpts("-framework", "FirebaseFirestore")
+            // Suppress the duplicate libraries warning
+            linkerOpts("-Xlinker", "-no_warn_duplicate_libraries")
+
         }
     }
 
     iosArm64 {
         binaries.framework {
             baseName = xcfName
+            isStatic = true
+            linkerOpts("-framework", "FirebaseCore")
+            linkerOpts("-framework", "FirebaseAuth")
+            linkerOpts("-framework", "FirebaseFirestore")
+            linkerOpts("-Xlinker", "-no_warn_duplicate_libraries")
         }
     }
 
     iosSimulatorArm64 {
         binaries.framework {
             baseName = xcfName
+            isStatic = true
+            linkerOpts("-framework", "FirebaseCore")
+            linkerOpts("-framework", "FirebaseAuth")
+            linkerOpts("-framework", "FirebaseFirestore")
+            // Suppress the duplicate libraries warning
+            linkerOpts("-Xlinker", "-no_warn_duplicate_libraries")
+
         }
     }
 
@@ -450,26 +468,32 @@ kotlin {
     // See: https://kotlinlang.org/docs/multiplatform-hierarchy.html
 
     sourceSets {
+        all {
+            languageSettings.optIn("kotlinx.cinterop.ExperimentalForeignApi")
+            languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
+        }
         commonMain {
             kotlin.srcDir("build/generated/sharedStrings/commonMain/kotlin")
             dependencies {
 
                 implementation(libs.kotlinx.coroutines)
                 implementation("dev.gitlive:firebase-storage:2.4.0")
-                implementation("dev.gitlive:firebase-analytics:2.4.0")
+//                implementation("dev.gitlive:firebase-analytics:2.4.0")
 //                implementation("dev.gitlive:firebase-crashlytics:2.4.0")
 
                 api(libs.androidx.lifecycle.viewmodel)
 
                 api(libs.koin.core)
-                implementation(project.dependencies.platform(libs.koin.bom))
+
                 implementation(libs.androidx.room.runtime)
 //                implementation(libs.androidx.sqlite.bundled)
 
 //                api("org.jetbrains.compose.runtime:runtime:1.6.11")
 //                implementation(compose.components.resources)
                 implementation(libs.kotlinx.datetime)
-                implementation("io.github.vinceglb:filekit-core:0.14.1")
+                implementation("io.github.vinceglb:filekit-core:0.12.0")
+                api("com.rickclephas.kmp:kmp-observableviewmodel-core:1.0.0-BETA-8")
+
             }
         }
 
@@ -482,6 +506,8 @@ kotlin {
         androidMain {
             kotlin.srcDir("build/generated/sharedStrings/androidMain/kotlin")
             dependencies {
+                implementation("dev.gitlive:firebase-storage:2.4.0")
+//                implementation("dev.gitlive:firebase-analytics:2.4.0")
                 api(libs.koin.android)
                 implementation(libs.androidx.room.sqlite.wrapper)
                 implementation("com.google.firebase:firebase-storage:19.1.1")
@@ -534,7 +560,14 @@ val syncSharedStrings by tasks.registering(SyncSharedStringsTask::class) {
     androidResDir.set(layout.projectDirectory.dir("src/androidMain/res"))
 }
 
-tasks.matching { it.name.startsWith("compile") && it.name.contains("Kotlin") }.configureEach {
+tasks.matching {
+    val name = it.name
+    name.contains("Kotlin", ignoreCase = true) &&
+            (name.startsWith("compile", ignoreCase = true) || name.startsWith(
+                "ksp",
+                ignoreCase = true
+            ))
+}.configureEach {
     dependsOn(syncSharedStrings)
 }
 

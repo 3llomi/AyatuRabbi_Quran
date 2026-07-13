@@ -1,9 +1,14 @@
 package com.devlomi.shared
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.devlomi.shared.settings.SettingsRepository
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 
 class MainViewModel(
     private val settingsRepository: SettingsRepository,
@@ -13,8 +18,8 @@ class MainViewModel(
     private val _keepScreenOn = MutableStateFlow<Boolean>(false)
     val keepScreenOn: StateFlow<Boolean> get() = _keepScreenOn
 
-    private val _hideUI = MutableStateFlow<Unit>(Unit)
-    val hideUI: StateFlow<Unit> get() = _hideUI
+    private val _hideUIChannel = Channel<Unit>()
+    val hideUI: Flow<Unit> get() = _hideUIChannel.receiveAsFlow()
 
 
     fun loadKeepScreenOn() {
@@ -29,9 +34,10 @@ class MainViewModel(
 
     //TODO HANDLE
     fun hideUI() {
-        _hideUI.value = Unit
+        viewModelScope.launch {
+            _hideUIChannel.send(Unit)
+        }
     }
-
 
 
 }
