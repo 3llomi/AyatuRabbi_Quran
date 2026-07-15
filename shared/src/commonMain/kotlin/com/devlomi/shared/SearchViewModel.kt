@@ -1,8 +1,10 @@
 package com.devlomi.shared
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devlomi.shared.db.search.SearchRepository
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.ViewModel
+import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.IO
@@ -16,6 +18,7 @@ class SearchViewModel
     (private val searchRepository: SearchRepository) : ViewModel() {
 
     private val _searchResults = MutableStateFlow<List<SearchResult>>(emptyList())
+    @NativeCoroutinesState
     val searchResults: StateFlow<List<SearchResult>> get() = _searchResults
     private var job: Job? = null
     fun searchForAyah(query: String) {

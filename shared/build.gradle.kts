@@ -385,7 +385,8 @@ plugins {
     id("com.android.lint")
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.room) apply false
-    id("com.rickclephas.kmp.nativecoroutines") version "1.0.0-ALPHA-38"
+//    id("com.rickclephas.kmp.nativecoroutines") version "1.0.0-ALPHA-38"
+    id("com.rickclephas.kmp.nativecoroutines") version "1.0.4"
 }
 
 
@@ -478,6 +479,7 @@ kotlin {
 
                 implementation(libs.kotlinx.coroutines)
                 implementation("dev.gitlive:firebase-storage:2.4.0")
+//                implementation("no.synth:kmp-zip:0.12.2")
 //                implementation("dev.gitlive:firebase-analytics:2.4.0")
 //                implementation("dev.gitlive:firebase-crashlytics:2.4.0")
 
@@ -492,7 +494,8 @@ kotlin {
 //                implementation(compose.components.resources)
                 implementation(libs.kotlinx.datetime)
                 implementation("io.github.vinceglb:filekit-core:0.12.0")
-                api("com.rickclephas.kmp:kmp-observableviewmodel-core:1.0.0-BETA-8")
+//                api("com.rickclephas.kmp:kmp-observableviewmodel-core:1.0.0-BETA-8")
+                api("com.rickclephas.kmp:kmp-observableviewmodel-core:1.0.5")
 
             }
         }

@@ -15,6 +15,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import com.devlomi.ayaturabbi.FileUnzipper
 import com.devlomi.ayaturabbi.R
 import com.devlomi.ayaturabbi.constants.IntentConstants
 import com.devlomi.ayaturabbi.ScopedService
@@ -182,7 +183,7 @@ class DownloadService : ScopedService() {
                 val temp = File("$cacheDir/quran_data/")
 
                 Log.d("DownloadService","Unzipping")
-                downloadRepository.unZipFile(filePath, temp.path)
+                FileUnzipper.unZipFile(filePath,temp.path)
 
                 Log.d("DownloadService","Copying files...")
                 copyFiles(temp, width)

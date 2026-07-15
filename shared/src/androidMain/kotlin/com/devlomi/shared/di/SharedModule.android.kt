@@ -1,7 +1,6 @@
 package com.devlomi.shared.di
 
 import com.devlomi.shared.CommonPreferences
-import com.devlomi.shared.FileUnzipper
 import com.devlomi.shared.ProperSizeCalc
 import com.devlomi.shared.quran_datasource.QuranImagePathProvider
 import org.koin.android.ext.koin.androidContext
@@ -18,7 +17,7 @@ actual val platformModule: Module = module {
     single<QuranImagePathProvider> {
         QuranImagePathProvider(androidContext())
     }
-    single<FileUnzipper> {
-        FileUnzipper()
-    }
+//    single<FileUnzipper> {
+//        FileUnzipper()
+//    }
 }

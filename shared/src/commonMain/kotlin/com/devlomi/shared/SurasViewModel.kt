@@ -1,8 +1,9 @@
 package com.devlomi.shared
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devlomi.shared.quran_datasource.QuranPageDataSource
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,6 +17,7 @@ class SurasViewModel(
 
     private lateinit var suras: List<Surah>
     private val _surasState = MutableStateFlow<List<Surah>>(listOf())
+    @NativeCoroutinesState
     val surasState: StateFlow<List<Surah>> get() = _surasState.asStateFlow()
 
 

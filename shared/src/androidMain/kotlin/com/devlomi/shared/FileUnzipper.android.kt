@@ -1,14 +1,12 @@
 package com.devlomi.shared
 
-import java.io.File
-
-actual class FileUnzipper {
-    actual fun unzip(zipFilePath: String, destDirectory: String) {
-        val file = File(destDirectory)
-        if (file.exists()) {
-            file.mkdirs()
-        }
-        File(zipFilePath).unzip(File(destDirectory))
-
-    }
-}
+import kotlinx.coroutines.runBlocking
+//TODO DELETE
+//actual class FileUnzipper {
+//    actual fun unzip(zipFilePath: String, destDirectory: String) {
+//        runBlocking {
+//            unzipFile(zipFilePath, destDirectory)
+//        }
+//
+//    }
+//}

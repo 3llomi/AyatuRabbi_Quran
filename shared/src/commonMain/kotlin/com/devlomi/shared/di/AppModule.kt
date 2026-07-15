@@ -21,7 +21,7 @@ fun appModule() = module {
         ProperSizeCalc()
     }
     single<DownloadRepository> {
-        DownloadRepository(get())
+        DownloadRepository()
     }
 
     single<QuranImagesDataSource>{

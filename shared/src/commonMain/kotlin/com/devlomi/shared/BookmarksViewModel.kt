@@ -1,14 +1,18 @@
 package com.devlomi.shared
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devlomi.shared.db.bookmark.Bookmark
 import com.devlomi.shared.db.bookmark.BookmarkDao
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.ViewModel
+import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -17,7 +21,8 @@ class BookmarksViewModel (
 ) : ViewModel() {
 
     private val _bookmarks = MutableStateFlow<List<Bookmark>>(listOf())
-    val bookmarks: Flow<List<Bookmark>> get() = _bookmarks
+    @NativeCoroutinesState
+    val bookmarks: StateFlow<List<Bookmark>> get() = _bookmarks.asStateFlow()
 
     init {
         viewModelScope.launch(Dispatchers.IO) {

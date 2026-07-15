@@ -1,12 +1,13 @@
 package com.devlomi.shared
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.devlomi.shared.db.ayahinfo.AyahInfoRepository
 import com.devlomi.shared.db.bookmark.BookmarkRepository
 import com.devlomi.shared.db.quran_ar.QuranRepository
 import com.devlomi.shared.quran_datasource.QuranPageDataSource
 import com.devlomi.shared.settings.SettingsRepository
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.ViewModel
+import com.rickclephas.kmp.observableviewmodel.launch
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.cacheDir
@@ -16,7 +17,6 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -30,24 +30,31 @@ class QuranPageViewModel(
 ) : ViewModel() {
 
     private val _quranPages = MutableStateFlow<MutableList<QuranPageItem>>(mutableListOf())
+    @NativeCoroutinesState
     val quranPages: StateFlow<MutableList<QuranPageItem>> get() = _quranPages.asStateFlow()
 
     private val _backgroundColor = MutableStateFlow<String>(PageColors.DKBLUE)
+    @NativeCoroutinesState
     val backgroundColor: StateFlow<String> get() = _backgroundColor.asStateFlow()
 
     private val _useWhiteColor = MutableStateFlow<Boolean>(false)
+    @NativeCoroutinesState
     val useWhiteColor: StateFlow<Boolean> get() = _useWhiteColor.asStateFlow()
 
     private val _currentIndex = MutableStateFlow<Int>(settingsRepository.getCurrentIndex())
+    @NativeCoroutinesState
     val currentIndex: StateFlow<Int> get() = _currentIndex.asStateFlow()
 
     private val _isBookmarked = MutableStateFlow<Boolean>(false)
+    @NativeCoroutinesState
     val isBookmarked: StateFlow<Boolean> get() = _isBookmarked.asStateFlow()
 
     private val _shareText = MutableStateFlow<String?>(null)
+    @NativeCoroutinesState
     val shareText: StateFlow<String?> get() = _shareText.asStateFlow()
 
     private val _shareImage = MutableStateFlow<String?>(null)
+    @NativeCoroutinesState
     val shareImage: StateFlow<String?> get() = _shareImage.asStateFlow()
 
     private var backgroundColorItem =
@@ -74,7 +81,7 @@ class QuranPageViewModel(
 
         when {
             surahNumber != null -> {
-                viewModelScope.launch(Dispatchers.IO) {
+                viewModelScope.launch (Dispatchers.IO) {
                     val foundPageNumber =
                         ayahInfoRepository.getPageNumberBySurahNumber(surahNumber)
                     withContext(Main) {

@@ -1,6 +1,5 @@
 package com.devlomi.shared
 
-import androidx.room.Ignore
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format

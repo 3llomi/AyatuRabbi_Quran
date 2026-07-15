@@ -1,9 +1,13 @@
 package com.devlomi.shared
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devlomi.shared.settings.SettingsRepository
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.ViewModel
+import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -15,11 +19,13 @@ class DownloadViewModel(
 ) : ViewModel() {
 
     private val navigationChannel = Channel<DownloadNavigationEvent>()
-    val navigationEvent = navigationChannel.receiveAsFlow()
+    @NativeCoroutines
+    val navigationEvent: Flow<DownloadNavigationEvent> = navigationChannel.receiveAsFlow()
 
 
     private val startDownloadChannel = Channel<Int>()
-    val startDownloadEvent = startDownloadChannel.receiveAsFlow()
+    @NativeCoroutines
+    val startDownloadEvent: Flow<Int> = startDownloadChannel.receiveAsFlow()
 
 
     private var properWidth = 0

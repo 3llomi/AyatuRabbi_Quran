@@ -6,7 +6,6 @@ import com.devlomi.shared.SharedString
 import com.devlomi.shared.StringArrays
 
 
-//TODO THIS SHOULD BE A SINGLETON AND SHOULD BE INJECTED USING KOIN
 class QuranPageDataSource (
     private val sharedString: SharedString,
     private val quranImagesDataSource: QuranImagesDataSource

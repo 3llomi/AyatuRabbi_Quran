@@ -1,11 +1,10 @@
 package com.devlomi.shared.network
 
-import com.devlomi.shared.FileUnzipper
 import com.devlomi.shared.getFile
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class DownloadRepository(private val fileUnzipper: FileUnzipper) {
+class DownloadRepository() {
 
 
     private val _downloadResource = MutableStateFlow<DownloadingResource>(DownloadingResource.None)
@@ -33,9 +32,6 @@ class DownloadRepository(private val fileUnzipper: FileUnzipper) {
 
     }
 
-    fun unZipFile(zipFilePath: String, targetLocation: String) {
-        fileUnzipper.unzip(zipFilePath,targetLocation)
-    }
 
 
 }
