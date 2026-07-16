@@ -1,14 +1,18 @@
 package com.devlomi.shared.network
 
 import com.devlomi.shared.getFile
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class DownloadRepository() {
 
 
     private val _downloadResource = MutableStateFlow<DownloadingResource>(DownloadingResource.None)
-    val downloadResource: Flow<DownloadingResource> get() = _downloadResource
+    @NativeCoroutinesState
+    val downloadResource: StateFlow<DownloadingResource> get() = _downloadResource.asStateFlow()
 
 
 
@@ -17,6 +21,7 @@ class DownloadRepository() {
 
     fun cancelDownload() {
 //        file?.delete()
+        //TODO
     }
 
     suspend fun download(width: Int, path: String) {

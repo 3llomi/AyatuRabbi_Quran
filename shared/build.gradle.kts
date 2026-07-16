@@ -429,9 +429,8 @@ kotlin {
         binaries.framework {
             baseName = xcfName
             isStatic = true
-            linkerOpts("-framework", "FirebaseCore")
-            linkerOpts("-framework", "FirebaseAuth")
-            linkerOpts("-framework", "FirebaseFirestore")
+//            linkerOpts("-framework", "FirebaseCore")
+//            linkerOpts("-framework", "FirebaseStorage")
             // Suppress the duplicate libraries warning
             linkerOpts("-Xlinker", "-no_warn_duplicate_libraries")
 
@@ -443,8 +442,7 @@ kotlin {
             baseName = xcfName
             isStatic = true
             linkerOpts("-framework", "FirebaseCore")
-            linkerOpts("-framework", "FirebaseAuth")
-            linkerOpts("-framework", "FirebaseFirestore")
+            linkerOpts("-framework", "FirebaseStorage")
             linkerOpts("-Xlinker", "-no_warn_duplicate_libraries")
         }
     }
@@ -454,12 +452,28 @@ kotlin {
             baseName = xcfName
             isStatic = true
             linkerOpts("-framework", "FirebaseCore")
-            linkerOpts("-framework", "FirebaseAuth")
-            linkerOpts("-framework", "FirebaseFirestore")
+            linkerOpts("-framework", "FirebaseStorage")
             // Suppress the duplicate libraries warning
             linkerOpts("-Xlinker", "-no_warn_duplicate_libraries")
 
         }
+    }
+
+    swiftPMDependencies {
+        // Import FirebaseAnalytics into your Kotlin code
+        swiftPackage(
+            url = url("https://github.com/firebase/firebase-ios-sdk.git"),
+            version = from("11.3.0"),
+            products = listOf(product("FirebaseStorage")),
+        )
+        // swift-protobuf is a transitive Firebase dependency,
+        // so you only need to include it
+        // if you want to use a specific version
+        swiftPackage(
+            url = url("https://github.com/apple/swift-protobuf.git"),
+            version = exact("1.37.0"),
+            products = listOf(),
+        )
     }
 
     // Source set declarations.

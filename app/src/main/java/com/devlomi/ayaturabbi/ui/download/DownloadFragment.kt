@@ -19,7 +19,7 @@ import com.devlomi.shared.network.DownloadingResource
 import com.devlomi.shared.network.exceptions.UserCancelledException
 import com.devlomi.ayaturabbi.constants.IntentConstants
 import com.devlomi.ayaturabbi.databinding.DownloadFragmentBinding
-import com.devlomi.shared.DownloadNavigationEvent
+import com.devlomi.shared.navigation.DownloadNavigationEvent
 import com.devlomi.shared.DownloadViewModel
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel

@@ -1,6 +1,7 @@
 package com.devlomi.shared
 
 import androidx.lifecycle.viewModelScope
+import com.devlomi.shared.navigation.DownloadNavigationEvent
 import com.devlomi.shared.settings.SettingsRepository
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState

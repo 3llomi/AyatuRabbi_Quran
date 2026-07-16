@@ -6,13 +6,13 @@
 //
 import SwiftUI
 import sharedKit
+import KMPObservableViewModelSwiftUI
 
 struct DownloadScreen: View {
-    @State private var isDownloading = false
-    @State private var downloadProgress: Double = 0.5
-    @State private var showDownloadButton = false
-    @State private var showCancelButton = false
-    @State private var showDownloadingText = false
+    @StateObject private var viewModel = DownloadViewModelSw()
+    @StateViewModel private var viewModelKt:DownloadViewModel = KoinKt.getDownloadViewModel()
+
+
 
     var body: some View {
         ZStack {
@@ -34,28 +34,50 @@ struct DownloadScreen: View {
                 Spacer()
 
                 // Downloading Text
-                if showDownloadingText {
-                    Text("Downloading Files")
+                if let loading = viewModel.downloadResourceState as? DownloadingResource.Loading{
+                    
+                    
+                    Text("Downloading")
                         .font(.system(size: 25, weight: .medium))
                         .foregroundColor(Color(red: 0.2, green: 0.2, blue: 0.2)) // colorOnBackground
                         .multilineTextAlignment(.center)
-                }
-
-                // Progress Bar
-                if showDownloadingText {
-                    ProgressView(value: downloadProgress)
-                        .tint(Color(red: 0.2, green: 0.6, blue: 0.8)) // colorSecondary
-                        .frame(height: 13)
-                        .padding(.horizontal, 32)
-                        .background(Color.white)
-                        .cornerRadius(16)
-                }
-
-                // Download Button
-                if showDownloadButton && !isDownloading {
+                    
+                    
+                    // Progress Bar
+                    
+                    
+                    ProgressView(value: Float(loading.progress))
+                            .tint(Color(red: 0.2, green: 0.6, blue: 0.8)) // colorSecondary
+                            .frame(height: 13)
+                            .padding(.horizontal, 32)
+                            .background(Color.white)
+                            .cornerRadius(16)
+                    
                     Button(action: {
-                        isDownloading = true
-                        showDownloadingText = true
+                        //TODO CANCEL
+                    }) {
+                        Text("Cancel")
+                            .font(.system(size: 18, weight: .medium))
+                            .frame(maxWidth: .infinity)
+                    }
+//                    .buttonStyle(.filled)
+                    .tint(Color(red: 0.15, green: 0.15, blue: 0.25)) // colorPrimaryVariant
+                    .padding(.horizontal, 32)
+                    .shadow(radius: 8)
+                }
+                
+                // Download Button
+                if let error = viewModel.downloadResourceState as? DownloadingResource.Error{
+                    
+                    Text("Error")
+                        .font(.system(size: 25, weight: .medium))
+                        .foregroundColor(Color(red: 0.2, green: 0.2, blue: 0.2)) // colorOnBackground
+                        .multilineTextAlignment(.center)
+                    
+                   
+                    
+                    Button(action: {
+                        //TODO Download
                     }) {
                         Text("Download")
                             .font(.system(size: 18, weight: .medium))
@@ -67,25 +89,15 @@ struct DownloadScreen: View {
                     .shadow(radius: 8)
                 }
 
-                // Cancel Button
-                if showCancelButton && isDownloading {
-                    Button(action: {
-                        isDownloading = false
-                        showDownloadingText = false
-                    }) {
-                        Text("Cancel")
-                            .font(.system(size: 18, weight: .medium))
-                            .frame(maxWidth: .infinity)
-                    }
-//                    .buttonStyle(.filled)
-                    .tint(Color(red: 0.15, green: 0.15, blue: 0.25)) // colorPrimaryVariant
-                    .padding(.horizontal, 32)
-                    .shadow(radius: 8)
-                }
+        
 
                 Spacer()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .onAppear {
+                viewModelKt.setDeviceWidth(deviceWidthPixels: 1280)//TODO
+                viewModelKt.startDownloading()//TODO SHOW DIALOG instead
+            }
         }
     }
 }
