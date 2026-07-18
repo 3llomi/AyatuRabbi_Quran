@@ -429,8 +429,8 @@ kotlin {
         binaries.framework {
             baseName = xcfName
             isStatic = true
-//            linkerOpts("-framework", "FirebaseCore")
-//            linkerOpts("-framework", "FirebaseStorage")
+            linkerOpts("-framework", "FirebaseCore")
+            linkerOpts("-framework", "FirebaseStorage")
             // Suppress the duplicate libraries warning
             linkerOpts("-Xlinker", "-no_warn_duplicate_libraries")
 
@@ -492,7 +492,7 @@ kotlin {
             dependencies {
 
                 implementation(libs.kotlinx.coroutines)
-                implementation("dev.gitlive:firebase-storage:2.4.0")
+//                implementation("dev.gitlive:firebase-storage:2.4.0")
 //                implementation("no.synth:kmp-zip:0.12.2")
 //                implementation("dev.gitlive:firebase-analytics:2.4.0")
 //                implementation("dev.gitlive:firebase-crashlytics:2.4.0")
@@ -523,7 +523,7 @@ kotlin {
         androidMain {
             kotlin.srcDir("build/generated/sharedStrings/androidMain/kotlin")
             dependencies {
-                implementation("dev.gitlive:firebase-storage:2.4.0")
+//                implementation("dev.gitlive:firebase-storage:2.4.0")
 //                implementation("dev.gitlive:firebase-analytics:2.4.0")
                 api(libs.koin.android)
                 implementation(libs.androidx.room.sqlite.wrapper)

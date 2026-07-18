@@ -97,7 +97,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.service)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation ("com.google.firebase:firebase-storage:19.1.1")
-//    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.3.1")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.3.1")
 
 //
 //    def room_version = "2.6.1"

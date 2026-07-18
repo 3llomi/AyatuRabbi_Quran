@@ -6,10 +6,15 @@
 //
 
 import SwiftUI
-
+import sharedKit
 
 @main
 struct iosAppApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+
+    init() {
+        KoinKt.doInitKoinIos()
+      }
     var body: some Scene {
         WindowGroup {
             ContentView()

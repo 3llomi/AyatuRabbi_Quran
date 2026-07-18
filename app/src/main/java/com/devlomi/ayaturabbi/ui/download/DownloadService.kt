@@ -19,7 +19,7 @@ import com.devlomi.ayaturabbi.FileUnzipper
 import com.devlomi.ayaturabbi.R
 import com.devlomi.ayaturabbi.constants.IntentConstants
 import com.devlomi.ayaturabbi.ScopedService
-import com.devlomi.shared.network.DownloadRepository
+import com.devlomi.ayaturabbi.DownloadRepository
 import com.devlomi.shared.network.DownloadingResource
 import com.devlomi.shared.network.exceptions.UserCancelledException
 import com.devlomi.ayaturabbi.util.isApi33OrAbove

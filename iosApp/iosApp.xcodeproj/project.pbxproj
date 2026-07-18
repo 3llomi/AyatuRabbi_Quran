@@ -14,6 +14,7 @@
 		CEC4199C3007D670009A1668 /* KMPObservableViewModelCore in Frameworks */ = {isa = PBXBuildFile; productRef = CEC4199B3007D670009A1668 /* KMPObservableViewModelCore */; };
 		CEC4199E3007D670009A1668 /* KMPObservableViewModelSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = CEC4199D3007D670009A1668 /* KMPObservableViewModelSwiftUI */; };
 		CEC419C53007FCAD009A1668 /* SwiftUIPager in Frameworks */ = {isa = PBXBuildFile; productRef = CEC419C43007FCAD009A1668 /* SwiftUIPager */; };
+		CEC419DE300BACAD009A1668 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = CEC419DD300BACAD009A1668 /* FirebaseStorage */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +39,7 @@
 				CEC4199C3007D670009A1668 /* KMPObservableViewModelCore in Frameworks */,
 				CEC419C53007FCAD009A1668 /* SwiftUIPager in Frameworks */,
 				CEC4199E3007D670009A1668 /* KMPObservableViewModelSwiftUI in Frameworks */,
+				CEC419DE300BACAD009A1668 /* FirebaseStorage in Frameworks */,
 				CEC3CCC63006B90500D6344B /* ZIPFoundation in Frameworks */,
 				6C588C7F3BFFA152AFD646A7 /* KotlinMultiplatformLinkedPackage in Frameworks */,
 			);
@@ -50,6 +52,7 @@
 			isa = PBXGroup;
 			children = (
 				CEC3CCA73005119000D6344B /* iosApp */,
+				CEC419DC300BACAD009A1668 /* Frameworks */,
 				CEC3CCA63005119000D6344B /* Products */,
 			);
 			sourceTree = "<group>";
@@ -60,6 +63,13 @@
 				CEC3CCA53005119000D6344B /* iosApp.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		CEC419DC300BACAD009A1668 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -90,6 +100,7 @@
 				CEC4199B3007D670009A1668 /* KMPObservableViewModelCore */,
 				CEC4199D3007D670009A1668 /* KMPObservableViewModelSwiftUI */,
 				CEC419C43007FCAD009A1668 /* SwiftUIPager */,
+				CEC419DD300BACAD009A1668 /* FirebaseStorage */,
 			);
 			productName = iosApp;
 			productReference = CEC3CCA53005119000D6344B /* iosApp.app */;
@@ -321,7 +332,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.devlomi.ayaturabbi.iosApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.devlomi.ayaturabbi;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -352,7 +363,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.devlomi.ayaturabbi.iosApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.devlomi.ayaturabbi;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -463,6 +474,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = CEC419C33007FCAD009A1668 /* XCRemoteSwiftPackageReference "SwiftUIPager" */;
 			productName = SwiftUIPager;
+		};
+		CEC419DD300BACAD009A1668 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CEC3CCBE300536CE00D6344B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
 		};
 		FB73946693BF89A102F759E0 /* KotlinMultiplatformLinkedPackage */ = {
 			isa = XCSwiftPackageProductDependency;

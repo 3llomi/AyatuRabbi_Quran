@@ -6,7 +6,6 @@ import com.devlomi.shared.db.ayahinfo.AyahInfoRepository
 import com.devlomi.shared.db.bookmark.BookmarkRepository
 import com.devlomi.shared.db.quran_ar.QuranRepository
 import com.devlomi.shared.db.search.SearchRepository
-import com.devlomi.shared.network.DownloadRepository
 import com.devlomi.shared.quran_datasource.QuranImagesDataSource
 import com.devlomi.shared.quran_datasource.QuranPageDataSource
 import com.devlomi.shared.settings.SettingsRepository
@@ -19,9 +18,6 @@ fun appModule() = module {
     }
     single<ProperSizeCalc> {
         ProperSizeCalc()
-    }
-    single<DownloadRepository> {
-        DownloadRepository()
     }
 
     single<QuranImagesDataSource>{

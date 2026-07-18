@@ -7,6 +7,7 @@
 import SwiftUI
 import sharedKit
 import KMPObservableViewModelSwiftUI
+import KMPNativeCoroutinesAsync
 
 struct DownloadScreen: View {
     @StateObject private var viewModel = DownloadViewModelSw()
@@ -34,7 +35,7 @@ struct DownloadScreen: View {
                 Spacer()
 
                 // Downloading Text
-                if let loading = viewModel.downloadResourceState as? DownloadingResource.Loading{
+                if  viewModel.downlaodState is DownloadingResource.Loading{
                     
                     
                     Text("Downloading")
@@ -45,6 +46,7 @@ struct DownloadScreen: View {
                     
                     // Progress Bar
                     
+                    let loading = viewModel.downlaodState as! DownloadingResource.Loading
                     
                     ProgressView(value: Float(loading.progress))
                             .tint(Color(red: 0.2, green: 0.6, blue: 0.8)) // colorSecondary
@@ -54,7 +56,8 @@ struct DownloadScreen: View {
                             .cornerRadius(16)
                     
                     Button(action: {
-                        //TODO CANCEL
+                        //TODO Find a way to unify both VMs (Swift and Kt)
+                        viewModel.stopDownload()
                     }) {
                         Text("Cancel")
                             .font(.system(size: 18, weight: .medium))
@@ -67,7 +70,7 @@ struct DownloadScreen: View {
                 }
                 
                 // Download Button
-                if let error = viewModel.downloadResourceState as? DownloadingResource.Error{
+                if viewModel.downlaodState is DownloadingResource.Error{
                     
                     Text("Error")
                         .font(.system(size: 25, weight: .medium))
@@ -77,7 +80,7 @@ struct DownloadScreen: View {
                    
                     
                     Button(action: {
-                        //TODO Download
+                        viewModelKt.startDownloading()//TODO SHOW DIALOG instead
                     }) {
                         Text("Download")
                             .font(.system(size: 18, weight: .medium))
@@ -94,9 +97,44 @@ struct DownloadScreen: View {
                 Spacer()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .onChange(of: viewModel.downlaodFinished){
+                if viewModel.downlaodFinished{
+                    viewModelKt.downloadFinished()
+                }
+            }
             .onAppear {
                 viewModelKt.setDeviceWidth(deviceWidthPixels: 1280)//TODO
                 viewModelKt.startDownloading()//TODO SHOW DIALOG instead
+                
+                Task {
+                    do {
+                        let downlaodChannelResult = asyncSequence(for: viewModelKt.startDownloadEvent)
+                        
+                        for try await result in downlaodChannelResult {
+                            //TODO REAL PATH
+                            let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+                            let file = documentsURL.appendingPathComponent("data.zip")
+                            
+                            
+                            self.viewModel.download(width: Int(result), file:file)
+                        }
+                    } catch {
+                        print("Failed with error: \(error)")
+                    }
+                }
+                
+                Task {
+                    do {
+                        let navigationResult = asyncSequence(for: viewModelKt.navigationEvent)
+                        
+                        for try await result in navigationResult {
+                            //TODO NAVIGATE
+                            print("Navigating to Next")
+                        }
+                    } catch {
+                        print("Failed with error: \(error)")
+                    }
+                }
             }
         }
     }
