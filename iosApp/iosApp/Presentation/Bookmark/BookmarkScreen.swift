@@ -44,7 +44,7 @@ struct BookmarksScreen: View {
                     }
                 }
                 .listStyle(.plain)
-                .scrollContentBackground(.hidden)
+//                .scrollContentBackground(.hidden)
                 .background(Color.colorPrimary)
                 .onAppear{
                     

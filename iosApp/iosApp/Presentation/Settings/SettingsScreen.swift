@@ -172,7 +172,7 @@ struct SettingsScreen: View {
                 }
                 .padding(.horizontal, 0)
             }
-            .scrollIndicators(.hidden)
+//            .scrollIndicators(.hidden)
         }
     }
     

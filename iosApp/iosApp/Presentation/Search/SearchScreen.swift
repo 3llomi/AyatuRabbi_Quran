@@ -22,7 +22,7 @@ struct SearchScreen: View {
             VStack(spacing: 0) {
                 // Search Card
                 VStack {
-                    SearchCard(text: $searchText).onChange(of: searchText) {
+                    SearchCard(text: $searchText).onChange(of: searchText) {newValue in
                         viewModel.searchForAyah(query:searchText)
                     }
                 }
@@ -52,7 +52,7 @@ struct SearchScreen: View {
                         }
                     }
                     .listStyle(.plain)
-                    .scrollContentBackground(.hidden)
+//                    .scrollContentBackground(.hidden)
                     .background(Color.colorPrimary)
                 }
             }

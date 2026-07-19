@@ -40,10 +40,10 @@ final class DownloadViewModelSw:ObservableObject{
     }
     
     func download(width:Int,file:URL){
-        print("file path \(file.path())")
+        print("file path \(file)")
 //        repository.download(width: width, file: file){
             let fm = FileManager.default
-            let temp = fm.temporaryDirectory.appending(path: "quran_data")
+        let temp = fm.temporaryDirectory.appendingPathComponent(path: "quran_data")
             do{
                 try? fm.removeItem(at: temp)
                 try fm.unzipItem(at: file, to: temp)
@@ -88,11 +88,11 @@ final class DownloadViewModelSw:ObservableObject{
           
 //        let cwd = URL(fileURLWithPath: fm.currentDirectoryPath)//TODO IS THIS OK?
         func copyAyahInfoNameDb() throws {
-            let src = URL(fileURLWithPath: temp.appending(path: DBFileNames.shared.ayahInfoNameDbPath(width: Int32(width))).path())
-            let dest = URL(fileURLWithPath: cwd.appending(path: DBFileNames.shared.ayahInfoNameDbPath(width: Int32(width))).path())
+            let src = URL(fileURLWithPath: temp.appendingPathComponent(path: DBFileNames.shared.ayahInfoNameDbPath(width: Int32(width))).pathCompat())
+            let dest = URL(fileURLWithPath: cwd.appendingPathComponent(path: DBFileNames.shared.ayahInfoNameDbPath(width: Int32(width))).pathCompat())
             try? fm.removeItem(at: dest)
-            print("srcPath \(src.path()) - exists? \(fm.fileExists(atPath: src.path()))")
-            print("destPath \(dest.path())")
+            print("srcPath \(src.pathCompat()) - exists? \(fm.fileExists(atPath: src.pathCompat()))")
+            print("destPath \(dest.pathCompat())")
             try fm.createDirectory(at: dest, withIntermediateDirectories: true)
             if fm.fileExists(atPath: dest.path){
                 try fm.removeItem(at: dest)
@@ -102,8 +102,8 @@ final class DownloadViewModelSw:ObservableObject{
         
         
         func copyQuranDbNameDb() throws {
-            let src = URL(fileURLWithPath: temp.appending(path: DBFileNames.shared.quranDbPath).path())
-            let dest = URL(fileURLWithPath: cwd.appending(path: DBFileNames.shared.quranDbPath).path())
+            let src = URL(fileURLWithPath: temp.appendingPathComponent(path: DBFileNames.shared.quranDbPath).pathCompat())
+            let dest = URL(fileURLWithPath: cwd.appendingPathComponent(path: DBFileNames.shared.quranDbPath).pathCompat())
             if fm.fileExists(atPath: dest.path){
                 try fm.removeItem(at: dest)
             }
@@ -113,11 +113,11 @@ final class DownloadViewModelSw:ObservableObject{
         
         
         func copyImages() throws {
-            let quranImagesDest = cwd.appending(path: "quran_images")
-            try? fm.removeItem(atPath: quranImagesDest.path())
-            try fm.createDirectory(atPath: quranImagesDest.path(), withIntermediateDirectories: true)
-            let src = URL(fileURLWithPath: temp.appending(path: "width_\(width)").path())
-            let dest = URL(fileURLWithPath: quranImagesDest.path())
+            let quranImagesDest = cwd.appendingPathComponent(path: "quran_images")
+            try? fm.removeItem(atPath: quranImagesDest.pathCompat())
+            try fm.createDirectory(atPath: quranImagesDest.pathCompat(), withIntermediateDirectories: true)
+            let src = URL(fileURLWithPath: temp.appendingPathComponent(path: "width_\(width)").pathCompat())
+            let dest = URL(fileURLWithPath: quranImagesDest.pathCompat())
             if fm.fileExists(atPath: dest.path){
                 try fm.removeItem(at: dest)
             }

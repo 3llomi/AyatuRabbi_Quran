@@ -30,7 +30,7 @@ class DownloadRepository{
         let ref = Storage.storage().reference(withPath: "quran_files/data_\(width).zip")
         
         self.file = file
-        print("downloading to path \(file.path())")
+        print("downloading to path \(file.pathCompat())")
         task = ref.write(toFile: file) { _, error in
             if let error = error{
                 print("error downloading \(error.localizedDescription)")

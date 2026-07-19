@@ -25,7 +25,7 @@ struct SurasScreen: View {
                 SearchCard(text: $searchText)
                     .padding(.horizontal, 32)
                     .padding(.top, 24)
-                    .onChange(of: searchText) {
+                    .onChange(of: searchText) {newValue in
                         viewModel.searchForSura(query: searchText)
                     }
                 

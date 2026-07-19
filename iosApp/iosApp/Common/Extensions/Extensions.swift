@@ -15,3 +15,20 @@ extension Bundle {
         return "\(version) (Build \(build))"
     }
 }
+
+extension URL{
+    func appendingPathComponent(path:String) -> URL{
+        if #available(iOS 16.0, *) {
+            return appending(component: path)
+        } else {
+            return appendingPathComponent(path)
+        }
+    }
+    func pathCompat() -> String {
+        if #available(iOS 16.0, *) {
+            return path()
+        } else {
+            return path
+        }
+    }
+}

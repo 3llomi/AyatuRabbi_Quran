@@ -97,11 +97,13 @@ struct DownloadScreen: View {
                 Spacer()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .onChange(of: viewModel.downlaodFinished){
+            
+            //TODO USE AN IF ELSE WITH NON-DEPRECATING METHOD
+            .onChange(of: viewModel.downlaodFinished, perform: { newValue in
                 if viewModel.downlaodFinished{
                     viewModelKt.downloadFinished()
                 }
-            }
+            })
             .onAppear {
                 viewModelKt.setDeviceWidth(deviceWidthPixels: 1280)//TODO
                 viewModelKt.startDownloading()//TODO SHOW DIALOG instead
