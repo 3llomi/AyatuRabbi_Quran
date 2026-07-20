@@ -41,7 +41,7 @@ final class DownloadViewModelSw:ObservableObject{
     
     func download(width:Int,file:URL){
         print("file path \(file)")
-//        repository.download(width: width, file: file){
+        repository.download(width: width, file: file){
             let fm = FileManager.default
         let temp = fm.temporaryDirectory.appendingPathComponent(path: "quran_data")
             do{
@@ -58,7 +58,7 @@ final class DownloadViewModelSw:ObservableObject{
             
 
             
-//        }
+        }
         //TODO DELETE OLD FILE?
 //        downloadTaskHandle?.cancel()
 //        downloadTaskHandle = Task {

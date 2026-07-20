@@ -1,6 +1,5 @@
 package com.devlomi.ayaturabbi
 
-import com.devlomi.shared.getFile
 import com.devlomi.shared.network.DownloadingResource
 import com.google.firebase.storage.FileDownloadTask
 import com.google.firebase.storage.FirebaseStorage

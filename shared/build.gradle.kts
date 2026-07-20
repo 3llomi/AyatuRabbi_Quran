@@ -444,6 +444,7 @@ kotlin {
             linkerOpts("-framework", "FirebaseCore")
             linkerOpts("-framework", "FirebaseStorage")
             linkerOpts("-Xlinker", "-no_warn_duplicate_libraries")
+            linkerOpts("-lsqlite3")
         }
     }
 
@@ -455,26 +456,27 @@ kotlin {
             linkerOpts("-framework", "FirebaseStorage")
             // Suppress the duplicate libraries warning
             linkerOpts("-Xlinker", "-no_warn_duplicate_libraries")
+            linkerOpts("-lsqlite3")
 
         }
     }
 
-    swiftPMDependencies {
-        // Import FirebaseAnalytics into your Kotlin code
-        swiftPackage(
-            url = url("https://github.com/firebase/firebase-ios-sdk.git"),
-            version = from("11.3.0"),
-            products = listOf(product("FirebaseStorage")),
-        )
-        // swift-protobuf is a transitive Firebase dependency,
-        // so you only need to include it
-        // if you want to use a specific version
-        swiftPackage(
-            url = url("https://github.com/apple/swift-protobuf.git"),
-            version = exact("1.37.0"),
-            products = listOf(),
-        )
-    }
+//    swiftPMDependencies {
+//        // Import FirebaseAnalytics into your Kotlin code
+//        swiftPackage(
+//            url = url("https://github.com/firebase/firebase-ios-sdk.git"),
+//            version = from("11.3.0"),
+//            products = listOf(product("FirebaseStorage")),
+//        )
+//        // swift-protobuf is a transitive Firebase dependency,
+//        // so you only need to include it
+//        // if you want to use a specific version
+//        swiftPackage(
+//            url = url("https://github.com/apple/swift-protobuf.git"),
+//            version = exact("1.37.0"),
+//            products = listOf(),
+//        )
+//    }
 
     // Source set declarations.
     // Declaring a target automatically creates a source set with the same name. By default, the
@@ -545,6 +547,14 @@ kotlin {
         iosMain {
             kotlin.srcDir("build/generated/sharedStrings/iosMain/kotlin")
             dependencies {
+                /*
+                RESOLVES Undefined symbols for architecture arm64:
+              "_sqlite3_load_extension", referenced from:
+                _sqlite3_sqlite3_load_extension_wrapper203 in sharedKit[16](libandroidx.sqlite:sqlite-framework-cinterop-sqlite3-cache.a.o)
+                ld: symbol(s) not found for architecture arm64
+                clang: error: linker command failed with exit code 1 (use -v to see invocation)
+                 */
+                implementation("androidx.sqlite:sqlite-framework:${libs.versions.sqlite.get()}")
                 // Add iOS-specific dependencies here. This a source set created by Kotlin Gradle
                 // Plugin (KGP) that each specific iOS target (e.g., iosX64) depends on as
                 // part of KMP’s default source set hierarchy. Note that this source set depends

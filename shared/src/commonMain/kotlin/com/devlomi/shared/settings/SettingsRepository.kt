@@ -25,8 +25,10 @@ class SettingsRepository(private val sharedPreferences: CommonPreferences) {
         sharedPreferences.putString("bgColorName", backgroundColorName)
     }
 
-    fun getBackgroundColorName() =
-        sharedPreferences.getString("bgColorName", ColorItem.DKBLUE.name)!!
+    fun getBackgroundColorName(): String {
+        return sharedPreferences.getString("bgColorName", ColorItem.DKBLUE.name)
+            ?: ColorItem.DKBLUE.name
+    }
 
     fun saveCurrentIndex(currentIndex: Int) {
         sharedPreferences.putInt("current_index", currentIndex)

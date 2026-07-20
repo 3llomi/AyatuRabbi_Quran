@@ -28,6 +28,8 @@ struct OptionsPanelScreen: View {
             Color.colorPrimary
                 .ignoresSafeArea()
             
+            let _ = print("page count \(viewModel.quranPages.count)")
+            
             VStack(spacing: 0) {
                 // Pager with Quran Pages
                 Pager(page: page,
