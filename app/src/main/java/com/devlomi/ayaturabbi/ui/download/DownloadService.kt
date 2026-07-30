@@ -113,7 +113,7 @@ class DownloadService : ScopedService() {
                     this,
                     NOTIFICATION_ID,
                     notification!!.build(),
-                    ServiceInfo.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
                 )
 
                 val width = intent?.getIntExtra(IntentConstants.EXTRA_WIDTH, 1260)!!
