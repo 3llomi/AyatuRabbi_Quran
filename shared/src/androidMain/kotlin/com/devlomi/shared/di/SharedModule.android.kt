@@ -1,8 +1,7 @@
 package com.devlomi.shared.di
 
 import com.devlomi.shared.CommonPreferences
-import com.devlomi.shared.ProperSizeCalc
-import com.devlomi.shared.quran_datasource.QuranImagePathProvider
+import com.devlomi.shared.data.quran_datasource.QuranImagePathProvider
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.dsl.module

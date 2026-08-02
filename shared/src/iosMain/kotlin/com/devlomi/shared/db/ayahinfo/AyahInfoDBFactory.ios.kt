@@ -2,8 +2,8 @@ package com.devlomi.shared.db.ayahinfo
 
 import androidx.room.Room
 import androidx.sqlite.driver.NativeSQLiteDriver
-import com.devlomi.shared.db.bookmark.BookmarkDB
-import com.devlomi.shared.db.quran_ar.QuranDB
+import com.devlomi.shared.data.db.bookmark.BookmarkDB
+import com.devlomi.shared.data.db.quran_ar.QuranDB
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
@@ -12,8 +12,8 @@ import platform.Foundation.NSUserDomainMask
 
 actual class DBFactory(private val name: String) {
     //TODO DOUBLE CHECK
-    actual fun createAyahInfoDB(): AyahInfoDB {
-        return Room.databaseBuilder<AyahInfoDB>(
+    actual fun createAyahInfoDB(): com.devlomi.shared.data.db.ayahinfo.AyahInfoDB {
+        return Room.databaseBuilder<com.devlomi.shared.data.db.ayahinfo.AyahInfoDB>(
             name = (documentDirectory() + "/db/ayahinfo_1024.db").also {
                 NSLog("Creating AyahInfoDB at path: $it")
             }
@@ -22,17 +22,17 @@ actual class DBFactory(private val name: String) {
             ).build()
     }
 
-    actual fun createQuranDB(): QuranDB {
-        return Room.databaseBuilder<QuranDB>(
+    actual fun createQuranDB(): com.devlomi.shared.data.db.quran_ar.QuranDB {
+        return Room.databaseBuilder<com.devlomi.shared.data.db.quran_ar.QuranDB>(
             name = documentDirectory() + "/db/quran_db.db"
         )
             .setDriver(NativeSQLiteDriver())
             .build()
     }
 
-    actual fun createBookmarkDB(): BookmarkDB {
-        return Room.databaseBuilder<BookmarkDB>(
-            name = documentDirectory() + "/${BookmarkDB.DB_NAME}.db"
+    actual fun createBookmarkDB(): com.devlomi.shared.data.db.bookmark.BookmarkDB {
+        return Room.databaseBuilder<com.devlomi.shared.data.db.bookmark.BookmarkDB>(
+            name = documentDirectory() + "/${_root_ide_package_.com.devlomi.shared.data.db.bookmark.BookmarkDB.DB_NAME}.db"
         )
             .setDriver(NativeSQLiteDriver())
             .build()

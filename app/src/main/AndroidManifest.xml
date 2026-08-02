@@ -17,15 +17,15 @@
         android:theme="@style/AppTheme"
         tools:replace="android:supportsRtl">
 
+<!--        TODO CHANGE TO DATA SYNC-->
         <service
             android:foregroundServiceType="shortService"
-            android:name=".ui.download.DownloadService"
+            android:name=".ui.DownloadService"
             android:enabled="true"
             android:exported="false" />
 
         <activity
-            android:name=".ui.main.MainActivity"
-            android:screenOrientation="portrait"
+            android:name=".ui.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

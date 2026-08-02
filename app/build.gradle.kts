@@ -3,6 +3,7 @@ import org.gradle.kotlin.dsl.implementation
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.composeCompiler)
     id("com.google.gms.google-services")
 }
 
@@ -42,7 +43,9 @@ android {
     buildFeatures{
         viewBinding = true
         buildConfig = true
+        compose = true
     }
+
     kotlin {
         jvmToolchain(21)
     }
@@ -96,6 +99,8 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.service)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.activity.compose)
+
     implementation ("com.google.firebase:firebase-storage:19.1.1")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.3.1")
 

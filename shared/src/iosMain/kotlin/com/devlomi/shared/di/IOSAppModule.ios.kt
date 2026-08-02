@@ -1,6 +1,5 @@
 package com.devlomi.shared.di
 
-import com.devlomi.shared.SharedString
 import org.koin.dsl.module
 
 

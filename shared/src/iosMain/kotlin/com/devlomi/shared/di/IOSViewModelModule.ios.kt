@@ -1,12 +1,12 @@
 package com.devlomi.shared.di
 
-import com.devlomi.shared.BookmarksViewModel
-import com.devlomi.shared.DownloadViewModel
+import com.devlomi.shared.ui.bookmark.BookmarksViewModel
+import com.devlomi.shared.ui.download.DownloadViewModel
 import com.devlomi.shared.MainViewModel
-import com.devlomi.shared.QuranPageViewModel
-import com.devlomi.shared.SearchViewModel
-import com.devlomi.shared.SettingsViewModel
-import com.devlomi.shared.SurasViewModel
+import com.devlomi.shared.ui.quran_page.QuranPageViewModel
+import com.devlomi.shared.ui.search.SearchViewModel
+import com.devlomi.shared.ui.settings.SettingsViewModel
+import com.devlomi.shared.ui.suras.SurasViewModel
 import org.koin.dsl.module
 
 fun iosViewModelModule() = module {

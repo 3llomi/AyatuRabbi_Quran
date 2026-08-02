@@ -5,7 +5,7 @@
     android:id="@+id/fragment_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.main.MainActivity">
+    tools:context=".ui.MainActivity">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment_container"
@@ -13,6 +13,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:defaultNavHost="true"
-        tools:context=".ui.main.MainActivity" />
+        tools:context=".ui.MainActivity" />
 
 </FrameLayout>

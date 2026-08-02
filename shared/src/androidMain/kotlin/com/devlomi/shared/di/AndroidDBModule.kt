@@ -1,30 +1,36 @@
 package com.devlomi.shared.di
 
-import com.devlomi.shared.db.ayahinfo.AyahInfoDB
-import com.devlomi.shared.db.ayahinfo.DBFactory
-import com.devlomi.shared.db.bookmark.BookmarkDB
-import com.devlomi.shared.db.quran_ar.QuranDB
-import com.devlomi.shared.settings.SettingsRepository
+import com.devlomi.shared.data.db.ayahinfo.DBFactory
+import com.devlomi.shared.data.settings.SettingsRepository
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 
 fun androidDBModule() = module {
-    single<AyahInfoDB> {
+    single<com.devlomi.shared.data.db.ayahinfo.AyahInfoDB> {
         val context = androidContext()
         val settingsRepository = get<SettingsRepository>()
-        DBFactory(context,settingsRepository).createAyahInfoDB()
+        DBFactory(
+            context,
+            settingsRepository
+        ).createAyahInfoDB()
     }
-    single<QuranDB> {
+    single<com.devlomi.shared.data.db.quran_ar.QuranDB> {
         val context = androidContext()
         val settingsRepository = get<SettingsRepository>()
-        DBFactory(context,settingsRepository).createQuranDB()
+        DBFactory(
+            context,
+            settingsRepository
+        ).createQuranDB()
     }
 
-    single<BookmarkDB> {
+    single<com.devlomi.shared.data.db.bookmark.BookmarkDB> {
         val context = androidContext()
         val settingsRepository = get<SettingsRepository>()
-        DBFactory(context,settingsRepository).createBookmarkDB()
+        DBFactory(
+            context,
+            settingsRepository
+        ).createBookmarkDB()
     }
 
 }

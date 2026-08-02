@@ -5,7 +5,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
 import com.devlomi.ayaturabbi.R
-import com.devlomi.shared.ColorItem
+import com.devlomi.shared.domain.ColorItem
 
 class ColorPickerLayout @JvmOverloads constructor(
     context: Context,

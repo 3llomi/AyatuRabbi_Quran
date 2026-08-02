@@ -1,14 +1,13 @@
 package com.devlomi.shared.di
 
-import com.devlomi.shared.CommonPreferences
-import com.devlomi.shared.ProperSizeCalc
-import com.devlomi.shared.db.ayahinfo.AyahInfoRepository
-import com.devlomi.shared.db.bookmark.BookmarkRepository
-import com.devlomi.shared.db.quran_ar.QuranRepository
-import com.devlomi.shared.db.search.SearchRepository
-import com.devlomi.shared.quran_datasource.QuranImagesDataSource
-import com.devlomi.shared.quran_datasource.QuranPageDataSource
-import com.devlomi.shared.settings.SettingsRepository
+import com.devlomi.shared.data.db.ayahinfo.AyahInfoRepository
+import com.devlomi.shared.data.db.bookmark.BookmarkRepository
+import com.devlomi.shared.data.db.quran_ar.QuranRepository
+import com.devlomi.shared.data.db.search.SearchRepository
+import com.devlomi.shared.domain.ProperSizeCalc
+import com.devlomi.shared.data.quran_datasource.QuranImagesDataSource
+import com.devlomi.shared.data.quran_datasource.QuranPageDataSource
+import com.devlomi.shared.data.settings.SettingsRepository
 import org.koin.dsl.module
 
 
@@ -24,7 +23,7 @@ fun appModule() = module {
         QuranImagesDataSource(get())
     }
     single<QuranPageDataSource> {
-        QuranPageDataSource(get(),get())
+        QuranPageDataSource(get())
     }
 
     factory<QuranRepository> {
@@ -40,7 +39,7 @@ fun appModule() = module {
     }
 
     factory<SearchRepository> {
-        SearchRepository(get(), get(), get())
+        SearchRepository(get(), get())
     }
 
 
