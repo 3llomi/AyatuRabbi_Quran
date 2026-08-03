@@ -22,10 +22,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,8 +48,6 @@ fun SurasScreen(
     state: SurasState,
     onEvent: (SurasEvents) -> Unit,
 ) {
-    var showPageDialog by remember { mutableStateOf(false) }
-    var showJuzoaDialog by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -79,7 +73,9 @@ fun SurasScreen(
                 horizontalArrangement = Arrangement.Center
             ) {
                 Button(
-                    onClick = { showPageDialog = true },
+                    onClick = {
+                        onEvent(SurasEvents.OnGoToPageClick)
+                    },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = SurasUiTokens.colorSecondary,
                         contentColor = SurasUiTokens.colorOnSecondary
@@ -97,7 +93,9 @@ fun SurasScreen(
                 Spacer(Modifier.size(12.dp))
 
                 Button(
-                    onClick = { showJuzoaDialog = true },
+                    onClick = {
+                        onEvent(SurasEvents.OnGoToJuzoaClick)
+                    },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = SurasUiTokens.colorSecondary,
                         contentColor = SurasUiTokens.colorOnSecondary
@@ -131,35 +129,44 @@ fun SurasScreen(
         }
     }
 
-    if (showPageDialog) {
+    if (state.pageNumberDialogState.isVisible) {
         NumberInputDialog(
+            value = state.pageNumberDialogState.text,
+            showError = state.pageNumberDialogState.showError,
             title = stringResource(Res.string.go_to_page),
             hint = stringResource(Res.string.page_number),
             errorText = stringResource(Res.string.invalid_page),
-            onDismiss = { showPageDialog = false },
-            onConfirm = { input ->
-                //TODO
-//                if (state.isPageNumberValid(input)) {
-//                    onOpenPage(input.toInt())
-//                    showPageDialog = false
-//                }
+            onDismiss = {
+                onEvent(
+                    SurasEvents.PageNumberDialogEvents(DialogActions.OnDismiss)
+                )
+            },
+            onChange = {
+                onEvent(SurasEvents.PageNumberDialogEvents(DialogActions.OnQueryChange(it)))
+            },
+            onConfirm = {
+                onEvent(SurasEvents.PageNumberDialogEvents(DialogActions.OnConfirm))
             }
         )
     }
 
-    if (showJuzoaDialog) {
+    if (state.juzoaNumberDialogState.isVisible) {
         NumberInputDialog(
+            value = state.pageNumberDialogState.text,
+            showError = state.pageNumberDialogState.showError,
             title = stringResource(Res.string.go_to_juzoa),
             hint = stringResource(Res.string.juzoa_number),
             errorText = stringResource(Res.string.invalid_juzoa),
-            onDismiss = { showJuzoaDialog = false },
-            onConfirm = { input ->
-                //TODO
-//                val page = state.pageByJuzoa(input)
-//                if (page != null) {
-//                    onOpenPage(page)
-//                    showJuzoaDialog = false
-//                }
+            onDismiss = {
+                onEvent(
+                    SurasEvents.JuzoaNumberDialogEvents(DialogActions.OnDismiss)
+                )
+            },
+            onChange = {
+                onEvent(SurasEvents.JuzoaNumberDialogEvents(DialogActions.OnQueryChange(it)))
+            },
+            onConfirm = {
+                onEvent(SurasEvents.JuzoaNumberDialogEvents(DialogActions.OnConfirm))
             }
         )
     }
@@ -206,12 +213,13 @@ private fun SurahItem(
 private fun NumberInputDialog(
     title: String,
     hint: String,
+    value: String,
     errorText: String,
+    showError: Boolean,
     onDismiss: () -> Unit,
-    onConfirm: (String) -> Unit
+    onChange: (query: String) -> Unit,
+    onConfirm: () -> Unit
 ) {
-    var value by remember { mutableStateOf("") }
-    var showError by remember { mutableStateOf(false) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -221,8 +229,7 @@ private fun NumberInputDialog(
                 OutlinedTextField(
                     value = value,
                     onValueChange = {
-                        value = it.filter(Char::isDigit)
-                        showError = false
+                        onChange(it)
                     },
                     singleLine = true,
                     placeholder = { Text(hint) }
@@ -239,13 +246,7 @@ private fun NumberInputDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    if (value.isNotBlank()) {
-                        val before = value
-                        onConfirm(before)
-                        if (before == value) showError = true
-                    } else {
-                        showError = true
-                    }
+                    onConfirm()
                 }
             ) { Text("Go") }
         },

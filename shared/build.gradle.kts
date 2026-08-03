@@ -149,6 +149,7 @@ kotlin {
                 implementation(libs.androidx.room.runtime)
                 implementation(libs.kotlinx.datetime)
                 implementation("io.github.vinceglb:filekit-core:0.12.0")
+                implementation("com.squareup.okio:okio:3.18.1")
 
             }
         }
@@ -165,6 +166,7 @@ kotlin {
 //                implementation("dev.gitlive:firebase-storage:2.4.0")
 //                implementation("dev.gitlive:firebase-analytics:2.4.0")
                 api(libs.koin.android)
+                implementation(libs.androidx.lifecycle.service)
                 implementation(libs.androidx.room.sqlite.wrapper)
                 implementation("com.google.firebase:firebase-storage:19.1.1")
 //                implementation ("com.google.firebase:firebase-crashlytics:17.2.2")//TODO

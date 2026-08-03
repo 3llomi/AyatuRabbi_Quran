@@ -4,22 +4,24 @@ import com.devlomi.shared.data.db.ayahinfo.AyahInfoRepository
 import com.devlomi.shared.data.db.bookmark.BookmarkRepository
 import com.devlomi.shared.data.db.quran_ar.QuranRepository
 import com.devlomi.shared.data.db.search.SearchRepository
+import com.devlomi.shared.data.network.DownloadRepository
 import com.devlomi.shared.domain.ProperSizeCalc
 import com.devlomi.shared.data.quran_datasource.QuranImagesDataSource
 import com.devlomi.shared.data.quran_datasource.QuranPageDataSource
 import com.devlomi.shared.data.settings.SettingsRepository
+import com.devlomi.shared.domain.ExtractAndCopyFiles
 import org.koin.dsl.module
 
 
 fun appModule() = module {
-    single<SettingsRepository>{
+    single<SettingsRepository> {
         SettingsRepository(get())
     }
     single<ProperSizeCalc> {
         ProperSizeCalc()
     }
 
-    single<QuranImagesDataSource>{
+    single<QuranImagesDataSource> {
         QuranImagesDataSource(get())
     }
     single<QuranPageDataSource> {
@@ -40,6 +42,13 @@ fun appModule() = module {
 
     factory<SearchRepository> {
         SearchRepository(get(), get())
+    }
+
+    single<DownloadRepository> {
+        DownloadRepository(get(), get(), get())
+    }
+    factory<ExtractAndCopyFiles> {
+        ExtractAndCopyFiles(get())
     }
 
 

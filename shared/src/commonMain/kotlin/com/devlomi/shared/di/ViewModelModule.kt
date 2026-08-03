@@ -7,34 +7,35 @@ import com.devlomi.shared.ui.quran_page.QuranPageViewModel
 import com.devlomi.shared.ui.search.SearchViewModel
 import com.devlomi.shared.ui.settings.SettingsViewModel
 import com.devlomi.shared.ui.suras.SurasViewModel
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
-fun iosViewModelModule() = module {
-    factory<BookmarksViewModel> {
-        BookmarksViewModel( get())
+fun viewModelModule() = module {
+    viewModel<BookmarksViewModel> {
+        BookmarksViewModel(get())
     }
 
-    factory<DownloadViewModel> {
-        DownloadViewModel(get(), get())
+    viewModel<DownloadViewModel> {
+        DownloadViewModel(get(), get(), get(), get(),get())
     }
 
-    factory<MainViewModel> {
+    viewModel<MainViewModel> {
         MainViewModel(get(), get())
     }
 
-    factory<QuranPageViewModel> {
-        QuranPageViewModel( get(), get(), get(), get(), get())
+    viewModel<QuranPageViewModel> {
+        QuranPageViewModel(get(), get(), get(), get(), get(), get())
     }
 
-    factory<SearchViewModel> {
+    viewModel<SearchViewModel> {
         SearchViewModel(get())
     }
 
-    factory<SettingsViewModel>{
+    viewModel<SettingsViewModel> {
         SettingsViewModel(get())
     }
-    factory<SurasViewModel> {
-        SurasViewModel(get(),get())
+    viewModel<SurasViewModel> {
+        SurasViewModel(get())
     }
 
 }

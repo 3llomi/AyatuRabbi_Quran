@@ -20,7 +20,7 @@
 <!--        TODO CHANGE TO DATA SYNC-->
         <service
             android:foregroundServiceType="shortService"
-            android:name=".ui.DownloadService"
+            android:name="com.devlomi.shared.DownloadService"
             android:enabled="true"
             android:exported="false" />
 

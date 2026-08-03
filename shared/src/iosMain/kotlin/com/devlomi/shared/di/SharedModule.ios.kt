@@ -6,7 +6,7 @@ import org.koin.core.module.Module
 import org.koin.dsl.module
 
 actual val platformModule: Module = module {
-    includes(iosDBModule(),iosAppModule(),iosViewModelModule())
+    includes(iosDBModule(),iosAppModule())
 
     single<CommonPreferences> {
         CommonPreferences()

@@ -10,11 +10,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import co.touchlab.kermit.Logger
 import com.devlomi.shared.data.settings.SettingsRepository
 import com.devlomi.shared.ui.bookmark.BookmarksScreen
 import com.devlomi.shared.ui.bookmark.BookmarksViewModel
+import com.devlomi.shared.ui.components.ObserveAsEvent
+import com.devlomi.shared.ui.download.DownloadNavigationEvent
 import com.devlomi.shared.ui.download.DownloadScreen
 import com.devlomi.shared.ui.download.DownloadViewModel
+import com.devlomi.shared.ui.quran_page.QuranPageScreen
 import com.devlomi.shared.ui.quran_page.QuranPageViewModel
 import com.devlomi.shared.ui.search.SearchScreen
 import com.devlomi.shared.ui.search.SearchViewModel
@@ -30,7 +34,8 @@ fun App() {
     val navController = rememberNavController()
     val settingsRepository = koinInject<SettingsRepository>()
     val initialScreen =
-        if (settingsRepository.hasDownloadedFiles()) Screen.Download.route else Screen.QuranPage.route
+        if (settingsRepository.hasDownloadedFiles()) Screen.QuranPage.route else Screen.Download.route
+    Logger.d { "Initial Screen $initialScreen" }
     AppTheme {
         Box(
             modifier = Modifier.background(MaterialTheme.colorScheme.background)
@@ -43,12 +48,31 @@ fun App() {
                 composable(Screen.Download.route) {
                     val viewModel = koinViewModel<DownloadViewModel>()
                     val state = viewModel.state.collectAsStateWithLifecycle().value
+                    ObserveAsEvent(viewModel.navigationEvent) {
+                        when (it) {
+                            DownloadNavigationEvent.ToQuranPage -> {
+                                navController.navigate(Screen.QuranPage.route) {
+                                    popUpTo(Screen.Download.route) {
+                                        inclusive = true
+                                    }
+                                }
+                            }
+                        }
+                    }
                     DownloadScreen(state, onEvent = viewModel::onEvent)
                 }
                 composable(Screen.QuranPage.route) {
                     val viewModel = koinViewModel<QuranPageViewModel>()
                     val state = viewModel.state.collectAsStateWithLifecycle().value
 //                    QuranPageScreen(state, onEvent = viewModel::onEvent)
+                    QuranPageScreen(
+                        onOpenSuras = {},
+                        onOpenSearch = {},
+                        onOpenSettings = {},
+                        onOpenBookmarks = {},
+                        onShareText = {},
+                        onShareImage = {}
+                    )
                 }
                 composable(Screen.Suras.route) {
                     val viewModel = koinViewModel<SurasViewModel>()

@@ -1,23 +1,32 @@
 package com.devlomi.shared
-//
-//import com.oldguy.common.io.File
-//import com.oldguy.common.io.FileMode
-//import com.oldguy.common.io.ZipFile
-//
-//
-//
-//suspend fun unzipFile(zipFilePath: String, outputDirectoryPath: String) {
-//    val destDir = File(outputDirectoryPath)
-//    if (!destDir.exists) {
-//        destDir.makeDirectory()
-//    }
-//
-//    val archiveFile = File(zipFilePath)
-//    val zipFile = ZipFile(archiveFile, FileMode.Read)
-//
-//    zipFile.use { file ->
-//        // kmp-io handles traversing entries and writing extracted files.
-//        file.extractToDirectory(destDir)
-//    }
-//}
-//TODO DELETE
+import okio.FileSystem
+import okio.Path
+import okio.Path.Companion.toPath
+import okio.buffer
+import okio.openZip
+import okio.use
+
+// This code is identical for jvmCommon and iOS.
+fun FileSystem.unpackZip(zipFile: Path, destDir: Path) {
+    fun Path.createParentDirectories() {
+        this.parent?.let { parent ->
+            createDirectories(parent)
+        }
+    }
+
+    val zipFileSystem = openZip(zipFile)
+    val paths = zipFileSystem.listRecursively("/".toPath())
+        .filter { zipFileSystem.metadata(it).isRegularFile }
+        .toList()
+
+    paths.forEach { zipFilePath ->
+        zipFileSystem.source(zipFilePath).buffer().use { source ->
+            val relativeFilePath = zipFilePath.toString().trimStart('/')
+            val fileToWrite = destDir.resolve(relativeFilePath)
+            fileToWrite.createParentDirectories()
+            sink(fileToWrite).buffer().use { sink ->
+                sink.writeAll(source)
+            }
+        }
+    }
+}

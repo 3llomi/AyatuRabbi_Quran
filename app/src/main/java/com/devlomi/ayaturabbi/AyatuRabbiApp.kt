@@ -2,7 +2,6 @@ package com.devlomi.ayaturabbi
 
 import android.app.Application
 import com.devlomi.shared.data.quran_datasource.QuranPageDataSource
-import com.devlomi.shared.di.androidViewModelModule
 import com.devlomi.shared.di.initKoin
 import kotlinx.coroutines.runBlocking
 import org.koin.android.ext.android.getKoin

@@ -12,18 +12,18 @@ import org.koin.dsl.module
 
 fun dbModule() = module {
 
-    single<com.devlomi.shared.data.db.ayahinfo.AyahInfoDao> {
-        val ayahInfoDB: com.devlomi.shared.data.db.ayahinfo.AyahInfoDB = get()
+    single<AyahInfoDao> {
+        val ayahInfoDB: AyahInfoDB = get()
         ayahInfoDB.ayahInfoDao()
     }
 
-    single<com.devlomi.shared.data.db.quran_ar.QuranDBDao> {
-        val quranDb: com.devlomi.shared.data.db.quran_ar.QuranDB = get()
+    single<QuranDBDao> {
+        val quranDb: QuranDB = get()
         quranDb.quranDBDao()
     }
 
-    single<com.devlomi.shared.data.db.bookmark.BookmarkDao> {
-        val bookmarkDB: com.devlomi.shared.data.db.bookmark.BookmarkDB = get()
+    single<BookmarkDao> {
+        val bookmarkDB: BookmarkDB = get()
         bookmarkDB.bookmarkDao()
     }
 }

@@ -2,11 +2,14 @@ package com.devlomi.shared.ui.download
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.touchlab.kermit.Logger
+import com.devlomi.shared.common.DirConstants
 import com.devlomi.shared.data.network.DownloadRepository
 import com.devlomi.shared.domain.ProperSizeCalc
 import com.devlomi.shared.data.network.DownloadingResource
 import com.devlomi.shared.data.settings.SettingsRepository
-import com.devlomi.shared.ui.DownloadService
+import com.devlomi.shared.ui.CommonDownloadService
+import com.devlomi.shared.ui.suras.DialogActions
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,8 +22,9 @@ import kotlinx.coroutines.launch
 class DownloadViewModel(
     private val settingsRepository: SettingsRepository,
     private val properSizeCalc: ProperSizeCalc,
-    private val downloadService: DownloadService,
-    private val downloadRepository: DownloadRepository
+    private val commonDownloadService: CommonDownloadService,
+    private val downloadRepository: DownloadRepository,
+    private val dirConstants: DirConstants
 ) : ViewModel() {
 
     private val navigationChannel = Channel<DownloadNavigationEvent>()
@@ -34,14 +38,15 @@ class DownloadViewModel(
     init {
         viewModelScope.launch {
             downloadRepository.downloadResource.collect { resource ->
+                Logger.d { "DownloadViewModel ${resource.toString()}" }
+                _state.update { it.copy(downlaodState = resource) }
+
                 if (resource is DownloadingResource.Success) {
                     launch {
-                        settingsRepository.setDownloadFinished(true)
                         navigationChannel.send(DownloadNavigationEvent.ToQuranPage)
                     }
                 }
 
-                _state.update { it.copy(downlaodState = resource) }
             }
         }
     }
@@ -51,12 +56,42 @@ class DownloadViewModel(
         when (event) {
             is DownloadEvents.OnStartDownload -> {
                 _state.update { it.copy(showConfirmDownloadDialog = false) }
-                val deviceWidth = settingsRepository.deviceWidth()
-                val properWidth = properSizeCalc.getProperWidth(deviceWidth)
-                downloadService.download(properWidth, "settingsRepository.getFilesDirPath()")//TODO
             }
             is DownloadEvents.OnCancel ->{
-                downloadService.cancel()
+                _state.update { it.copy(showConfirmCancelDownloadDialog = true) }
+            }
+
+            is DownloadEvents.CancelDownloadAction -> {
+                when (event.action) {
+                    DialogActions.OnConfirm -> {
+                        _state.update { it.copy(showConfirmCancelDownloadDialog = false) }
+                        Logger.d { "Cancelling Downlaod VM" }
+                        commonDownloadService.cancel()
+                    }
+
+                    DialogActions.OnDismiss -> {
+                        _state.update { it.copy(showConfirmCancelDownloadDialog = false) }
+                    }
+
+                    is DialogActions.OnQueryChange -> {}
+                }
+            }
+            is DownloadEvents.StartDownloadAction -> {
+                when (event.action) {
+                    DialogActions.OnConfirm -> {
+                        _state.update { it.copy(showConfirmDownloadDialog = false) }
+                        val deviceWidth = settingsRepository.deviceWidth()
+                        val properWidth = properSizeCalc.getProperWidth(deviceWidth)
+                        val path = dirConstants.getDownloadTempPath("data.zip")
+                        commonDownloadService.download(properWidth, path)
+                    }
+
+                    DialogActions.OnDismiss -> {
+                        _state.update { it.copy(showConfirmDownloadDialog = false) }
+                    }
+
+                    is DialogActions.OnQueryChange -> {}
+                }
             }
         }
     }

@@ -19,7 +19,7 @@ class SurasViewModel(
 ) : ViewModel() {
 
     private lateinit var suras: List<Surah>
-    private val _state = MutableStateFlow<SurasState>(SurasState())
+    private val _state = MutableStateFlow(SurasState())
     val state: StateFlow<SurasState> get() = _state.asStateFlow()
 
 
@@ -39,9 +39,100 @@ class SurasViewModel(
 
     fun onEvent(event: SurasEvents) {
         when (event) {
-//            is SurasEvents.OnSurahClick -> onSurahClick(event.surah)//TODO
             is SurasEvents.OnQueryChange -> searchForSura(event.query)
             is SurasEvents.OnSurahClick -> TODO()
+            is SurasEvents.JuzoaNumberDialogEvents -> {
+                when (event.action) {
+                    is DialogActions.OnQueryChange -> {
+
+                        //verify page number is valid
+                        _state.update {
+                            it.copy(juzoaNumberDialogState = it.juzoaNumberDialogState.copy(text = event.action.query))
+                        }
+                    }
+
+                    is DialogActions.OnDismiss -> {
+                        _state.update {
+                            it.copy(
+                                juzoaNumberDialogState = it.juzoaNumberDialogState.copy(
+                                    isVisible = false,
+                                    showError = false
+                                )
+                            )
+                        }
+                    }
+
+                    is DialogActions.OnConfirm -> {
+                        val pageNumber =
+                            getPageNumberByJuzoaIfValid(_state.value.juzoaNumberDialogState.text)
+                        if (pageNumber != null) {
+                            //navigate to page number
+                            _state.update {
+                                it.copy(
+                                    juzoaNumberDialogState = it.juzoaNumberDialogState.copy(
+                                        isVisible = false,
+                                        showError = false
+                                    )
+                                )
+                            }
+                        } else {
+                            _state.update {
+                                it.copy(
+                                    juzoaNumberDialogState = it.juzoaNumberDialogState.copy(
+                                        showError = true
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            SurasEvents.OnGoToJuzoaClick -> TODO()
+            SurasEvents.OnGoToPageClick -> TODO()
+            is SurasEvents.PageNumberDialogEvents -> {
+                when (event.action) {
+                    is DialogActions.OnQueryChange -> {
+                        //verify page number is valid
+                        _state.update {
+                            it.copy(pageNumberDialogState = it.pageNumberDialogState.copy(text = event.action.query))
+                        }
+                    }
+
+                    is DialogActions.OnDismiss -> {
+                        _state.update {
+                            it.copy(
+                                pageNumberDialogState = it.pageNumberDialogState.copy(
+                                    isVisible = false,
+                                    showError = false
+                                )
+                            )
+                        }
+                    }
+
+                    is DialogActions.OnConfirm -> {
+                        if (isPageNumberValid(_state.value.pageNumberDialogState.text)) {
+                            //navigate to page number
+                            _state.update {
+                                it.copy(
+                                    pageNumberDialogState = it.pageNumberDialogState.copy(
+                                        isVisible = false,
+                                        showError = false
+                                    )
+                                )
+                            }
+                        } else {
+                            _state.update {
+                                it.copy(
+                                    pageNumberDialogState = it.pageNumberDialogState.copy(
+                                        showError = true
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -57,7 +148,7 @@ class SurasViewModel(
         }
     }
 
-    fun isPageNumberValid(page: String): Boolean {
+    private fun isPageNumberValid(page: String): Boolean {
         if (page.trim().isEmpty())
             return false
 
@@ -72,7 +163,7 @@ class SurasViewModel(
         return false
     }
 
-    fun getPageNumberByJuzoaIfValid(juzoa: String): Int? {
+    private fun getPageNumberByJuzoaIfValid(juzoa: String): Int? {
         if (juzoa.isDigitsOnly()) {
             val allowedNumbers = (1..30)
             val juzoaNumber = juzoa.toInt()

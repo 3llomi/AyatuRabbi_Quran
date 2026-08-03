@@ -1,9 +1,14 @@
 package com.devlomi.shared.ui
 
-actual class DownloadService {
+import android.content.Context
+import com.devlomi.shared.DownloadService
+
+actual class CommonDownloadService(private val context: Context) {
     actual fun download(width: Int, filePath: String) {
+        DownloadService.start( width, filePath,context)
     }
 
     actual fun cancel() {
+        DownloadService.stop(context)
     }
 }

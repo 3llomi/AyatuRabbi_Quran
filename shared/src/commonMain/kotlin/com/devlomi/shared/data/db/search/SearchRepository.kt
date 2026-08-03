@@ -3,7 +3,6 @@ package com.devlomi.shared.data.db.search
 import ayaturabbi.shared.generated.resources.Res
 import ayaturabbi.shared.generated.resources.surah_names
 import com.devlomi.shared.domain.model.SearchResult
-import com.devlomi.shared.StringArrays
 import org.jetbrains.compose.resources.getStringArray
 
 

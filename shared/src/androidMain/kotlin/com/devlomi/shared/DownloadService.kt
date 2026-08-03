@@ -1,8 +1,9 @@
-package com.devlomi.ayaturabbi.ui
+package com.devlomi.shared
 
 import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
@@ -15,16 +16,14 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import ayaturabbi.shared.generated.resources.Res
 import co.touchlab.kermit.Logger
-import com.devlomi.ayaturabbi.FileUnzipper
-import com.devlomi.ayaturabbi.R
-import com.devlomi.ayaturabbi.constants.IntentConstants
-import com.devlomi.ayaturabbi.ScopedService
-import com.devlomi.ayaturabbi.util.isApi33OrAbove
+import com.devlomi.shared.constants.IntentConstants
 import com.devlomi.shared.data.db.DBFileNames
 import com.devlomi.shared.data.network.DownloadRepository
 import com.devlomi.shared.data.network.DownloadingResource
 import com.devlomi.shared.data.network.exceptions.UserCancelledException
+import com.devlomi.shared.domain.ExtractAndCopyFiles
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Job
@@ -33,15 +32,23 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import kotlinx.io.files.Path
+import okio.FileSystem
+import okio.Path.Companion.toPath
+import org.jetbrains.compose.resources.getDrawableResourceBytes
 import org.koin.android.ext.android.inject
+import org.koin.java.KoinJavaComponent.inject
 import java.io.File
+import kotlin.getValue
 
 
 class DownloadService : ScopedService() {
-//TODO RESOLVE CRASH:
+    //TODO RESOLVE CRASH:
     // Reason: A foreground service of FOREGROUND_SERVICE_TYPE_SHORT_SERVICE did not stop within a timeout: ComponentInfo{com.devlomi.ayaturabbi/com.devlomi.ayaturabbi.ui.download.DownloadService}
     val downloadRepository: DownloadRepository by inject()
+    val extractAndCopyFiles: ExtractAndCopyFiles by inject()
 
 
     private var notification: NotificationCompat.Builder? = null
@@ -52,7 +59,7 @@ class DownloadService : ScopedService() {
     }
 
     private var downloadCancelled = false
-    private var downloadJob: Job?=null
+    private var downloadJob: Job? = null
 
     private lateinit var notificationManager: NotificationManagerCompat
 
@@ -61,9 +68,9 @@ class DownloadService : ScopedService() {
         notificationManager = NotificationManagerCompat.from(this)
         lifecycleScope.launch {
             downloadRepository.downloadResource.collectLatest {
+                Logger.d { "DownlaodService Changed - Service ${it.toString()}" }
                 if (it is DownloadingResource.Loading) {
                     if (!downloadCancelled) {
-                        Logger.d { "Download Progress ${it.progress}" }
                         updateNotificationProgress(it.progress)
                         _downloadState.value = it
                     }
@@ -89,9 +96,28 @@ class DownloadService : ScopedService() {
     }
 
     companion object {
+        //TODO REMOVE THIS STATE SINCE I'TS MOVED TO DOWNLOAD REPOSITORY?
         private val _downloadState = MutableStateFlow<DownloadingResource>(DownloadingResource.None)
         val downloadState: StateFlow<DownloadingResource>
             get() = _downloadState
+
+        fun start(width: Int, filePath: String, context: Context) {
+            val intent = Intent(context, DownloadService::class.java)
+            intent.action = IntentConstants.ACTION_START_DOWNLOAD
+            intent.putExtra(IntentConstants.EXTRA_WIDTH, width)
+            intent.putExtra(IntentConstants.EXTRA_DOWNLOAD_FILE_PATH, filePath)
+            ContextCompat.startForegroundService(context, intent)
+        }
+
+        fun stop(context: Context) {
+            Logger.d { "Cancellign Download" }
+            Intent(context, DownloadService::class.java).apply {
+                action = IntentConstants.ACTION_CANCEL_DOWNLOAD
+                context.startService(
+                    this
+                )
+            }
+        }
 
         private const val NOTIFICATION_CHANNEL_ID = "2"
         private const val NOTIFICATION_ID = 2
@@ -102,6 +128,7 @@ class DownloadService : ScopedService() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
+        Logger.d { "OnStartCommand action ${intent?.action}" }
         intent?.action?.let { action ->
             if (action == IntentConstants.ACTION_START_DOWNLOAD) {
 
@@ -109,20 +136,23 @@ class DownloadService : ScopedService() {
                     createNotificationChannel()
                 }
 
+
+
+
                 notification =
                     NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
                         .setContentTitle(getString(R.string.downloading_quran_files))
                         .setContentText(getString(R.string.downloaded, 0))
-//                        .setSmallIcon(R.drawable.ic_noti)//TODO
                         .setSmallIcon(R.drawable.ic_note)//TODO
+//                        .setSmallIcon(R.drawable.ic_note)//TODO
 //                        .setProgress(MAX_PROGRESS, 0, false)//TODO
-                        .setSilent(true)
+//                        .setSilent(true)//TODO
 
                 ServiceCompat.startForeground(
                     this,
                     NOTIFICATION_ID,
                     notification!!.build(),
-                    ServiceInfo.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE//TODO DATA SYNC
                 )
 
                 val width = intent?.getIntExtra(IntentConstants.EXTRA_WIDTH, 1260)!!
@@ -130,6 +160,7 @@ class DownloadService : ScopedService() {
                 startDownloading(width, filePath)
 
             } else if (action == IntentConstants.ACTION_CANCEL_DOWNLOAD) {
+                Logger.d { "INTENT ACTION CANCEL DOWNLOAD" }
                 cancelDownload()
             }
         }
@@ -142,8 +173,7 @@ class DownloadService : ScopedService() {
         downloadCancelled = true
         downloadJob?.cancel()
         lifecycleScope.launch {
-
-        downloadRepository.cancelDownload()
+            downloadRepository.cancelDownload()
         }
         cancel("Cancelled by user")
         _downloadState.value = DownloadingResource.Error(UserCancelledException())
@@ -183,31 +213,43 @@ class DownloadService : ScopedService() {
         // 	at kotlinx.coroutines.CancellableContinuationImpl.resumeWith(CancellableContinuationImpl.kt:359)
         downloadJob = launch(IO) {
             try {
-                Log.d("DownloadService","Downloading... at filePath ${filePath}")
-                downloadRepository.download(width, filePath)
+                Log.d("DownloadService", "Downloading... at filePath ${filePath}")
+
+                val result = downloadRepository.download(width, filePath)
+                if (result.isSuccess){
+                    stopService()
+                    Logger.d { "Downlaod Success - Download Service" }
+                }else{
+                    Logger.e { "Downlaod Error - Download Service ${result?.exceptionOrNull()?.message}" }
+                    throw result.exceptionOrNull() ?: Exception("Download Error")
+                }
                 val temp = File("$cacheDir/quran_data/")
 
-                Log.d("DownloadService","Unzipping")
-                FileUnzipper.unZipFile(filePath,temp.path)
+                Log.d("DownloadService", "Unzipping")
+//                FileUnzipper.unZipFile(filePath,temp.path)//TODO UNCOMMENT THIS LINE WHEN TESTING ON REAL DEVICE, IT CRASHES ON EMULATOR
 
-                Log.d("DownloadService","Copying files...")
-                copyFiles(temp, width)
-
-                Log.d("DownloadService","Deleting temp...")
-                temp.deleteRecursively()
-                Log.d("DownloadService","Copied files")
-                File(cacheDir, "data.zip").delete()
+//                val zipFile: okio.Path = File(filePath).absolutePath.toPath()
+//                val destDir: okio.Path = temp.absolutePath.toPath()
+//                FileSystem.SYSTEM.unpackZip(zipFile, destDir)
+//                extractAndCopyFiles.execute(width, filePath)
 
 
+                Log.d("DownloadService", "Copying files...")
+//                copyFiles(temp, width)
+
+                Log.d("DownloadService", "Deleting temp...")
+//                temp.deleteRecursively()
+//                Log.d("DownloadService","Copied files")
+//                File(cacheDir, "data.zip").delete()
 
 
-
-                withContext(Dispatchers.Main) {
-                    _downloadState.value = DownloadingResource.Success
-                }
-                stopService()
+//                withContext(Dispatchers.Main) {
+//                    _downloadState.value = DownloadingResource.Success
+//                }
+//                stopService()
 
             } catch (e: Exception) {
+                Logger.e { "Error Downloading - Downlaod Service ${e.message}" }
                 withContext(Dispatchers.Main) {
                     _downloadState.value = DownloadingResource.Error(e)
                 }
