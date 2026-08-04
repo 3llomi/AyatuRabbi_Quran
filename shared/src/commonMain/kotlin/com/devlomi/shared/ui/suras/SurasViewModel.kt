@@ -43,7 +43,7 @@ class SurasViewModel(
             is SurasEvents.OnSurahClick -> TODO()
             is SurasEvents.JuzoaNumberDialogEvents -> {
                 when (event.action) {
-                    is DialogActions.OnQueryChange -> {
+                    is DialogActionsWithQuery.OnQueryChange -> {
 
                         //verify page number is valid
                         _state.update {
@@ -51,7 +51,7 @@ class SurasViewModel(
                         }
                     }
 
-                    is DialogActions.OnDismiss -> {
+                    is DialogActionsWithQuery.OnDismiss -> {
                         _state.update {
                             it.copy(
                                 juzoaNumberDialogState = it.juzoaNumberDialogState.copy(
@@ -62,7 +62,7 @@ class SurasViewModel(
                         }
                     }
 
-                    is DialogActions.OnConfirm -> {
+                    is DialogActionsWithQuery.OnConfirm<*> -> {
                         val pageNumber =
                             getPageNumberByJuzoaIfValid(_state.value.juzoaNumberDialogState.text)
                         if (pageNumber != null) {
@@ -92,14 +92,14 @@ class SurasViewModel(
             SurasEvents.OnGoToPageClick -> TODO()
             is SurasEvents.PageNumberDialogEvents -> {
                 when (event.action) {
-                    is DialogActions.OnQueryChange -> {
+                    is DialogActionsWithQuery.OnQueryChange -> {
                         //verify page number is valid
                         _state.update {
                             it.copy(pageNumberDialogState = it.pageNumberDialogState.copy(text = event.action.query))
                         }
                     }
 
-                    is DialogActions.OnDismiss -> {
+                    is DialogActionsWithQuery.OnDismiss -> {
                         _state.update {
                             it.copy(
                                 pageNumberDialogState = it.pageNumberDialogState.copy(
@@ -110,7 +110,7 @@ class SurasViewModel(
                         }
                     }
 
-                    is DialogActions.OnConfirm -> {
+                    is DialogActionsWithQuery.OnConfirm<*> -> {
                         if (isPageNumberValid(_state.value.pageNumberDialogState.text)) {
                             //navigate to page number
                             _state.update {

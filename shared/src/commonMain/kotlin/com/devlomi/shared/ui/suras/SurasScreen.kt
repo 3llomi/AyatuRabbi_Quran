@@ -138,14 +138,14 @@ fun SurasScreen(
             errorText = stringResource(Res.string.invalid_page),
             onDismiss = {
                 onEvent(
-                    SurasEvents.PageNumberDialogEvents(DialogActions.OnDismiss)
+                    SurasEvents.PageNumberDialogEvents(DialogActionsWithQuery.OnDismiss)
                 )
             },
             onChange = {
-                onEvent(SurasEvents.PageNumberDialogEvents(DialogActions.OnQueryChange(it)))
+                onEvent(SurasEvents.PageNumberDialogEvents(DialogActionsWithQuery.OnQueryChange(it)))
             },
             onConfirm = {
-                onEvent(SurasEvents.PageNumberDialogEvents(DialogActions.OnConfirm))
+                onEvent(SurasEvents.PageNumberDialogEvents(DialogActionsWithQuery.OnConfirm(null)))
             }
         )
     }
@@ -159,14 +159,14 @@ fun SurasScreen(
             errorText = stringResource(Res.string.invalid_juzoa),
             onDismiss = {
                 onEvent(
-                    SurasEvents.JuzoaNumberDialogEvents(DialogActions.OnDismiss)
+                    SurasEvents.JuzoaNumberDialogEvents(DialogActionsWithQuery.OnDismiss)
                 )
             },
             onChange = {
-                onEvent(SurasEvents.JuzoaNumberDialogEvents(DialogActions.OnQueryChange(it)))
+                onEvent(SurasEvents.JuzoaNumberDialogEvents(DialogActionsWithQuery.OnQueryChange(it)))
             },
             onConfirm = {
-                onEvent(SurasEvents.JuzoaNumberDialogEvents(DialogActions.OnConfirm))
+                onEvent(SurasEvents.JuzoaNumberDialogEvents(DialogActionsWithQuery.OnConfirm(null)))
             }
         )
     }

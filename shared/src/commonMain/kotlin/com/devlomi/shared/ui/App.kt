@@ -18,6 +18,7 @@ import com.devlomi.shared.ui.components.ObserveAsEvent
 import com.devlomi.shared.ui.download.DownloadNavigationEvent
 import com.devlomi.shared.ui.download.DownloadScreen
 import com.devlomi.shared.ui.download.DownloadViewModel
+import com.devlomi.shared.ui.quran_page.QuranPageNavigationEvent
 import com.devlomi.shared.ui.quran_page.QuranPageScreen
 import com.devlomi.shared.ui.quran_page.QuranPageViewModel
 import com.devlomi.shared.ui.search.SearchScreen
@@ -64,14 +65,28 @@ fun App() {
                 composable(Screen.QuranPage.route) {
                     val viewModel = koinViewModel<QuranPageViewModel>()
                     val state = viewModel.state.collectAsStateWithLifecycle().value
-//                    QuranPageScreen(state, onEvent = viewModel::onEvent)
+                    ObserveAsEvent(viewModel.navigationEvent) {
+                        when (it) {
+                            QuranPageNavigationEvent.ToSuras -> {
+                                navController.navigate(Screen.Suras.route)
+                            }
+
+                            QuranPageNavigationEvent.ToBookmarks -> {
+                                navController.navigate(Screen.Bookmarks.route)
+                            }
+
+                            QuranPageNavigationEvent.ToSearch -> {
+                                navController.navigate(Screen.Search.route)
+                            }
+
+                            QuranPageNavigationEvent.ToSettings -> {
+                                navController.navigate(Screen.Settings.route)
+                            }
+                        }
+                    }
                     QuranPageScreen(
-                        onOpenSuras = {},
-                        onOpenSearch = {},
-                        onOpenSettings = {},
-                        onOpenBookmarks = {},
-                        onShareText = {},
-                        onShareImage = {}
+                        state = state,
+                        onEvent = viewModel::onEvent
                     )
                 }
                 composable(Screen.Suras.route) {

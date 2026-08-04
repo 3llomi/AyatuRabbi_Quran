@@ -10,6 +10,7 @@ import com.devlomi.shared.data.network.DownloadingResource
 import com.devlomi.shared.data.settings.SettingsRepository
 import com.devlomi.shared.ui.CommonDownloadService
 import com.devlomi.shared.ui.suras.DialogActions
+import com.devlomi.shared.ui.suras.DialogActionsWithQuery
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -63,7 +64,7 @@ class DownloadViewModel(
 
             is DownloadEvents.CancelDownloadAction -> {
                 when (event.action) {
-                    DialogActions.OnConfirm -> {
+                    is DialogActions.OnConfirm<*> -> {
                         _state.update { it.copy(showConfirmCancelDownloadDialog = false) }
                         Logger.d { "Cancelling Downlaod VM" }
                         commonDownloadService.cancel()
@@ -73,12 +74,11 @@ class DownloadViewModel(
                         _state.update { it.copy(showConfirmCancelDownloadDialog = false) }
                     }
 
-                    is DialogActions.OnQueryChange -> {}
                 }
             }
             is DownloadEvents.StartDownloadAction -> {
                 when (event.action) {
-                    DialogActions.OnConfirm -> {
+                    is DialogActions.OnConfirm<*> -> {
                         _state.update { it.copy(showConfirmDownloadDialog = false) }
                         val deviceWidth = settingsRepository.deviceWidth()
                         val properWidth = properSizeCalc.getProperWidth(deviceWidth)
@@ -89,8 +89,6 @@ class DownloadViewModel(
                     DialogActions.OnDismiss -> {
                         _state.update { it.copy(showConfirmDownloadDialog = false) }
                     }
-
-                    is DialogActions.OnQueryChange -> {}
                 }
             }
         }

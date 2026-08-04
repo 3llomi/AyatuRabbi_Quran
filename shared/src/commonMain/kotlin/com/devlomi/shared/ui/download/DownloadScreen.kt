@@ -41,7 +41,7 @@ fun DownloadScreen(
             text = { Text("Required Quran files must be downloaded before continuing.") },
             confirmButton = {
                 TextButton(onClick = {
-                    onEvent(DownloadEvents.StartDownloadAction(DialogActions.OnConfirm))
+                    onEvent(DownloadEvents.StartDownloadAction(DialogActions.OnConfirm<Nothing>()))
                 }) { Text("Download") }
             },
             dismissButton = {
@@ -59,7 +59,7 @@ fun DownloadScreen(
             text = { Text("Are you sure you want to cancel") },
             confirmButton = {
                 TextButton(onClick = {
-                    onEvent(DownloadEvents.CancelDownloadAction(DialogActions.OnConfirm))
+                    onEvent(DownloadEvents.CancelDownloadAction(DialogActions.OnConfirm(null)))
                 }) { Text("Yes") }
             },
             dismissButton = {

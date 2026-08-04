@@ -11,13 +11,18 @@ import com.devlomi.shared.domain.ShareImageBackground
 import com.devlomi.shared.domain.ShareType
 import com.devlomi.shared.data.quran_datasource.QuranPageDataSource
 import com.devlomi.shared.data.settings.SettingsRepository
+import com.devlomi.shared.ui.suras.DialogActions
+import com.devlomi.shared.ui.suras.DialogActionsWithQuery
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.cacheDir
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -32,6 +37,9 @@ class QuranPageViewModel(
     private val ayahInfoRepository: com.devlomi.shared.data.db.ayahinfo.AyahInfoRepository,
     private val bookmarkRepository: com.devlomi.shared.data.db.bookmark.BookmarkRepository
 ) : ViewModel() {
+
+    private val navigationChannel = Channel<QuranPageNavigationEvent>()
+    val navigationEvent: Flow<QuranPageNavigationEvent> = navigationChannel.receiveAsFlow()
 
     private var backgroundColorItem =
         ColorItem.fromName(settingsRepository.getBackgroundColorName())
@@ -54,16 +62,107 @@ class QuranPageViewModel(
             is QuranPageEvents.OnColorPicked -> colorPicked(event.colorItem)
             QuranPageEvents.OnBookmarkClicked -> bookmarkClicked()
             QuranPageEvents.OnStop -> onStop()
-            is QuranPageEvents.OnShareTypeChosen -> shareTypeChosen(event.shareType)
-            is QuranPageEvents.OnBookmarkWithNote -> bookmarkWithNote(event.note)
             QuranPageEvents.OnShareDone -> shareDone()
             QuranPageEvents.OnZoomDone -> zoomDone()
-            is QuranPageEvents.OnSetPageScale -> setPageScale(event.thumbPosition)
+            is QuranPageEvents.OnPageSliderChange -> setPageScale(event.thumbPosition)
             QuranPageEvents.OnZoomClicked -> btnZoomClicked()
+            QuranPageEvents.OnSurasClick -> navigateTo(QuranPageNavigationEvent.ToSuras)
+            QuranPageEvents.OnBookmarksClick -> navigateTo(QuranPageNavigationEvent.ToBookmarks)
+            QuranPageEvents.OnSearchClick -> navigateTo(QuranPageNavigationEvent.ToSearch)
+            QuranPageEvents.OnSettingsClick -> navigateTo(QuranPageNavigationEvent.ToSettings)
+            QuranPageEvents.OnShareClick -> showShareDialog()
+            QuranPageEvents.OnPageClick -> toggleOptionsPanel()
+            QuranPageEvents.OnColorClick -> toggleColorPanel()
+            QuranPageEvents.OnBookmarkLongClick -> showBookmarkDialog()
+            is QuranPageEvents.OnShareDialogAction -> handleShareDialogAction(event.action)
+            is QuranPageEvents.OnBookmarkDialogAction -> handleBookmarkDialogAction(event.action)
+        }
+    }
+
+    private fun navigateTo(navEvent: QuranPageNavigationEvent) {
+        viewModelScope.launch {
+            navigationChannel.send(navEvent)
+        }
+    }
+
+    private fun showShareDialog() {
+        _state.update { it.copy(shareTypeDialogState = it.shareTypeDialogState.copy(isVisible = true)) }
+    }
+
+    private fun showBookmarkDialog() {
+        _state.update { it.copy(bookmarkDialogState = it.bookmarkDialogState.copy(isVisible = true)) }
+    }
+
+    private fun toggleOptionsPanel() {
+        _state.update { it.copy(showOptionsPanel = !it.showOptionsPanel) }
+    }
+
+    private fun toggleColorPanel() {
+        _state.update { it.copy(showColorsPanel = !it.showColorsPanel) }
+    }
+
+    private fun handleShareDialogAction(action: DialogActions) {
+        when (action) {
+            is DialogActions.OnConfirm<*> -> {
+
+                shareTypeChosen(action.data as ShareType)
+                _state.update {
+                    it.copy(
+                        shareTypeDialogState = it.shareTypeDialogState.copy(
+                            isVisible = false,
+                        )
+                    )
+                }
+            }
+
+            DialogActions.OnDismiss -> {
+                _state.update {
+                    it.copy(
+                        shareTypeDialogState = it.shareTypeDialogState.copy(
+                            isVisible = false,
+                        )
+                    )
+                }
+            }
+
+        }
+    }
+
+    private fun handleBookmarkDialogAction(action: DialogActionsWithQuery) {
+        when (action) {
+            is DialogActionsWithQuery.OnConfirm<*> -> {
+                bookmarkWithNote(state.value.bookmarkDialogState.text)
+                _state.update {
+                    it.copy(
+                        bookmarkDialogState = it.bookmarkDialogState.copy(
+                            isVisible = false,
+                            text = ""
+                        )
+                    )
+                }
+            }
+
+            DialogActionsWithQuery.OnDismiss -> {
+                _state.update {
+                    it.copy(
+                        bookmarkDialogState = it.bookmarkDialogState.copy(
+                            isVisible = false,
+                            text = ""
+                        )
+                    )
+                }
+            }
+
+            is DialogActionsWithQuery.OnQueryChange -> {
+                _state.update { it.copy(bookmarkDialogState = it.bookmarkDialogState.copy(text = action.query)) }
+            }
+
+
         }
     }
 
     var quranPageItemsDataSource: List<QuranPageItem>
+
     init {
         val surahNumber = savedStateHandle.get<Int?>("surahNumber")
         val pageNumber = savedStateHandle.get<Int?>("pageNumber")
@@ -234,20 +333,20 @@ class QuranPageViewModel(
     private fun bookmarkWithNote(note: String) {
         val index = state.value.currentIndex
         state.value.quranPages.getOrNull(index)?.let { quranPage ->
-                viewModelScope.launch(Dispatchers.Default) {
-                    try {
-                        bookmarkRepository.bookmark(
-                            quranPage.pageNumber,
-                            quranPage.surahName,
-                            note
-                        )
-                        withContext(Dispatchers.Main) {
-                            _state.update { it.copy(isBookmarked = true) }
-                        }
-                    } catch (_: Exception) {
-
+            viewModelScope.launch(Dispatchers.Default) {
+                try {
+                    bookmarkRepository.bookmark(
+                        quranPage.pageNumber,
+                        quranPage.surahName,
+                        note
+                    )
+                    withContext(Dispatchers.Main) {
+                        _state.update { it.copy(isBookmarked = true) }
                     }
+                } catch (_: Exception) {
+
                 }
+            }
         }
 
 
@@ -259,19 +358,18 @@ class QuranPageViewModel(
     }
 
     private fun zoomDone() {
-        _state.update { it.copy(showZoomSheet = null) }
+        _state.update { it.copy(showZoomSheet = false) }
     }
 
 
     private fun setPageScale(thumbPosition: Int) {
         val scale = ProgressMapper.mapToScale(thumbPosition)
         currentScale = scale
-        _state.update { it.copy(pageScale = scale) }
+        _state.update { it.copy(pageScale = scale, pageScaleSliderValue = thumbPosition.toFloat()) }
     }
 
     private fun btnZoomClicked() {
-        val mapToView = ProgressMapper.mapToView(currentScale)
-        _state.update { it.copy(showZoomSheet = mapToView) }
+        _state.update { it.copy(showZoomSheet = true) }
     }
 
 }

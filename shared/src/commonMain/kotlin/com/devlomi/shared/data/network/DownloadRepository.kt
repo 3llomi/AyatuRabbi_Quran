@@ -43,6 +43,7 @@ class DownloadRepository(
         extractAndCopyFiles.execute(width, file!!.path)
         Logger.d { "Files Copied, attemtping to set downlaod finished" }
         settingsRepository.setDownloadFinished(true)
+        _downloadResource.value = DownloadingResource.Success
         return Result.success("Download and extraction successful")
         try {
             val result =

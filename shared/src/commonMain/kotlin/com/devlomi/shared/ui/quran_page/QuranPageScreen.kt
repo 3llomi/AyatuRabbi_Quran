@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -33,6 +34,8 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.ZoomIn
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BottomSheet
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
@@ -40,15 +43,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -57,396 +57,407 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.devlomi.shared.domain.ColorItem
 import com.devlomi.shared.domain.ShareType
 import com.devlomi.shared.domain.WhiteColorFilter
 import com.devlomi.shared.domain.model.QuranPageItem
+import com.devlomi.shared.ui.suras.DialogActions
+import com.devlomi.shared.ui.suras.DialogActionsWithQuery
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.readBytes
-import kotlinx.coroutines.flow.StateFlow
 import org.jetbrains.compose.resources.decodeToImageBitmap
-import org.koin.compose.viewmodel.koinViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuranPageScreen(
-	onOpenSuras: () -> Unit = {},
-	onOpenBookmarks: () -> Unit = {},
-	onOpenSearch: () -> Unit = {},
-	onOpenSettings: () -> Unit = {},
-	onShareText: (String) -> Unit = {},
-	onShareImage: (String) -> Unit = {},
-	viewModel: QuranPageViewModel = koinViewModel()
+    state: QuranPageState,
+    onEvent: (QuranPageEvents) -> Unit
 ) {
-	val state by viewModel.state.collectAsStateWithLifecycleCompat()
 
-	var showOptionsPanel by rememberSaveable { mutableStateOf(false) }
-	var showColorPanel by rememberSaveable { mutableStateOf(false) }
-	var showShareDialog by rememberSaveable { mutableStateOf(false) }
-	var showNoteDialog by rememberSaveable { mutableStateOf(false) }
-	var bookmarkNote by rememberSaveable { mutableStateOf("") }
 
-	val pagerState = rememberPagerState(
-		initialPage = 0,
-		pageCount = { state.quranPages.size }
-	)
+    val pagerState = rememberPagerState(
+        initialPage = 0,
+        pageCount = { state.quranPages.size }
+    )
 
-	LaunchedEffect(state.currentIndex, state.quranPages.size) {
-		if (state.quranPages.isNotEmpty() && state.currentIndex != pagerState.currentPage) {
-			pagerState.scrollToPage(state.currentIndex.coerceIn(0, state.quranPages.lastIndex))
-		}
-	}
+    LaunchedEffect(state.currentIndex, state.quranPages.size) {
+        if (state.quranPages.isNotEmpty() && state.currentIndex != pagerState.currentPage) {
+            pagerState.scrollToPage(state.currentIndex.coerceIn(0, state.quranPages.lastIndex))
+        }
+    }
 
-	LaunchedEffect(pagerState.currentPage) {
-		if (state.quranPages.isNotEmpty() && pagerState.currentPage != state.currentIndex) {
-			viewModel.onEvent(QuranPageEvents.OnPageChanged(pagerState.currentPage))
-		}
-	}
+    LaunchedEffect(pagerState.currentPage) {
+        if (state.quranPages.isNotEmpty() && pagerState.currentPage != state.currentIndex) {
+            onEvent(QuranPageEvents.OnPageChanged(pagerState.currentPage))
+        }
+    }
 
-	LaunchedEffect(state.shareText) {
-		state.shareText?.let {
-			onShareText(it)
-			viewModel.onEvent(QuranPageEvents.OnShareDone)
-		}
-	}
+    val zoomBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-	LaunchedEffect(state.shareImage) {
-		state.shareImage?.let {
-			onShareImage(it)
-			viewModel.onEvent(QuranPageEvents.OnShareDone)
-		}
-	}
+    LaunchedEffect(state.showZoomSheet){
+        if (!state.showZoomSheet) {
+            zoomBottomSheetState.hide()
+        } else if (!zoomBottomSheetState.isVisible) {
+            zoomBottomSheetState.show()
+        }
+    }
 
-	Box(
-		modifier = Modifier
-			.fillMaxSize()
-			.background(state.backgroundColor.asComposeColor())
-	) {
-		if (state.quranPages.isNotEmpty()) {
-			HorizontalPager(
-				state = pagerState,
-				modifier = Modifier.fillMaxSize()
-			) { index ->
-				QuranPage(
-					item = state.quranPages[index],
-					scale = state.pageScale,
-					useWhiteColor = state.useWhiteColor,
-					onTap = { showOptionsPanel = !showOptionsPanel }
-				)
-			}
-		}
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(state.backgroundColor.asComposeColor())
+    ) {
+        if (state.quranPages.isNotEmpty()) {
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+                HorizontalPager(
 
-		AnimatedVisibility(
-			visible = showOptionsPanel,
-			modifier = Modifier.align(Alignment.BottomCenter),
-			enter = slideInVertically(
-				animationSpec = tween(250),
-				initialOffsetY = { it }
-			) + fadeIn(tween(250)),
-			exit = slideOutVertically(
-				animationSpec = tween(250),
-				targetOffsetY = { it }
-			) + fadeOut(tween(250))
-		) {
-			Column(modifier = Modifier.fillMaxWidth()) {
-				AnimatedVisibility(
-					visible = showColorPanel,
-					enter = slideInVertically(
-						animationSpec = tween(250),
-						initialOffsetY = { it }
-					) + fadeIn(tween(250)),
-					exit = slideOutVertically(
-						animationSpec = tween(250),
-						targetOffsetY = { it }
-					) + fadeOut(tween(250))
-				) {
-					ColorPickerPanel(
-						onColorPicked = {
-							viewModel.onEvent(QuranPageEvents.OnColorPicked(it))
-						}
-					)
-				}
+                    state = pagerState,
+                    modifier = Modifier.fillMaxSize()
+                ) { index ->
+                    QuranPage(
+                        item = state.quranPages[index],
+                        scale = state.pageScale,
+                        useWhiteColor = state.useWhiteColor,
+                        onTap = {
+                            onEvent(QuranPageEvents.OnPageClick)
+                        }
+                    )
+                }
+            }
+        }
 
-				OptionsButtonsBar(
-					isBookmarked = state.isBookmarked,
-					isColorPanelVisible = showColorPanel,
-					onColorClick = { showColorPanel = !showColorPanel },
-					onSurasClick = onOpenSuras,
-					onBookmarkClick = {
-						viewModel.onEvent(QuranPageEvents.OnBookmarkClicked)
-					},
-					onBookmarkLongClick = {
-						showNoteDialog = true
-					},
-					onBookmarkedPagesClick = onOpenBookmarks,
-					onSearchClick = onOpenSearch,
-					onShareClick = { showShareDialog = true },
-					onSettingsClick = onOpenSettings,
-					onZoomClick = {
-						viewModel.onEvent(QuranPageEvents.OnZoomClicked)
-					}
-				)
-			}
-		}
-	}
+        AnimatedVisibility(
+            visible = state.showOptionsPanel,
+            modifier = Modifier.align(Alignment.BottomCenter),
+            enter = slideInVertically(
+                animationSpec = tween(250),
+                initialOffsetY = { it }
+            ) + fadeIn(tween(250)),
+            exit = slideOutVertically(
+                animationSpec = tween(250),
+                targetOffsetY = { it }
+            ) + fadeOut(tween(250))
+        ) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                AnimatedVisibility(
+                    visible = state.showColorsPanel,
+                    enter = slideInVertically(
+                        animationSpec = tween(250),
+                        initialOffsetY = { it }
+                    ) + fadeIn(tween(250)),
+                    exit = slideOutVertically(
+                        animationSpec = tween(250),
+                        targetOffsetY = { it }
+                    ) + fadeOut(tween(250))
+                ) {
+                    ColorPickerPanel(
+                        onColorPicked = {
+                            onEvent(QuranPageEvents.OnColorPicked(it))
+                        }
+                    )
+                }
 
-	if (showShareDialog) {
-		AlertDialog(
-			onDismissRequest = { showShareDialog = false },
-			title = { Text("Share") },
-			text = {
-				Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-					Text(
-						text = "Text",
-						modifier = Modifier.clickable {
-							showShareDialog = false
-							viewModel.onEvent(QuranPageEvents.OnShareTypeChosen(ShareType.TEXT))
-						}
-					)
-					Text(
-						text = "Image",
-						modifier = Modifier.clickable {
-							showShareDialog = false
-							viewModel.onEvent(QuranPageEvents.OnShareTypeChosen(ShareType.IMAGE))
-						}
-					)
-				}
-			},
-			confirmButton = {
-				TextButton(onClick = { showShareDialog = false }) { Text("Close") }
-			}
-		)
-	}
+                OptionsButtonsBar(
+                    isBookmarked = state.isBookmarked,
+                    isColorPanelVisible = state.showColorsPanel,
+                    onColorClick = {
+                        onEvent(QuranPageEvents.OnColorClick)
+                    },
+                    onSurasClick = { onEvent(QuranPageEvents.OnSurasClick) },
+                    onBookmarkClick = {
+                        onEvent(QuranPageEvents.OnBookmarkClicked)
+                    },
+                    onBookmarkLongClick = {
+                        onEvent(QuranPageEvents.OnBookmarkLongClick)
+                    },
+                    onBookmarkedPagesClick = { onEvent(QuranPageEvents.OnBookmarksClick) },
+                    onSearchClick = { onEvent(QuranPageEvents.OnSearchClick) },
+                    onShareClick = { onEvent(QuranPageEvents.OnShareClick) },
+                    onSettingsClick = { onEvent(QuranPageEvents.OnSettingsClick) },
+                    onZoomClick = {
+                        onEvent(QuranPageEvents.OnZoomClicked)
+                    }
+                )
+            }
+        }
+    }
 
-	if (showNoteDialog) {
-		AlertDialog(
-			onDismissRequest = { showNoteDialog = false },
-			title = { Text("Add note") },
-			text = {
-				TextField(
-					value = bookmarkNote,
-					onValueChange = { bookmarkNote = it },
-					placeholder = { Text("Note") }
-				)
-			},
-			confirmButton = {
-				TextButton(onClick = {
-					viewModel.onEvent(QuranPageEvents.OnBookmarkWithNote(bookmarkNote))
-					bookmarkNote = ""
-					showNoteDialog = false
-				}) { Text("Save") }
-			},
-			dismissButton = {
-				TextButton(onClick = { showNoteDialog = false }) { Text("Cancel") }
-			}
-		)
-	}
+    if (state.shareTypeDialogState.isVisible) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = { Text("Share") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = "Text",
+                        modifier = Modifier.clickable {
+                            onEvent(
+                                QuranPageEvents.OnShareDialogAction(
+                                    DialogActions.OnConfirm(
+                                        ShareType.TEXT
+                                    )
+                                )
+                            )
+                        }
+                    )
+                    Text(
+                        text = "Image",
+                        modifier = Modifier.clickable {
+                            onEvent(
+                                QuranPageEvents.OnShareDialogAction(
+                                    DialogActions.OnConfirm(
+                                        ShareType.IMAGE
+                                    )
+                                )
+                            )
+                        }
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    onEvent(
+                        QuranPageEvents.OnShareDialogAction(
+                            DialogActions.OnDismiss
+                        )
+                    )
+                }) { Text("Close") }
+            }
+        )
+    }
 
-	state.showZoomSheet?.let { progress ->
-		var sliderValue by remember(progress) { mutableStateOf(progress.toFloat()) }
-		AlertDialog(
-			onDismissRequest = { viewModel.onEvent(QuranPageEvents.OnZoomDone) },
-			title = { Text("Zoom") },
-			text = {
-				Slider(
-					value = sliderValue,
-					onValueChange = {
-						sliderValue = it
-						viewModel.onEvent(QuranPageEvents.OnSetPageScale(it.toInt()))
-					},
-					valueRange = 0f..100f
-				)
-			},
-			confirmButton = {
-				TextButton(onClick = { viewModel.onEvent(QuranPageEvents.OnZoomDone) }) {
-					Text("Done")
-				}
-			}
-		)
-	}
+    if (state.bookmarkDialogState.isVisible) {
+        AlertDialog(
+            onDismissRequest = { },
+            title = { Text("Add note") },
+            text = {
+                TextField(
+                    value = state.bookmarkDialogState.text,
+                    onValueChange = {
+                        onEvent(
+                            QuranPageEvents.OnBookmarkDialogAction(
+                                DialogActionsWithQuery.OnQueryChange(
+                                    it
+                                )
+                            )
+                        )
+                    },
+                    placeholder = { Text("Note") }
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    onEvent(QuranPageEvents.OnBookmarkDialogAction(DialogActionsWithQuery.OnConfirm(null)))
+                }) { Text("Save") }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    onEvent(QuranPageEvents.OnBookmarkDialogAction(DialogActionsWithQuery.OnDismiss))
+                }) { Text("Cancel") }
+            }
+        )
+    }
+
+        //TODO MOVE THIS TO VM STATE?
+        BottomSheet(
+            state = zoomBottomSheetState,
+            onDismissRequest = { onEvent(QuranPageEvents.OnZoomDone) },
+        ) {
+            Slider(
+                value = state.pageScaleSliderValue,
+                onValueChange = {
+                    onEvent(QuranPageEvents.OnPageSliderChange(it.toInt()))
+                },
+                steps = 10,
+                valueRange = 0f..100f
+            )
+
+    }
 }
 
 @Composable
 private fun QuranPage(
-	item: QuranPageItem,
-	scale: Float,
-	useWhiteColor: Boolean,
-	onTap: () -> Unit
+    item: QuranPageItem,
+    scale: Float,
+    useWhiteColor: Boolean,
+    onTap: () -> Unit
 ) {
-	val imageBitmap by rememberFileImageBitmap(item.imageFilePath)
-	val textColor = if (useWhiteColor) Color.White else Color.Black
+    val imageBitmap by rememberFileImageBitmap(item.imageFilePath)
+    val textColor = if (useWhiteColor) Color.White else Color.Black
 
-	Box(
-		modifier = Modifier
-			.fillMaxSize()
-			.clickable(onClick = onTap)
-	) {
-		imageBitmap?.let { bitmap ->
-			Image(
-				bitmap = bitmap,
-				contentDescription = null,
-				modifier = Modifier
-					.fillMaxSize()
-					.scale(scale),
-				colorFilter = if (useWhiteColor) {
-					ColorFilter.colorMatrix(ColorMatrix(WhiteColorFilter.matrix))
-				} else null
-			)
-		}
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .clickable(onClick = onTap)
+    ) {
+        imageBitmap?.let { bitmap ->
+            Image(
+                bitmap = bitmap,
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .scale(scale),
+                colorFilter = if (useWhiteColor) {
+                    ColorFilter.colorMatrix(ColorMatrix(WhiteColorFilter.matrix))
+                } else null
+            )
+        }
 
-		Column(
-			modifier = Modifier
-				.align(Alignment.TopEnd)
-				.padding(16.dp),
-			horizontalAlignment = Alignment.End
-		) {
-			item.juzoaNumberText?.let {
-				Text(
-					text = "الجزء $it",
-					color = textColor,
-					fontWeight = FontWeight.Bold
-				)
-			}
-			Text(
-				text = "سورة ${item.surahName}",
-				color = textColor
-			)
-			Text(
-				text = item.pageNumberLocalized,
-				color = textColor
-			)
-		}
-	}
+        Row (
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "سورة ${item.surahName}",
+                color = textColor
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            item.juzoaNumberText?.let {
+                Text(
+                    text = "الجزء $it",
+                    color = textColor,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+
+        }
+        Text(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            text = item.pageNumberLocalized,
+            color = textColor
+        )
+    }
 }
 
 @Composable
 private fun ColorPickerPanel(
-	onColorPicked: (ColorItem) -> Unit
+    onColorPicked: (ColorItem) -> Unit
 ) {
-	Surface(
-		tonalElevation = 4.dp,
-		shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-		modifier = Modifier.fillMaxWidth()
-	) {
-		Row(
-			modifier = Modifier
-				.fillMaxWidth()
-				.padding(16.dp),
-			horizontalArrangement = Arrangement.SpaceEvenly
-		) {
-			ColorDot(ColorItem.DKBLUE, Color(0xFF0C2942), onColorPicked)
-			ColorDot(ColorItem.DKGRAY, Color(0xFF8F8F8F), onColorPicked)
-			ColorDot(ColorItem.BEIGE, Color(0xFFF5F5DC), onColorPicked)
-			ColorDot(ColorItem.WHITE, Color.White, onColorPicked)
-		}
-	}
+    Surface(
+        tonalElevation = 4.dp,
+        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            ColorDot(ColorItem.DKBLUE, Color(0xFF0C2942), onColorPicked)
+            ColorDot(ColorItem.DKGRAY, Color(0xFF8F8F8F), onColorPicked)
+            ColorDot(ColorItem.BEIGE, Color(0xFFF5F5DC), onColorPicked)
+            ColorDot(ColorItem.WHITE, Color.White, onColorPicked)
+        }
+    }
 }
 
 @Composable
 private fun ColorDot(
-	item: ColorItem,
-	color: Color,
-	onColorPicked: (ColorItem) -> Unit
+    item: ColorItem,
+    color: Color,
+    onColorPicked: (ColorItem) -> Unit
 ) {
-	Box(
-		modifier = Modifier
-			.size(34.dp)
-			.background(color, CircleShape)
-			.clickable { onColorPicked(item) }
-	)
+    Box(
+        modifier = Modifier
+            .size(34.dp)
+            .background(color, CircleShape)
+            .clickable { onColorPicked(item) }
+    )
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun OptionsButtonsBar(
-	isBookmarked: Boolean,
-	isColorPanelVisible: Boolean,
-	onColorClick: () -> Unit,
-	onSurasClick: () -> Unit,
-	onBookmarkClick: () -> Unit,
-	onBookmarkLongClick: () -> Unit,
-	onBookmarkedPagesClick: () -> Unit,
-	onSearchClick: () -> Unit,
-	onShareClick: () -> Unit,
-	onSettingsClick: () -> Unit,
-	onZoomClick: () -> Unit
+    isBookmarked: Boolean,
+    isColorPanelVisible: Boolean,
+    onColorClick: () -> Unit,
+    onSurasClick: () -> Unit,
+    onBookmarkClick: () -> Unit,
+    onBookmarkLongClick: () -> Unit,
+    onBookmarkedPagesClick: () -> Unit,
+    onSearchClick: () -> Unit,
+    onShareClick: () -> Unit,
+    onSettingsClick: () -> Unit,
+    onZoomClick: () -> Unit
 ) {
-	Surface(
-		tonalElevation = 8.dp,
-		modifier = Modifier.fillMaxWidth()
-	) {
-		Row(
-			modifier = Modifier
-				.fillMaxWidth()
-				.padding(horizontal = 8.dp, vertical = 10.dp),
-			horizontalArrangement = Arrangement.SpaceEvenly,
-			verticalAlignment = Alignment.CenterVertically
-		) {
-			ActionIcon(
-				icon = Icons.Default.ColorLens,
-				tint = if (isColorPanelVisible) MaterialTheme.colorScheme.secondary else Color.Unspecified,
-				onClick = onColorClick
-			)
-			ActionIcon(icon = Icons.Default.MenuBook, onClick = onSurasClick)
-			ActionIcon(
-				icon = if (isBookmarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
-				onClick = onBookmarkClick,
-				onLongClick = onBookmarkLongClick
-			)
-			ActionIcon(icon = Icons.Default.Bookmark, onClick = onBookmarkedPagesClick)
-			ActionIcon(icon = Icons.Default.Search, onClick = onSearchClick)
-			ActionIcon(icon = Icons.Default.Share, onClick = onShareClick)
-			ActionIcon(icon = Icons.Default.Settings, onClick = onSettingsClick)
-			ActionIcon(icon = Icons.Default.ZoomIn, onClick = onZoomClick)
-		}
-	}
+    Surface(
+        tonalElevation = 8.dp,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 10.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            ActionIcon(
+                icon = Icons.Default.ColorLens,
+                tint = if (isColorPanelVisible) MaterialTheme.colorScheme.secondary else Color.Unspecified,
+                onClick = onColorClick
+            )
+            ActionIcon(icon = Icons.Default.MenuBook, onClick = onSurasClick)
+            ActionIcon(
+                icon = if (isBookmarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
+                onClick = onBookmarkClick,
+                onLongClick = onBookmarkLongClick
+            )
+            ActionIcon(icon = Icons.Default.Bookmark, onClick = onBookmarkedPagesClick)
+            ActionIcon(icon = Icons.Default.Search, onClick = onSearchClick)
+            ActionIcon(icon = Icons.Default.Share, onClick = onShareClick)
+            ActionIcon(icon = Icons.Default.Settings, onClick = onSettingsClick)
+            ActionIcon(icon = Icons.Default.ZoomIn, onClick = onZoomClick)
+        }
+    }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ActionIcon(
-	icon: ImageVector,
-	onClick: () -> Unit,
-	onLongClick: (() -> Unit)? = null,
-	tint: Color = Color.Unspecified
+    icon: ImageVector,
+    onClick: () -> Unit,
+    onLongClick: (() -> Unit)? = null,
+    tint: Color = Color.Unspecified
 ) {
-	Box(
-		modifier = Modifier
-			.size(40.dp)
-			.combinedClickable(
-				onClick = onClick,
-				onLongClick = onLongClick
-			),
-		contentAlignment = Alignment.Center
-	) {
-		Icon(imageVector = icon, contentDescription = null, tint = tint)
-	}
+    Box(
+        modifier = Modifier
+            .size(40.dp)
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(imageVector = icon, contentDescription = null, tint = tint)
+    }
 }
 
 @Composable
 private fun rememberFileImageBitmap(path: String): androidx.compose.runtime.State<ImageBitmap?> {
-	return produceState<ImageBitmap?>(initialValue = null, key1 = path) {
-		value = try {
-			val bytes = PlatformFile(path).readBytes()
-			bytes.decodeToImageBitmap()
-		} catch (_: Exception) {
-			null
-		}
-	}
-}
-
-@Composable
-private fun StateFlow<QuranPageState>.collectAsStateWithLifecycleCompat(): androidx.compose.runtime.State<QuranPageState> {
-	return this.collectAsState()
+    return produceState<ImageBitmap?>(initialValue = null, key1 = path) {
+        value = try {
+            val bytes = PlatformFile(path).readBytes()
+            bytes.decodeToImageBitmap()
+        } catch (_: Exception) {
+            null
+        }
+    }
 }
 
 private fun String.asComposeColor(): Color {
-	val raw = removePrefix("#")
-	val argb = when (raw.length) {
-		6 -> (0xFF000000 or raw.toLong(16))
-		8 -> raw.toLong(16)
-		else -> 0xFF0C2942
-	}
-	return Color(argb)
+    val raw = removePrefix("#")
+    val argb = when (raw.length) {
+        6 -> (0xFF000000 or raw.toLong(16))
+        8 -> raw.toLong(16)
+        else -> 0xFF0C2942
+    }
+    return Color(argb)
 }
