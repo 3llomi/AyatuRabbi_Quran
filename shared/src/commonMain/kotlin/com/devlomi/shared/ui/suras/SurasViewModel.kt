@@ -7,20 +7,29 @@ import ayaturabbi.shared.generated.resources.surah_names
 import com.devlomi.shared.domain.model.Surah
 import com.devlomi.shared.data.quran_datasource.QuranPageDataSource
 import com.devlomi.shared.common.isDigitsOnly
+import com.devlomi.shared.data.db.ayahinfo.AyahInfoRepository
+import com.devlomi.shared.ui.quran_page.QuranPageNavigationEvent
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getStringArray
 
 class SurasViewModel(
     private val quranPageDataSource: QuranPageDataSource,
+    private val ayahInfoRepository: AyahInfoRepository,
 ) : ViewModel() {
 
     private lateinit var suras: List<Surah>
     private val _state = MutableStateFlow(SurasState())
     val state: StateFlow<SurasState> get() = _state.asStateFlow()
+
+    private val navigationChannel = Channel<SurasNavigationEvent>()
+    val navigationEvent: Flow<SurasNavigationEvent> = navigationChannel.receiveAsFlow()
 
 
     init {
@@ -40,7 +49,18 @@ class SurasViewModel(
     fun onEvent(event: SurasEvents) {
         when (event) {
             is SurasEvents.OnQueryChange -> searchForSura(event.query)
-            is SurasEvents.OnSurahClick -> TODO()
+            is SurasEvents.OnSurahClick -> {
+                viewModelScope.launch {
+                    val foundPageNumber =
+                        ayahInfoRepository.getPageNumberBySurahNumber(event.surah.surahNumber)
+                    navigationChannel.send(
+                        SurasNavigationEvent.ToQuranPageWithPageNumber(
+                            foundPageNumber
+                        )
+                    )
+                }
+            }
+
             is SurasEvents.JuzoaNumberDialogEvents -> {
                 when (event.action) {
                     is DialogActionsWithQuery.OnQueryChange -> {
@@ -88,8 +108,12 @@ class SurasViewModel(
                 }
             }
 
-            SurasEvents.OnGoToJuzoaClick -> TODO()
-            SurasEvents.OnGoToPageClick -> TODO()
+            SurasEvents.OnGoToJuzoaClick -> _state.update {
+                it.copy(juzoaNumberDialogState = it.juzoaNumberDialogState.copy(isVisible = true))
+            }
+            SurasEvents.OnGoToPageClick -> _state.update {
+                it.copy(pageNumberDialogState = it.pageNumberDialogState.copy(isVisible = true))
+            }
             is SurasEvents.PageNumberDialogEvents -> {
                 when (event.action) {
                     is DialogActionsWithQuery.OnQueryChange -> {

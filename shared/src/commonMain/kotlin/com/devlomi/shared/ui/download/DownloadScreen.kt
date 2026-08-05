@@ -9,14 +9,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -42,12 +40,12 @@ fun DownloadScreen(
             confirmButton = {
                 TextButton(onClick = {
                     onEvent(DownloadEvents.StartDownloadAction(DialogActions.OnConfirm<Nothing>()))
-                }) { Text("Download") }
+                }, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)) { Text("Download") }
             },
             dismissButton = {
                 TextButton(onClick = {
                     onEvent(DownloadEvents.StartDownloadAction(DialogActions.OnDismiss))
-                }) { Text("Cancel") }
+                }, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)) { Text("Cancel") }
             }
         )
     }
@@ -60,12 +58,12 @@ fun DownloadScreen(
             confirmButton = {
                 TextButton(onClick = {
                     onEvent(DownloadEvents.CancelDownloadAction(DialogActions.OnConfirm(null)))
-                }) { Text("Yes") }
+                }, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)) { Text("Yes") }
             },
             dismissButton = {
                 TextButton(onClick = {
                     onEvent(DownloadEvents.CancelDownloadAction(DialogActions.OnDismiss))
-                }) { Text("Cancel") }
+                }, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)) { Text("Cancel") }
             }
         )
     }

@@ -14,12 +14,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults.textButtonColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,7 +34,6 @@ import ayaturabbi.shared.generated.resources.ic_bookmark
 import ayaturabbi.shared.generated.resources.ic_clear
 import ayaturabbi.shared.generated.resources.ic_note
 import ayaturabbi.shared.generated.resources.ic_reading_quran
-import com.devlomi.shared.ui.bookmark.BookmarksViewModel
 import com.devlomi.shared.data.db.bookmark.Bookmark
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.vectorResource
@@ -46,12 +45,12 @@ fun BookmarksScreen(
     state: BookmarkState,
     onEvent: (BookmarkEvents) -> Unit
 ) {
-    var pendingDelete by remember { mutableStateOf<com.devlomi.shared.data.db.bookmark.Bookmark?>(null) }
+    var pendingDelete by remember { mutableStateOf<Bookmark?>(null) }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.primary)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             BookmarksTitle(
@@ -87,14 +86,18 @@ fun BookmarksScreen(
                 title = { Text("Delete bookmark?") },
                 text = { Text("Are you sure you want to delete this bookmark?") },
                 dismissButton = {
-                    TextButton(onClick = { pendingDelete = null }) { Text("Cancel") }
+                    TextButton(
+                        onClick = { pendingDelete = null },
+                        colors = textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)
+                    ) { Text("Cancel") }
                 },
                 confirmButton = {
                     TextButton(
                         onClick = {
                             pendingDelete?.let{BookmarkEvents.OnDelete(it)}
                             pendingDelete = null
-                        }
+                        },
+                        colors = textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)
                     ) { Text("Yes") }
                 }
             )
@@ -112,22 +115,22 @@ private fun BookmarksTitle(modifier: Modifier = Modifier) {
     ) {
         Text(
             text = "Saved Bookmarks",
-//            color = BookmarksUiTokens.titleColor,
-//            style = BookmarksUiTokens.titleTextStyle,
+            color = MaterialTheme.colorScheme.onBackground,
+            style = MaterialTheme.typography.titleMedium,
             textAlign = TextAlign.Center
         )
         androidx.compose.foundation.layout.Spacer(Modifier.size(8.dp))
         Icon(
             imageVector = vectorResource(Res.drawable.ic_bookmark),
             contentDescription = null,
-//            tint = BookmarksUiTokens.titleColor
+            tint = MaterialTheme.colorScheme.onBackground
         )
     }
 }
 
 @Composable
 private fun BookmarkItem(
-    bookmark: com.devlomi.shared.data.db.bookmark.Bookmark,
+    bookmark: Bookmark,
     onClick: () -> Unit,
     onDeleteClick: () -> Unit
 ) {
@@ -142,8 +145,7 @@ private fun BookmarkItem(
         TrailingIconTextRow(
             text = bookmark.surahName,
             icon = Res.drawable.ic_reading_quran,
-//            textStyle = BookmarksUiTokens.surahTextStyle,
-//            tint = BookmarksUiTokens.primaryTextColor,
+            tint = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(end = 16.dp)
@@ -153,8 +155,7 @@ private fun BookmarkItem(
         TrailingIconTextRow(
             text = bookmark.pageNumber.toString(),
             icon = Res.drawable.ic_article,
-//            textStyle = BookmarksUiTokens.regularTextStyle,
-//            tint = BookmarksUiTokens.secondaryTextColor,
+            tint = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 8.dp, end = 16.dp)
@@ -164,8 +165,7 @@ private fun BookmarkItem(
         TrailingIconTextRow(
             text = bookmark.note?.takeIf { it.isNotBlank() } ?: "لا يوجد",
             icon = Res.drawable.ic_note,
-//            textStyle = BookmarksUiTokens.regularTextStyle,
-//            tint = BookmarksUiTokens.primaryTextColor,
+            tint = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 8.dp, end = 16.dp)
@@ -174,8 +174,8 @@ private fun BookmarkItem(
         // tv_date: start 16, aligned left near top block
         Text(
             text = bookmark.timestamp.toString(),//TODO GET CREATED AT INSTEAD
-//            color = BookmarksUiTokens.primaryTextColor,
-//            style = BookmarksUiTokens.regularTextStyle,
+            color = MaterialTheme.colorScheme.onBackground,
+            style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.padding(start = 16.dp)
         )
 
@@ -185,18 +185,20 @@ private fun BookmarkItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 32.dp, end = 32.dp, top = 16.dp),
-//            colors = BookmarksUiTokens.deleteButtonColors
+            colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.error,
+                contentColor = MaterialTheme.colorScheme.onError
+            )
         ) {
             Text(
                 text = "Delete",
-//                color = BookmarksUiTokens.deleteButtonTextColor,
-//                style = BookmarksUiTokens.regularTextStyle
+                style = MaterialTheme.typography.bodyMedium
             )
             androidx.compose.foundation.layout.Spacer(Modifier.size(8.dp))
             Icon(
                 imageVector = vectorResource(Res.drawable.ic_clear),
                 contentDescription = null,
-//                tint = BookmarksUiTokens.deleteIconTint
+                tint = MaterialTheme.colorScheme.onError
             )
         }
     }
@@ -206,8 +208,7 @@ private fun BookmarkItem(
 private fun TrailingIconTextRow(
     text: String,
     icon: DrawableResource,
-//    textStyle: androidx.compose.ui.text.TextStyle,
-//    tint: androidx.compose.ui.graphics.Color,
+    tint: androidx.compose.ui.graphics.Color,
     modifier: Modifier = Modifier
 ) {
     androidx.compose.foundation.layout.Row(
@@ -215,14 +216,12 @@ private fun TrailingIconTextRow(
         horizontalArrangement = Arrangement.End,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = text,
-//            color = tint, style = textStyle
-        )
+        Text(text = text, color = tint, style = MaterialTheme.typography.bodyMedium)
         androidx.compose.foundation.layout.Spacer(Modifier.size(8.dp))
         Icon(
             imageVector = vectorResource(icon),
             contentDescription = null,
-//            tint = tint
+            tint = tint
         )
     }
 }

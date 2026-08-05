@@ -18,23 +18,25 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ayaturabbi.shared.generated.resources.Res
 import ayaturabbi.shared.generated.resources.ic_search
-import ayaturabbi.shared.generated.resources.search_for_ayah
-import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 fun SearchCard(
+    enabled: Boolean = true,
     value: String,
+    placeholder: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier,
-        shape = RoundedCornerShape(14.dp),
+        shape = RoundedCornerShape(18.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+
     ) {
         TextField(
+            enabled = enabled,
             value = value,
             onValueChange = onValueChange,
             singleLine = true,
@@ -46,8 +48,8 @@ fun SearchCard(
             ),
             placeholder = {
                 Text(
-                    text = stringResource(Res.string.search_for_ayah),
-                    color = Color(0xFF555555),
+                    text = placeholder,
+                    color = Color(0xFF8F8F8F),
                     fontFamily = FontFamily.Default
                 )
             },
@@ -55,7 +57,7 @@ fun SearchCard(
                 Icon(
                     vectorResource(Res.drawable.ic_search),
                     contentDescription = null,
-                    tint = Color.Unspecified
+                    tint = Color.Black
                 )
             },
             colors = TextFieldDefaults.colors(
@@ -68,8 +70,7 @@ fun SearchCard(
             ),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp) // card padding
-                .padding(horizontal = 8.dp) // xml marginRight feel
+                .padding(4.dp)
         )
     }
 }

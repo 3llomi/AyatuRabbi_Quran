@@ -36,7 +36,7 @@
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:background="@drawable/circle_bg"
-        android:backgroundTint="@color/white"
+        android:backgroundTint="#ffffff"
         app:layout_constraintEnd_toStartOf="@+id/color_dkblue"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="spread"

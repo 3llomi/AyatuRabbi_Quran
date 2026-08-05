@@ -13,8 +13,8 @@
 
 
 
-        <item name="md_color_title">@color/white</item>
-        <item name="md_color_content">@color/white</item>
+        <item name="md_color_title">#ffffff</item>
+        <item name="md_color_content">#ffffff</item>
         <item name="md_color_button_text">@color/colorSecondary</item>
 
     </style>

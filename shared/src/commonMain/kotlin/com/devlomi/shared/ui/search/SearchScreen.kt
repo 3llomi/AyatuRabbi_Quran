@@ -12,21 +12,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -36,14 +30,11 @@ import ayaturabbi.shared.generated.resources.Res
 import ayaturabbi.shared.generated.resources.ic_article
 import ayaturabbi.shared.generated.resources.ic_quran_logo
 import ayaturabbi.shared.generated.resources.ic_reading_quran
-import ayaturabbi.shared.generated.resources.ic_search
 import ayaturabbi.shared.generated.resources.ic_star_ayah
-import ayaturabbi.shared.generated.resources.search_for_ayah
 import com.devlomi.shared.domain.model.SearchResult
 import com.devlomi.shared.ui.components.SearchCard
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun SearchScreen(
@@ -57,6 +48,7 @@ fun SearchScreen(
             // layout_search: margins 32/24/32
             SearchCard(
                 value = state.query,
+                placeholder = "Search For Ayah",
                 onValueChange = { onEvent(SearchEvents.OnSearchQueryChanged(it)) },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -148,13 +140,13 @@ private fun SearchResultItem(
             .padding(start = 8.dp, end = 8.dp, bottom = 16.dp)
     ) {
         val normal = SpanStyle(
-            color = Color.White, // or your default text color
+            color = MaterialTheme.colorScheme.onBackground,
             fontSize = 16.sp,
             fontFamily = FontFamily.Default
         )
         val highlight = SpanStyle(
-            color = Color(0xFFFFD54F), // tune to old highlight color
-            background = Color(0x66FFD54F),
+            color = MaterialTheme.colorScheme.secondary,
+            background = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.45f),
             fontWeight = FontWeight.Bold
         )
 
@@ -202,13 +194,13 @@ private fun MetaWithIcon(
         Text(
             text = text,
             fontSize = 14.sp,
-            color = Color(0xFFB0BEC5), // map to colorOnSecondary
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontFamily = FontFamily.Default // Cairo regular
         )
         Icon(
             painter = painterResource(icon),
             contentDescription = null,
-            tint = Color.White,
+            tint = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.padding(start = 8.dp)
         )
     }

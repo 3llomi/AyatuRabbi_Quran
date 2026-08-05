@@ -3,6 +3,7 @@ package com.devlomi.shared.ui.quran_page
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.touchlab.kermit.Logger
 import com.devlomi.shared.domain.ColorItem
 import com.devlomi.shared.domain.PageColors
 import com.devlomi.shared.domain.ProgressMapper
@@ -46,10 +47,11 @@ class QuranPageViewModel(
 
     private var currentScale = settingsRepository.getScale()
 
-    private val _state = MutableStateFlow<QuranPageState>(
+    private val _state = MutableStateFlow(
         QuranPageState(
             currentIndex = settingsRepository.getCurrentIndex(),
             pageScale = currentScale,
+            pageScaleSliderValue = ProgressMapper.mapToView(currentScale).toFloat(),
             backgroundColor = getBackgroundColorResource(),
             useWhiteColor = useWhiteTextColor()
         )
@@ -71,7 +73,7 @@ class QuranPageViewModel(
             QuranPageEvents.OnSearchClick -> navigateTo(QuranPageNavigationEvent.ToSearch)
             QuranPageEvents.OnSettingsClick -> navigateTo(QuranPageNavigationEvent.ToSettings)
             QuranPageEvents.OnShareClick -> showShareDialog()
-            QuranPageEvents.OnPageClick -> toggleOptionsPanel()
+            QuranPageEvents.OnPageClick -> onPageClick()
             QuranPageEvents.OnColorClick -> toggleColorPanel()
             QuranPageEvents.OnBookmarkLongClick -> showBookmarkDialog()
             is QuranPageEvents.OnShareDialogAction -> handleShareDialogAction(event.action)
@@ -93,7 +95,11 @@ class QuranPageViewModel(
         _state.update { it.copy(bookmarkDialogState = it.bookmarkDialogState.copy(isVisible = true)) }
     }
 
-    private fun toggleOptionsPanel() {
+    private fun onPageClick() {
+        if (state.value.showZoomSheet) {
+            _state.update { it.copy(showZoomSheet = false) }
+            return
+        }
         _state.update { it.copy(showOptionsPanel = !it.showOptionsPanel) }
     }
 
@@ -164,8 +170,10 @@ class QuranPageViewModel(
     var quranPageItemsDataSource: List<QuranPageItem>
 
     init {
-        val surahNumber = savedStateHandle.get<Int?>("surahNumber")
         val pageNumber = savedStateHandle.get<Int?>("pageNumber")
+
+        Logger.d { "Init: pageNumber=$pageNumber" }
+
         quranPageItemsDataSource = quranPageDataSource.getData()
         _state.update {
             it.copy(
@@ -176,10 +184,11 @@ class QuranPageViewModel(
 
 
         when {
-            surahNumber != null -> {
+            pageNumber != null && pageNumber > 0 -> {
+
                 viewModelScope.launch(Dispatchers.Default) {
                     val foundPageNumber =
-                        ayahInfoRepository.getPageNumberBySurahNumber(surahNumber)
+                        ayahInfoRepository.getPageNumberBySurahNumber(pageNumber)
                     withContext(Dispatchers.Main) {
                         _state.update { state ->
                             state.copy(currentIndex = foundPageNumber - 1)
@@ -187,12 +196,6 @@ class QuranPageViewModel(
                         indexChanged()
                     }
                 }
-
-            }
-
-            pageNumber != null -> {
-                _state.update { it.copy(currentIndex = pageNumber - 1) }
-                indexChanged()
 
             }
 
@@ -364,6 +367,7 @@ class QuranPageViewModel(
 
     private fun setPageScale(thumbPosition: Int) {
         val scale = ProgressMapper.mapToScale(thumbPosition)
+        Logger.d { "ThumbPosition $thumbPosition - scale: $scale" }
         currentScale = scale
         _state.update { it.copy(pageScale = scale, pageScaleSliderValue = thumbPosition.toFloat()) }
     }

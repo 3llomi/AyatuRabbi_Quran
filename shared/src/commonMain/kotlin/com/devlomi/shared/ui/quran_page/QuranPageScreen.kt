@@ -9,6 +9,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
@@ -25,16 +27,17 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
+import androidx.compose.material.icons.filled.CollectionsBookmark
 import androidx.compose.material.icons.filled.ColorLens
-import androidx.compose.material.icons.filled.MenuBook
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.ZoomIn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomSheet
+import androidx.compose.material3.ButtonDefaults.textButtonColors
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -61,10 +64,13 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import com.devlomi.shared.domain.ColorItem
 import com.devlomi.shared.domain.ShareType
 import com.devlomi.shared.domain.WhiteColorFilter
 import com.devlomi.shared.domain.model.QuranPageItem
+import com.devlomi.shared.ui.components.SearchCard
 import com.devlomi.shared.ui.suras.DialogActions
 import com.devlomi.shared.ui.suras.DialogActionsWithQuery
 import io.github.vinceglb.filekit.PlatformFile
@@ -78,6 +84,9 @@ fun QuranPageScreen(
     onEvent: (QuranPageEvents) -> Unit
 ) {
 
+    LifecycleEventEffect(Lifecycle.Event.ON_STOP) {
+        onEvent(QuranPageEvents.OnStop)
+    }
 
     val pagerState = rememberPagerState(
         initialPage = 0,
@@ -98,7 +107,7 @@ fun QuranPageScreen(
 
     val zoomBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    LaunchedEffect(state.showZoomSheet){
+    LaunchedEffect(state.showZoomSheet) {
         if (!state.showZoomSheet) {
             zoomBottomSheetState.hide()
         } else if (!zoomBottomSheetState.isVisible) {
@@ -189,11 +198,12 @@ fun QuranPageScreen(
     if (state.shareTypeDialogState.isVisible) {
         AlertDialog(
             onDismissRequest = {},
-            title = { Text("Share") },
+            title = { Text("Share", color = MaterialTheme.colorScheme.onSurface) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(
                         text = "Text",
+                        color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.clickable {
                             onEvent(
                                 QuranPageEvents.OnShareDialogAction(
@@ -206,6 +216,7 @@ fun QuranPageScreen(
                     )
                     Text(
                         text = "Image",
+                        color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.clickable {
                             onEvent(
                                 QuranPageEvents.OnShareDialogAction(
@@ -225,7 +236,7 @@ fun QuranPageScreen(
                             DialogActions.OnDismiss
                         )
                     )
-                }) { Text("Close") }
+                }, colors = textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)) { Text("Close") }
             }
         )
     }
@@ -233,7 +244,7 @@ fun QuranPageScreen(
     if (state.bookmarkDialogState.isVisible) {
         AlertDialog(
             onDismissRequest = { },
-            title = { Text("Add note") },
+            title = { Text("Add note", color = MaterialTheme.colorScheme.onSurface) },
             text = {
                 TextField(
                     value = state.bookmarkDialogState.text,
@@ -246,36 +257,57 @@ fun QuranPageScreen(
                             )
                         )
                     },
-                    placeholder = { Text("Note") }
+                    placeholder = { Text("Note", color = MaterialTheme.colorScheme.onSurfaceVariant) }
                 )
             },
             confirmButton = {
                 TextButton(onClick = {
-                    onEvent(QuranPageEvents.OnBookmarkDialogAction(DialogActionsWithQuery.OnConfirm(null)))
-                }) { Text("Save") }
+                    onEvent(
+                        QuranPageEvents.OnBookmarkDialogAction(
+                            DialogActionsWithQuery.OnConfirm(
+                                null
+                            )
+                        )
+                    )
+                }, colors = textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)) { Text("Save") }
             },
             dismissButton = {
                 TextButton(onClick = {
                     onEvent(QuranPageEvents.OnBookmarkDialogAction(DialogActionsWithQuery.OnDismiss))
-                }) { Text("Cancel") }
+                }, colors = textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)) { Text("Cancel") }
             }
         )
     }
 
-        //TODO MOVE THIS TO VM STATE?
-        BottomSheet(
-            state = zoomBottomSheetState,
-            onDismissRequest = { onEvent(QuranPageEvents.OnZoomDone) },
-        ) {
+    //TODO MOVE THIS TO VM STATE?
+    BottomSheet(
+        state = zoomBottomSheetState,
+        onDismissRequest = { onEvent(QuranPageEvents.OnZoomDone) },
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Slider(
                 value = state.pageScaleSliderValue,
                 onValueChange = {
                     onEvent(QuranPageEvents.OnPageSliderChange(it.toInt()))
                 },
-                steps = 10,
-                valueRange = 0f..100f
+                steps = 8,
+                valueRange = 1f..10f
             )
-
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                repeat(10) { index ->
+                    Text(
+                        text = ((index + 1) * 10).toString(),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -287,7 +319,11 @@ private fun QuranPage(
     onTap: () -> Unit
 ) {
     val imageBitmap by rememberFileImageBitmap(item.imageFilePath)
-    val textColor = if (useWhiteColor) Color.White else Color.Black
+    val textColor = if (useWhiteColor) {
+        MaterialTheme.colorScheme.onBackground
+    } else {
+        MaterialTheme.colorScheme.scrim
+    }
 
     Box(
         modifier = Modifier
@@ -307,7 +343,7 @@ private fun QuranPage(
             )
         }
 
-        Row (
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(4.dp),
@@ -315,23 +351,24 @@ private fun QuranPage(
         ) {
             Text(
                 text = "سورة ${item.surahName}",
-                color = textColor
+                color = textColor,
+                style = MaterialTheme.typography.bodyLarge
             )
             Spacer(modifier = Modifier.weight(1f))
             item.juzoaNumberText?.let {
                 Text(
                     text = "الجزء $it",
                     color = textColor,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
-
-
         }
         Text(
             modifier = Modifier.align(Alignment.BottomCenter),
             text = item.pageNumberLocalized,
-            color = textColor
+            color = textColor,
+            style = MaterialTheme.typography.bodySmall
         )
     }
 }
@@ -367,8 +404,9 @@ private fun ColorDot(
 ) {
     Box(
         modifier = Modifier
-            .size(34.dp)
+            .size(50.dp)
             .background(color, CircleShape)
+            .border(2.dp, MaterialTheme.colorScheme.outline, CircleShape)
             .clickable { onColorPicked(item) }
     )
 }
@@ -392,31 +430,63 @@ private fun OptionsButtonsBar(
         tonalElevation = 8.dp,
         modifier = Modifier.fillMaxWidth()
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 10.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            ActionIcon(
-                icon = Icons.Default.ColorLens,
-                tint = if (isColorPanelVisible) MaterialTheme.colorScheme.secondary else Color.Unspecified,
-                onClick = onColorClick
-            )
-            ActionIcon(icon = Icons.Default.MenuBook, onClick = onSurasClick)
-            ActionIcon(
-                icon = if (isBookmarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
-                onClick = onBookmarkClick,
-                onLongClick = onBookmarkLongClick
-            )
-            ActionIcon(icon = Icons.Default.Bookmark, onClick = onBookmarkedPagesClick)
-            ActionIcon(icon = Icons.Default.Search, onClick = onSearchClick)
-            ActionIcon(icon = Icons.Default.Share, onClick = onShareClick)
-            ActionIcon(icon = Icons.Default.Settings, onClick = onSettingsClick)
-            ActionIcon(icon = Icons.Default.ZoomIn, onClick = onZoomClick)
+        Column {
+            Spacer(modifier = Modifier.height(16.dp))
+            SearchCard(
+                enabled = true,
+                "",
+                "Search",
+                {},
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp).clickable {
+                    onSearchClick()
+                })
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 10.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                ActionIcon(
+                    icon = Icons.AutoMirrored.Filled.MenuBook,
+                    onClick = onSurasClick,
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+                ActionIcon(
+                    icon = Icons.Default.ZoomIn,
+                    onClick = onZoomClick,
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+                ActionIcon(
+                    icon = if (isBookmarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
+                    onClick = onBookmarkClick,
+                    onLongClick = onBookmarkLongClick,
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+                ActionIcon(
+                    icon = Icons.Default.ColorLens,
+                    tint = if (isColorPanelVisible) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface,
+                    onClick = onColorClick
+                )
+                ActionIcon(
+                    icon = Icons.Default.CollectionsBookmark,
+                    onClick = onBookmarkedPagesClick,
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+                ActionIcon(
+                    icon = Icons.Default.Share,
+                    onClick = onShareClick,
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+                ActionIcon(
+                    icon = Icons.Default.Settings,
+                    onClick = onSettingsClick,
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+            }
         }
     }
+
 }
 
 @OptIn(ExperimentalFoundationApi::class)

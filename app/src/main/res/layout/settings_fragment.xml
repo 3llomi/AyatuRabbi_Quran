@@ -54,7 +54,7 @@
             android:background="#e1e1e1" />
 
         <TextView
-            android:drawableTint="@color/white"
+            android:drawableTint="#ffffff"
             android:id="@+id/tv_share_app"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

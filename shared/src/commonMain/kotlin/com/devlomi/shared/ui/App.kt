@@ -5,13 +5,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import co.touchlab.kermit.Logger
-import com.devlomi.shared.data.settings.SettingsRepository
+import com.devlomi.shared.ui.main.MainViewModel
 import com.devlomi.shared.ui.bookmark.BookmarksScreen
 import com.devlomi.shared.ui.bookmark.BookmarksViewModel
 import com.devlomi.shared.ui.components.ObserveAsEvent
@@ -25,23 +29,46 @@ import com.devlomi.shared.ui.search.SearchScreen
 import com.devlomi.shared.ui.search.SearchViewModel
 import com.devlomi.shared.ui.settings.SettingsScreen
 import com.devlomi.shared.ui.settings.SettingsViewModel
+import com.devlomi.shared.ui.suras.SurasNavigationEvent
 import com.devlomi.shared.ui.suras.SurasScreen
 import com.devlomi.shared.ui.suras.SurasViewModel
-import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun App() {
+fun App(hideSystemUi: (Boolean) -> Unit) {
+    val sharedViewModel = koinViewModel<MainViewModel>()
+    val sharedState = sharedViewModel.state.collectAsStateWithLifecycle().value
     val navController = rememberNavController()
-    val settingsRepository = koinInject<SettingsRepository>()
     val initialScreen =
-        if (settingsRepository.hasDownloadedFiles()) Screen.QuranPage.route else Screen.Download.route
+        if (sharedState.hasDownloadedFiles) Screen.QuranPage.createRoute(-1) else Screen.Download.route
     Logger.d { "Initial Screen $initialScreen" }
     AppTheme {
         Box(
             modifier = Modifier.background(MaterialTheme.colorScheme.background)
                 .safeDrawingPadding()
         ) {
+            SetWindowFlag(sharedState.keepScreenOn)
+            //hide system bars if the user presses the recent button or minimized the app
+            ObserveWindowFocusChange {
+                val currentRoute = navController.currentDestination?.route
+                if (currentRoute?.startsWith(Screen.QuranPage.route) != true){
+                    return@ObserveWindowFocusChange
+                }
+                hideSystemUi(it)
+            }
+
+
+            DisposableEffect(navController) {
+                val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
+                    val route = destination.route
+                    hideSystemUi(route?.startsWith(Screen.QuranPage.route) == true)
+                }
+                navController.addOnDestinationChangedListener(listener)
+
+                onDispose {
+                    navController.removeOnDestinationChangedListener(listener)
+                }
+            }
             NavHost(
                 navController = navController,
                 startDestination = initialScreen,
@@ -52,7 +79,7 @@ fun App() {
                     ObserveAsEvent(viewModel.navigationEvent) {
                         when (it) {
                             DownloadNavigationEvent.ToQuranPage -> {
-                                navController.navigate(Screen.QuranPage.route) {
+                                navController.navigate(Screen.QuranPage.createRoute(-1)) {
                                     popUpTo(Screen.Download.route) {
                                         inclusive = true
                                     }
@@ -62,7 +89,16 @@ fun App() {
                     }
                     DownloadScreen(state, onEvent = viewModel::onEvent)
                 }
-                composable(Screen.QuranPage.route) {
+                composable(
+                    Screen.QuranPage.routeWithArgs,
+                    arguments = listOf(
+                        navArgument(Screen.QuranPage.PAGE_NUMBER_ARG) {
+                            type = NavType.IntType
+                            defaultValue = -1
+                        }
+                    ),
+
+                ) {
                     val viewModel = koinViewModel<QuranPageViewModel>()
                     val state = viewModel.state.collectAsStateWithLifecycle().value
                     ObserveAsEvent(viewModel.navigationEvent) {
@@ -92,6 +128,19 @@ fun App() {
                 composable(Screen.Suras.route) {
                     val viewModel = koinViewModel<SurasViewModel>()
                     val state = viewModel.state.collectAsStateWithLifecycle().value
+                    ObserveAsEvent(viewModel.navigationEvent){
+                        when (it) {
+                            is SurasNavigationEvent.ToQuranPageWithPageNumber -> {
+                                Logger.d { "ToQuranPage with number ${it.pageNumber}" }
+
+                                navController.navigate(Screen.QuranPage.createRoute(it.pageNumber)){
+                                    popUpTo(Screen.Suras.route) {
+                                        inclusive = true
+                                    }
+                                }
+                            }
+                        }
+                    }
                     SurasScreen(state, onEvent = viewModel::onEvent)
                 }
                 composable(Screen.Search.route) {

@@ -2,7 +2,7 @@ package com.devlomi.shared.di
 
 import com.devlomi.shared.ui.bookmark.BookmarksViewModel
 import com.devlomi.shared.ui.download.DownloadViewModel
-import com.devlomi.shared.MainViewModel
+import com.devlomi.shared.ui.main.MainViewModel
 import com.devlomi.shared.ui.quran_page.QuranPageViewModel
 import com.devlomi.shared.ui.search.SearchViewModel
 import com.devlomi.shared.ui.settings.SettingsViewModel
@@ -20,7 +20,7 @@ fun viewModelModule() = module {
     }
 
     viewModel<MainViewModel> {
-        MainViewModel(get(), get())
+        MainViewModel(get())
     }
 
     viewModel<QuranPageViewModel> {
@@ -35,7 +35,7 @@ fun viewModelModule() = module {
         SettingsViewModel(get())
     }
     viewModel<SurasViewModel> {
-        SurasViewModel(get())
+        SurasViewModel(get(),get())
     }
 
 }

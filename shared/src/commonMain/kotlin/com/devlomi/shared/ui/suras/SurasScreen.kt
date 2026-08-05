@@ -18,6 +18,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -25,7 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -52,12 +52,13 @@ fun SurasScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(SurasUiTokens.colorPrimaryVariant)
+            .background(MaterialTheme.colorScheme.primaryContainer)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
 
             // layout_search margins 32/24/32
             SearchCard(
+                placeholder = "Search For Ayah",
                 value = state.query,
                 onValueChange = { onEvent(SurasEvents.OnQueryChange(it)) },
                 modifier = Modifier
@@ -77,14 +78,14 @@ fun SurasScreen(
                         onEvent(SurasEvents.OnGoToPageClick)
                     },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = SurasUiTokens.colorSecondary,
-                        contentColor = SurasUiTokens.colorOnSecondary
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.onSecondary
                     )
                 ) {
                     Icon(
                         painter = painterResource(Res.drawable.ic_article),
                         contentDescription = null,
-                        tint = SurasUiTokens.colorOnSecondary
+                        tint = MaterialTheme.colorScheme.onSecondary
                     )
                     Spacer(Modifier.size(8.dp))
                     Text(stringResource(Res.string.go_to_page))
@@ -97,14 +98,14 @@ fun SurasScreen(
                         onEvent(SurasEvents.OnGoToJuzoaClick)
                     },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = SurasUiTokens.colorSecondary,
-                        contentColor = SurasUiTokens.colorOnSecondary
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.onSecondary
                     )
                 ) {
                     Icon(
                         painter = painterResource(Res.drawable.ic_star_ayah),
                         contentDescription = null,
-                        tint = SurasUiTokens.colorOnSecondary
+                        tint = MaterialTheme.colorScheme.onSecondary
                     )
                     Spacer(Modifier.size(8.dp))
                     Text(stringResource(Res.string.go_to_juzoa))
@@ -121,7 +122,7 @@ fun SurasScreen(
                     SurahItem(
                         surah = surah,
                         onClick = {
-//                            onOpenSurah(surah.surahNumber)//TODO
+                            onEvent(SurasEvents.OnSurahClick(surah))
                         }
                     )
                 }
@@ -190,7 +191,7 @@ private fun SurahItem(
             text = surah.surahName,
             fontSize = 18.sp,
             fontFamily = FontFamily.Default, // swap Cairo regular
-            color = SurasUiTokens.primaryText,
+            color = MaterialTheme.colorScheme.onSecondary,
             modifier = Modifier.padding(end = 16.dp)
         )
 
@@ -199,11 +200,11 @@ private fun SurahItem(
                 modifier = Modifier
                     .size(35.dp)
                     .clip(CircleShape)
-                    .background(SurasUiTokens.colorSecondaryVariant)
+                    .background(MaterialTheme.colorScheme.secondary)
             )
             Text(
                 text = surah.surahNumber.toString(),//TODO surahNumberArabic
-                color = SurasUiTokens.primaryText
+                color = MaterialTheme.colorScheme.onSecondary
             )
         }
     }
@@ -237,7 +238,7 @@ private fun NumberInputDialog(
                 if (showError) {
                     Text(
                         text = errorText,
-                        color = Color.Red,
+                        color = MaterialTheme.colorScheme.onSecondary,
                         modifier = Modifier.padding(top = 8.dp)
                     )
                 }
@@ -247,20 +248,15 @@ private fun NumberInputDialog(
             TextButton(
                 onClick = {
                     onConfirm()
-                }
+                },
+                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)
             ) { Text("Go") }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
+            TextButton(
+                onClick = onDismiss,
+                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)
+            ) { Text("Cancel") }
         }
     )
-}
-
-object SurasUiTokens {
-    // swap with exact app colors/fonts for 1:1
-    val colorPrimaryVariant = Color(0xFF1B1B1B)
-    val colorSecondary = Color(0xFF2E7D32)
-    val colorOnSecondary = Color.White
-    val colorSecondaryVariant = Color(0xFF4CAF50)
-    val primaryText = Color.White
 }

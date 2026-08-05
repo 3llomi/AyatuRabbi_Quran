@@ -19,7 +19,7 @@ import com.devlomi.ayaturabbi.R
 import com.devlomi.ayaturabbi.databinding.MainActivityBinding
 import com.devlomi.ayaturabbi.extensions.deviceWidthPixels
 import com.devlomi.ayaturabbi.util.isApi33OrAbove
-import com.devlomi.shared.MainViewModel
+import com.devlomi.shared.ui.main.MainViewModel
 import com.devlomi.shared.ui.App
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -30,27 +30,11 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class MainActivity : AppCompatActivity() {
 
 
-    private val viewModel: MainViewModel by viewModel()
-
     private lateinit var uiHelper: SystemUiHelper
 
-    private var currentDestination = -1
-
-    private lateinit var binding: MainActivityBinding
-
-    override fun onWindowFocusChanged(hasFocus: Boolean) {
-        super.onWindowFocusChanged(hasFocus)
-        //hide system bars if the user presses the recent button or minimized the aoo
-        if (currentDestination == R.id.quranPage) {
-            uiHelper.hide()
-
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        binding = MainActivityBinding.inflate(layoutInflater)
-//        setContentView(binding.root)
 
         uiHelper = SystemUiHelper(
             this,
@@ -58,17 +42,17 @@ class MainActivity : AppCompatActivity() {
             SystemUiHelper.FLAG_IMMERSIVE_STICKY
         )
 
-//        subscribeObservers()
-//
-//        viewModel.loadKeepScreenOn()
-//        viewModel.saveDeviceWidth(deviceWidthPixels())
 
-        requestNotificationsPermissions()
-
-        setContent{
-            App()
+        setContent {
+            App { hideSystemUi ->
+                if (hideSystemUi) {
+                    uiHelper.hide()
+                } else {
+                    uiHelper.show()
+                }
+            }
         }
-
+        requestNotificationsPermissions()
 
     }
 
@@ -85,51 +69,5 @@ class MainActivity : AppCompatActivity() {
             )
         }
     }
-
-
-    private fun setupNavController(
-        navHostFragment: NavHostFragment,
-        navController: NavController
-    ) {
-        val graphInflater = navHostFragment.navController.navInflater
-        val navGraph = graphInflater.inflate(R.navigation.nav_graph)
-
-        val destination = if (viewModel.hasDownloadedFiles()) {
-            R.id.quranPage
-        } else {
-            R.id.downloadFragment
-        }
-
-//        navGraph.startDestination = destination
-        navController.graph = navGraph
-    }
-
-    private fun subscribeObservers() {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED){
-                launch {
-                    viewModel.keepScreenOn.collectLatest{ keepScreenOn ->
-                        setScreenOnFlags(keepScreenOn)
-                    }
-                }
-
-                launch {
-                    viewModel.hideUI.collectLatest {
-                        uiHelper.hide()
-                    }
-                }
-            }
-        }
-
-
-    }
-
-    private fun setScreenOnFlags(keepScreenOn: Boolean) {
-        if (keepScreenOn)
-            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        else
-            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-    }
-
 
 }
