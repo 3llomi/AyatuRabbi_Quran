@@ -13,6 +13,7 @@ import ayaturabbi.shared.generated.resources.Res
 import ayaturabbi.shared.generated.resources.cairo_black
 import ayaturabbi.shared.generated.resources.cairo_bold
 import ayaturabbi.shared.generated.resources.cairo_regular
+import ayaturabbi.shared.generated.resources.naskh
 import org.jetbrains.compose.resources.Font
 
 // Color definitions from colors.xml
@@ -64,6 +65,10 @@ private val appColorScheme = darkColorScheme(
     inversePrimary = colorSecondary
 )
 
+@Composable
+fun cairoFont(): FontFamily {
+    return FontFamily(Font(resource = Res.font.cairo_regular, weight = FontWeight.Normal))
+}
 @Composable
 fun AppTheme(content: @Composable () -> Unit) {
      val cairoBold = FontFamily(Font(resource = Res.font.cairo_bold, weight = FontWeight.Bold))

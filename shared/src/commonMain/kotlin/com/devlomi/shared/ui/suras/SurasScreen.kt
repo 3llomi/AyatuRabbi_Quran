@@ -26,7 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ayaturabbi.shared.generated.resources.Res
@@ -38,6 +37,9 @@ import ayaturabbi.shared.generated.resources.invalid_juzoa
 import ayaturabbi.shared.generated.resources.invalid_page
 import ayaturabbi.shared.generated.resources.juzoa_number
 import ayaturabbi.shared.generated.resources.page_number
+import ayaturabbi.shared.generated.resources.search_for_ayah
+import ayaturabbi.shared.generated.resources.go
+import ayaturabbi.shared.generated.resources.cancel
 import com.devlomi.shared.domain.model.Surah
 import com.devlomi.shared.ui.components.SearchCard
 import org.jetbrains.compose.resources.painterResource
@@ -58,7 +60,7 @@ fun SurasScreen(
 
             // layout_search margins 32/24/32
             SearchCard(
-                placeholder = "Search For Ayah",
+                placeholder = stringResource(Res.string.search_for_ayah),
                 value = state.query,
                 onValueChange = { onEvent(SurasEvents.OnQueryChange(it)) },
                 modifier = Modifier
@@ -120,6 +122,7 @@ fun SurasScreen(
             ) {
                 items(state.suras, key = { it.surahNumber }) { surah ->
                     SurahItem(
+                        modifier = Modifier.animateItem(),
                         surah = surah,
                         onClick = {
                             onEvent(SurasEvents.OnSurahClick(surah))
@@ -175,12 +178,13 @@ fun SurasScreen(
 
 @Composable
 private fun SurahItem(
+    modifier: Modifier = Modifier,
     surah: Surah,
     onClick: () -> Unit
 ) {
     // item_surah.xml clone
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick) // selectable bg equivalent via ripple from theme
             .padding(16.dp),
@@ -190,7 +194,7 @@ private fun SurahItem(
         Text(
             text = surah.surahName,
             fontSize = 18.sp,
-            fontFamily = FontFamily.Default, // swap Cairo regular
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSecondary,
             modifier = Modifier.padding(end = 16.dp)
         )
@@ -250,13 +254,13 @@ private fun NumberInputDialog(
                     onConfirm()
                 },
                 colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)
-            ) { Text("Go") }
+            ) { Text(stringResource(Res.string.go)) }
         },
         dismissButton = {
             TextButton(
                 onClick = onDismiss,
                 colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)
-            ) { Text("Cancel") }
+            ) { Text(stringResource(Res.string.cancel)) }
         }
     )
 }

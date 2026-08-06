@@ -21,9 +21,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ayaturabbi.shared.generated.resources.Res
 import ayaturabbi.shared.generated.resources.app_icon
+import ayaturabbi.shared.generated.resources.cancel
+import ayaturabbi.shared.generated.resources.download
+import ayaturabbi.shared.generated.resources.download_failed
+import ayaturabbi.shared.generated.resources.download_required_files_title
+import ayaturabbi.shared.generated.resources.downloading_files
+import ayaturabbi.shared.generated.resources.yes
 import com.devlomi.shared.data.network.DownloadingResource
 import com.devlomi.shared.ui.suras.DialogActions
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun DownloadScreen(
@@ -35,17 +42,17 @@ fun DownloadScreen(
     if (state.showConfirmDownloadDialog) {
         AlertDialog(
             onDismissRequest = { },
-            title = { Text("Download required files") },
+            title = { Text(stringResource(Res.string.download_required_files_title)) },
             text = { Text("Required Quran files must be downloaded before continuing.") },
             confirmButton = {
                 TextButton(onClick = {
                     onEvent(DownloadEvents.StartDownloadAction(DialogActions.OnConfirm<Nothing>()))
-                }, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)) { Text("Download") }
+                }, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)) { Text(stringResource(Res.string.download)) }
             },
             dismissButton = {
                 TextButton(onClick = {
                     onEvent(DownloadEvents.StartDownloadAction(DialogActions.OnDismiss))
-                }, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)) { Text("Cancel") }
+                }, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)) { Text(stringResource(Res.string.cancel)) }
             }
         )
     }
@@ -53,17 +60,17 @@ fun DownloadScreen(
     if (state.showConfirmCancelDownloadDialog) {
         AlertDialog(
             onDismissRequest = { },
-            title = { Text("Cancel") },
+            title = { Text(stringResource(Res.string.cancel)) },
             text = { Text("Are you sure you want to cancel") },
             confirmButton = {
                 TextButton(onClick = {
                     onEvent(DownloadEvents.CancelDownloadAction(DialogActions.OnConfirm(null)))
-                }, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)) { Text("Yes") }
+                }, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)) { Text(stringResource(Res.string.yes)) }
             },
             dismissButton = {
                 TextButton(onClick = {
                     onEvent(DownloadEvents.CancelDownloadAction(DialogActions.OnDismiss))
-                }, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)) { Text("Cancel") }
+                }, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)) { Text(stringResource(Res.string.cancel)) }
             }
         )
     }
@@ -84,7 +91,7 @@ fun DownloadScreen(
         when (state.downlaodState) {
             is DownloadingResource.Loading -> {
                 Text(
-                    text = "downloadingText",
+                    text = stringResource(Res.string.downloading_files),
                     modifier = Modifier.padding(bottom = 12.dp)
                 )
 
@@ -101,13 +108,13 @@ fun DownloadScreen(
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Cancel")
+                    Text(stringResource(Res.string.cancel))
                 }
 
             }
 
             is DownloadingResource.Error -> {
-                Text("Download Error")
+                Text(stringResource(Res.string.download_failed))
                 //retry button
                 Button(
                     onClick = {

@@ -2,7 +2,6 @@ package com.devlomi.shared.ui.search
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,7 +15,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
@@ -31,57 +29,58 @@ import ayaturabbi.shared.generated.resources.ic_article
 import ayaturabbi.shared.generated.resources.ic_quran_logo
 import ayaturabbi.shared.generated.resources.ic_reading_quran
 import ayaturabbi.shared.generated.resources.ic_star_ayah
+import ayaturabbi.shared.generated.resources.search_for_ayah
 import com.devlomi.shared.domain.model.SearchResult
 import com.devlomi.shared.ui.components.SearchCard
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun SearchScreen(
     state: SearchState,
     onEvent: (SearchEvents) -> Unit,
 ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            Column(modifier = Modifier.fillMaxSize()) {
+                // layout_search: margins 32/24/32
+                SearchCard(
+                    value = state.query,
+                    placeholder = stringResource(Res.string.search_for_ayah),
+                    onValueChange = { onEvent(SearchEvents.OnSearchQueryChanged(it)) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 32.dp, top = 24.dp, end = 32.dp)
+                )
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(modifier = Modifier.fillMaxSize()) {
-
-            // layout_search: margins 32/24/32
-            SearchCard(
-                value = state.query,
-                placeholder = "Search For Ayah",
-                onValueChange = { onEvent(SearchEvents.OnSearchQueryChanged(it)) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 32.dp, top = 24.dp, end = 32.dp)
-            )
-
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 16.dp)
-            ) {
-                items(
-                    items = state.searchResults,
-                    key = { item -> "${item.pageNumber}_${item.ayahNumber}_${item.surahName}" }
-                ) { result ->
-                    SearchResultItem(
-                        item = result,
-                        onClick = {
-                            onEvent(SearchEvents.OnSearchResultClicked(result))
-                        }
-                    )
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 16.dp)
+                ) {
+                    items(
+                        items = state.searchResults,
+                        key = { item -> "${item.pageNumber}_${item.ayahNumber}_${item.surahName}" }
+                    ) { result ->
+                        SearchResultItem(
+                            modifier = Modifier.animateItem(),
+                            item = result,
+                            onClick = {
+                                onEvent(SearchEvents.OnSearchResultClicked(result))
+                            }
+                        )
+                    }
                 }
             }
-        }
 
-        // img_quran centered, visible when empty
-        if (state.searchResults.isEmpty()) {
-            Image(
-                painter = painterResource(Res.drawable.ic_quran_logo),
-                contentDescription = null,
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
+            // img_quran centered, visible when empty
+            if (state.searchResults.isEmpty()) {
+                Image(
+                    painter = painterResource(Res.drawable.ic_quran_logo),
+                    contentDescription = null,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
     }
 }
 
@@ -126,15 +125,14 @@ private fun highlightMatches(
 }
 @Composable
 private fun SearchResultItem(
+    modifier: Modifier = Modifier,
     item: SearchResult,
     onClick: () -> Unit
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null, // replace with ripple if you want selectableItemBackground behavior
                 onClick = onClick
             )
             .padding(start = 8.dp, end = 8.dp, bottom = 16.dp)
@@ -157,6 +155,8 @@ private fun SearchResultItem(
                 normalStyle = normal,
                 highlightStyle = highlight
             ),
+            textAlign = androidx.compose.ui.text.style.TextAlign.Right,
+            style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 8.dp, bottom = 8.dp)
@@ -165,8 +165,9 @@ private fun SearchResultItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
+                .padding(top = 8.dp)
+                .align(Alignment.CenterHorizontally),
+            horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
             MetaWithIcon(

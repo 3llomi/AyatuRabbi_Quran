@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ayaturabbi.shared.generated.resources.Res
 import ayaturabbi.shared.generated.resources.surah_names
+import co.touchlab.kermit.Logger
 import com.devlomi.shared.domain.model.Surah
 import com.devlomi.shared.data.quran_datasource.QuranPageDataSource
 import com.devlomi.shared.common.isDigitsOnly
@@ -95,6 +96,13 @@ class SurasViewModel(
                                     )
                                 )
                             }
+                            viewModelScope.launch {
+                                navigationChannel.send(
+                                    SurasNavigationEvent.ToQuranPageWithPageNumber(
+                                        pageNumber
+                                    )
+                                )
+                            }
                         } else {
                             _state.update {
                                 it.copy(
@@ -111,9 +119,11 @@ class SurasViewModel(
             SurasEvents.OnGoToJuzoaClick -> _state.update {
                 it.copy(juzoaNumberDialogState = it.juzoaNumberDialogState.copy(isVisible = true))
             }
+
             SurasEvents.OnGoToPageClick -> _state.update {
                 it.copy(pageNumberDialogState = it.pageNumberDialogState.copy(isVisible = true))
             }
+
             is SurasEvents.PageNumberDialogEvents -> {
                 when (event.action) {
                     is DialogActionsWithQuery.OnQueryChange -> {
@@ -145,6 +155,15 @@ class SurasViewModel(
                                     )
                                 )
                             }
+                            viewModelScope.launch {
+                                navigationChannel.send(
+                                    SurasNavigationEvent.ToQuranPageWithPageNumber(
+                                        state.value.pageNumberDialogState.text.toInt().also {
+                                            Logger.d{"Navigating to page number: $it - text ${state.value.pageNumberDialogState.text}"}
+                                        }
+                                    )
+                                )
+                            }
                         } else {
                             _state.update {
                                 it.copy(
@@ -161,6 +180,7 @@ class SurasViewModel(
     }
 
     private fun searchForSura(query: String) {
+        _state.update { it.copy(query = query) }
         if (query.trim().isEmpty()) {
             _state.update { it.copy(suras = suras) }
         } else {

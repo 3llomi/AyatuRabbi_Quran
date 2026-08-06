@@ -1,30 +1,21 @@
 package com.devlomi.ayaturabbi.ui
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
+import android.net.Uri
 import android.os.Bundle
-import android.view.WindowManager
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.updatePadding
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
-import com.devlomi.ayaturabbi.R
-import com.devlomi.ayaturabbi.databinding.MainActivityBinding
-import com.devlomi.ayaturabbi.extensions.deviceWidthPixels
+import androidx.core.content.FileProvider
 import com.devlomi.ayaturabbi.util.isApi33OrAbove
-import com.devlomi.shared.ui.main.MainViewModel
 import com.devlomi.shared.ui.App
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import com.google.firebase.BuildConfig
 import me.zhanghai.android.systemuihelper.SystemUiHelper
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.io.File
 
 
 class MainActivity : AppCompatActivity() {
@@ -44,15 +35,66 @@ class MainActivity : AppCompatActivity() {
 
 
         setContent {
-            App { hideSystemUi ->
-                if (hideSystemUi) {
-                    uiHelper.hide()
-                } else {
-                    uiHelper.show()
-                }
-            }
+            App(
+                hideSystemUi = { hideSystemUi ->
+                    if (hideSystemUi) {
+                        uiHelper.hide()
+                    } else {
+                        uiHelper.show()
+                    }
+                },
+                onShareText = { shareText(it) },
+                onShareImage = { shareImage(it) }
+            )
         }
         requestNotificationsPermissions()
+
+    }
+
+    private fun shareText(text: String) {
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, text)
+        }
+        startActivity(Intent.createChooser(shareIntent, null))
+    }
+
+    private fun shareImage(imagePath: String) {
+
+        val uri = Uri.fromFile(File(imagePath))
+        val intent = Intent()
+        intent.action = Intent.ACTION_SEND
+        intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+
+
+        val imageUri =
+            FileProvider.getUriForFile(
+                this,
+                "${packageName}.provider",
+                File(imagePath)
+            )
+
+        intent.putExtra(Intent.EXTRA_STREAM, imageUri)
+        intent.type = "image/*"
+
+
+        val chooser = Intent.createChooser(intent, "Share Using").apply {
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+
+        val resInfoList: List<ResolveInfo> = this.packageManager
+            .queryIntentActivities(chooser, PackageManager.MATCH_DEFAULT_ONLY)
+
+        for (resolveInfo in resInfoList) {
+            val packageName = resolveInfo.activityInfo.packageName
+            this.grantUriPermission(
+                packageName,
+                uri,
+                Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION
+            )
+        }
+
+        startActivity(chooser)
 
     }
 

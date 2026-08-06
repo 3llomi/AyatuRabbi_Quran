@@ -12,6 +12,7 @@ import com.devlomi.shared.domain.ShareImageBackground
 import com.devlomi.shared.domain.ShareType
 import com.devlomi.shared.data.quran_datasource.QuranPageDataSource
 import com.devlomi.shared.data.settings.SettingsRepository
+import com.devlomi.shared.ui.Screen
 import com.devlomi.shared.ui.suras.DialogActions
 import com.devlomi.shared.ui.suras.DialogActionsWithQuery
 import io.github.vinceglb.filekit.FileKit
@@ -31,11 +32,9 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class QuranPageViewModel(
-    savedStateHandle: SavedStateHandle,
     private val settingsRepository: SettingsRepository,
     private val quranPageDataSource: QuranPageDataSource,
     private val quranRepository: com.devlomi.shared.data.db.quran_ar.QuranRepository,
-    private val ayahInfoRepository: com.devlomi.shared.data.db.ayahinfo.AyahInfoRepository,
     private val bookmarkRepository: com.devlomi.shared.data.db.bookmark.BookmarkRepository
 ) : ViewModel() {
 
@@ -60,11 +59,14 @@ class QuranPageViewModel(
 
     fun onEvent(event: QuranPageEvents) {
         when (event) {
-            is QuranPageEvents.OnPageChanged -> onPageChanged(event.index)
+            is QuranPageEvents.OnPageChanged -> {
+                _state.update { it.copy(showOptionsPanel = false) }
+                onPageChanged(event.index)
+            }
+            is QuranPageEvents.OnPageSwipe -> onPageChanged(event.index)
             is QuranPageEvents.OnColorPicked -> colorPicked(event.colorItem)
             QuranPageEvents.OnBookmarkClicked -> bookmarkClicked()
             QuranPageEvents.OnStop -> onStop()
-            QuranPageEvents.OnShareDone -> shareDone()
             QuranPageEvents.OnZoomDone -> zoomDone()
             is QuranPageEvents.OnPageSliderChange -> setPageScale(event.thumbPosition)
             QuranPageEvents.OnZoomClicked -> btnZoomClicked()
@@ -167,14 +169,9 @@ class QuranPageViewModel(
         }
     }
 
-    var quranPageItemsDataSource: List<QuranPageItem>
+    var quranPageItemsDataSource: List<QuranPageItem> = quranPageDataSource.getData()
 
     init {
-        val pageNumber = savedStateHandle.get<Int?>("pageNumber")
-
-        Logger.d { "Init: pageNumber=$pageNumber" }
-
-        quranPageItemsDataSource = quranPageDataSource.getData()
         _state.update {
             it.copy(
                 quranPages = quranPageItemsDataSource,
@@ -183,30 +180,8 @@ class QuranPageViewModel(
         }
 
 
-        when {
-            pageNumber != null && pageNumber > 0 -> {
-
-                viewModelScope.launch(Dispatchers.Default) {
-                    val foundPageNumber =
-                        ayahInfoRepository.getPageNumberBySurahNumber(pageNumber)
-                    withContext(Dispatchers.Main) {
-                        _state.update { state ->
-                            state.copy(currentIndex = foundPageNumber - 1)
-                        }
-                        indexChanged()
-                    }
-                }
-
-            }
-
-            else -> {
-                indexChanged()
-
-            }
-        }
-
-
         updateBackgroundAndTextColors()
+        indexChanged()
 
     }
 
@@ -303,7 +278,7 @@ class QuranPageViewModel(
                         val shareText =
                             quranRepository.getShareTextForPage(pageNumber)
                         withContext(Dispatchers.Main) {
-                            _state.update { it.copy(shareText = shareText) }
+                            navigateTo(QuranPageNavigationEvent.ShareText(shareText))
                         }
                     } catch (_: Exception) {
                     }
@@ -326,7 +301,7 @@ class QuranPageViewModel(
                         useWhiteTextColor(),
                         finalFile
                     )
-                _state.update { it.copy(shareImage = quranImageWithBacgkround) }
+                navigateTo(QuranPageNavigationEvent.ShareImage(quranImageWithBacgkround))
             }
         }
 
@@ -356,9 +331,7 @@ class QuranPageViewModel(
     }
 
     //prevent multiple calls when Fragment is re-created
-    private fun shareDone() {
-        _state.update { it.copy(shareText = null, shareImage = null) }
-    }
+
 
     private fun zoomDone() {
         _state.update { it.copy(showZoomSheet = false) }

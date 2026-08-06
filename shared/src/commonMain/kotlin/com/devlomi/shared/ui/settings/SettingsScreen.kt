@@ -1,7 +1,6 @@
 package com.devlomi.shared.ui.settings
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -55,7 +54,7 @@ fun SettingsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.scrim)
+//            .background(MaterialTheme.colorScheme.scrim)
             .verticalScroll(rememberScrollState()) // ScrollView
             .padding(start = 8.dp, top = 16.dp, end = 8.dp) // LinearLayout margins
     ) {
@@ -72,7 +71,11 @@ fun SettingsScreen(
             modifier = Modifier.padding(top = 8.dp)
         )
 
-        DividerLikeXml()
+        HorizontalDivider(
+            color = Color(0xFFE1E1E1),
+            thickness = 0.3.dp,
+            modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)
+        )
 
         SwitchRow(
             text = stringResource(Res.string.screen_lock_prevent),
@@ -83,7 +86,11 @@ fun SettingsScreen(
             }
         )
 
-        DividerLikeXml()
+        HorizontalDivider(
+            color = Color(0xFFE1E1E1),
+            thickness = 0.3.dp,
+            modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)
+        )
 
         ActionRow(
             text = stringResource(Res.string.share_app),
@@ -92,6 +99,7 @@ fun SettingsScreen(
             onClick = {
                 //TODO share app link
 //                onShareApp("Download Ayatu Rabbi App, the easiest app for Reciting Quran \n$appLink")
+                onEvent(SettingsEvents.OnShareAppClick)
             }
         )
 
@@ -140,14 +148,7 @@ fun openUrl(urlHandler: UriHandler, link: String) {
     urlHandler.openUri(link)
 }
 
-@Composable
-private fun DividerLikeXml() {
-    HorizontalDivider(
-        color = Color(0xFFE1E1E1),
-        thickness = 0.3.dp,
-        modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)
-    )
-}
+
 
 @Composable
 private fun SwitchRow(

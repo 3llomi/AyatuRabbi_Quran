@@ -35,7 +35,6 @@ import androidx.compose.material.icons.filled.ColorLens
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.ZoomIn
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomSheet
 import androidx.compose.material3.ButtonDefaults.textButtonColors
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -66,6 +65,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
+import co.touchlab.kermit.Logger
 import com.devlomi.shared.domain.ColorItem
 import com.devlomi.shared.domain.ShareType
 import com.devlomi.shared.domain.WhiteColorFilter
@@ -76,6 +76,22 @@ import com.devlomi.shared.ui.suras.DialogActionsWithQuery
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.readBytes
 import org.jetbrains.compose.resources.decodeToImageBitmap
+import androidx.compose.material.icons.filled.Image
+import androidx.compose.ui.text.font.FontFamily
+import ayaturabbi.shared.generated.resources.Res
+import ayaturabbi.shared.generated.resources.add_note
+import ayaturabbi.shared.generated.resources.aljuzoa
+import ayaturabbi.shared.generated.resources.cancel
+import ayaturabbi.shared.generated.resources.choose_share_type
+import ayaturabbi.shared.generated.resources.image
+import ayaturabbi.shared.generated.resources.note
+import ayaturabbi.shared.generated.resources.naskh
+import ayaturabbi.shared.generated.resources.save
+import ayaturabbi.shared.generated.resources.search
+import ayaturabbi.shared.generated.resources.surah
+import ayaturabbi.shared.generated.resources.text
+import org.jetbrains.compose.resources.Font
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -95,13 +111,15 @@ fun QuranPageScreen(
 
     LaunchedEffect(state.currentIndex, state.quranPages.size) {
         if (state.quranPages.isNotEmpty() && state.currentIndex != pagerState.currentPage) {
-            pagerState.scrollToPage(state.currentIndex.coerceIn(0, state.quranPages.lastIndex))
+            Logger.d { "pagerState.scrollToPage(state.currentIndex) ${state.currentIndex}" }
+            pagerState.scrollToPage(state.currentIndex)
         }
     }
 
     LaunchedEffect(pagerState.currentPage) {
+        Logger.d { "pagerState.currentPage ${pagerState.currentPage}" }
         if (state.quranPages.isNotEmpty() && pagerState.currentPage != state.currentIndex) {
-            onEvent(QuranPageEvents.OnPageChanged(pagerState.currentPage))
+            onEvent(QuranPageEvents.OnPageSwipe(pagerState.currentPage))
         }
     }
 
@@ -114,6 +132,8 @@ fun QuranPageScreen(
             zoomBottomSheetState.show()
         }
     }
+
+
 
     Box(
         modifier = Modifier
@@ -195,16 +215,34 @@ fun QuranPageScreen(
         }
     }
 
-    if (state.shareTypeDialogState.isVisible) {
-        AlertDialog(
-            onDismissRequest = {},
-            title = { Text("Share", color = MaterialTheme.colorScheme.onSurface) },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(
-                        text = "Text",
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.clickable {
+    // Share options as bottom sheet
+    val shareBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    LaunchedEffect(state.shareTypeDialogState.isVisible) {
+        if (!state.shareTypeDialogState.isVisible) {
+            shareBottomSheetState.hide()
+        } else if (!shareBottomSheetState.isVisible) {
+            shareBottomSheetState.show()
+        }
+    }
+
+    BottomSheet(
+        state = shareBottomSheetState,
+        onDismissRequest = {
+            onEvent(QuranPageEvents.OnShareDialogAction(DialogActions.OnDismiss))
+        }
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = stringResource(Res.string.choose_share_type),
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Spacer(modifier = Modifier.size(8.dp))
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
                             onEvent(
                                 QuranPageEvents.OnShareDialogAction(
                                     DialogActions.OnConfirm(
@@ -213,11 +251,22 @@ fun QuranPageScreen(
                                 )
                             )
                         }
+                        .padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.MenuBook,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
-                    Text(
-                        text = "Image",
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.clickable {
+                    Spacer(modifier = Modifier.size(8.dp))
+                    Text(text = stringResource(Res.string.text), color = MaterialTheme.colorScheme.onSurface)
+                }
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
                             onEvent(
                                 QuranPageEvents.OnShareDialogAction(
                                     DialogActions.OnConfirm(
@@ -226,57 +275,88 @@ fun QuranPageScreen(
                                 )
                             )
                         }
+                        .padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Image,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
+                    Spacer(modifier = Modifier.size(8.dp))
+                    Text(text = stringResource(Res.string.image), color = MaterialTheme.colorScheme.onSurface)
                 }
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    onEvent(
-                        QuranPageEvents.OnShareDialogAction(
-                            DialogActions.OnDismiss
-                        )
-                    )
-                }, colors = textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)) { Text("Close") }
             }
-        )
+            Spacer(modifier = Modifier.size(12.dp))
+            TextButton(
+                onClick = { onEvent(QuranPageEvents.OnShareDialogAction(DialogActions.OnDismiss)) },
+                colors = textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)
+            ) {
+                Text(stringResource(Res.string.cancel))
+            }
+        }
     }
 
-    if (state.bookmarkDialogState.isVisible) {
-        AlertDialog(
-            onDismissRequest = { },
-            title = { Text("Add note", color = MaterialTheme.colorScheme.onSurface) },
-            text = {
-                TextField(
-                    value = state.bookmarkDialogState.text,
-                    onValueChange = {
+    // Bookmark note as bottom sheet
+    val bookmarkBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    LaunchedEffect(state.bookmarkDialogState.isVisible) {
+        if (!state.bookmarkDialogState.isVisible) {
+            bookmarkBottomSheetState.hide()
+        } else if (!bookmarkBottomSheetState.isVisible) {
+            bookmarkBottomSheetState.show()
+        }
+    }
+
+    BottomSheet(
+        state = bookmarkBottomSheetState,
+        onDismissRequest = { onEvent(QuranPageEvents.OnBookmarkDialogAction(DialogActionsWithQuery.OnDismiss)) }
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = stringResource(Res.string.add_note),
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Spacer(modifier = Modifier.size(8.dp))
+            TextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = state.bookmarkDialogState.text,
+                onValueChange = {
+                    onEvent(
+                        QuranPageEvents.OnBookmarkDialogAction(
+                            DialogActionsWithQuery.OnQueryChange(
+                                it
+                            )
+                        )
+                    )
+                },
+                placeholder = { Text(stringResource(Res.string.note), color = MaterialTheme.colorScheme.onSurfaceVariant) },
+
+            )
+            Spacer(modifier = Modifier.size(12.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                TextButton(
+                    onClick = {
                         onEvent(
                             QuranPageEvents.OnBookmarkDialogAction(
-                                DialogActionsWithQuery.OnQueryChange(
-                                    it
-                                )
+                                DialogActionsWithQuery.OnConfirm(null)
                             )
                         )
                     },
-                    placeholder = { Text("Note", color = MaterialTheme.colorScheme.onSurfaceVariant) }
-                )
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    onEvent(
-                        QuranPageEvents.OnBookmarkDialogAction(
-                            DialogActionsWithQuery.OnConfirm(
-                                null
+                    colors = textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)
+                ) { Text(stringResource(Res.string.save)) }
+                TextButton(
+                    onClick = {
+                        onEvent(
+                            QuranPageEvents.OnBookmarkDialogAction(
+                                DialogActionsWithQuery.OnDismiss
                             )
                         )
-                    )
-                }, colors = textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)) { Text("Save") }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    onEvent(QuranPageEvents.OnBookmarkDialogAction(DialogActionsWithQuery.OnDismiss))
-                }, colors = textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)) { Text("Cancel") }
+                    },
+                    colors = textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)
+                ) { Text(stringResource(Res.string.cancel)) }
             }
-        )
+        }
     }
 
     //TODO MOVE THIS TO VM STATE?
@@ -284,7 +364,10 @@ fun QuranPageScreen(
         state = zoomBottomSheetState,
         onDismissRequest = { onEvent(QuranPageEvents.OnZoomDone) },
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(
+            modifier = Modifier.padding(vertical = 16.dp, horizontal = 20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Slider(
                 value = state.pageScaleSliderValue,
                 onValueChange = {
@@ -346,21 +429,23 @@ private fun QuranPage(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(4.dp),
+                .padding(horizontal = 2.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "سورة ${item.surahName}",
+                text = stringResource(Res.string.surah, item.surahName),
+                fontFamily = FontFamily(Font(resource = Res.font.naskh)),
                 color = textColor,
                 style = MaterialTheme.typography.bodyLarge
             )
             Spacer(modifier = Modifier.weight(1f))
             item.juzoaNumberText?.let {
                 Text(
-                    text = "الجزء $it",
+                    text = stringResource(Res.string.aljuzoa, it),
                     color = textColor,
                     fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontFamily = FontFamily(Font(resource = Res.font.naskh))
                 )
             }
         }
@@ -368,7 +453,8 @@ private fun QuranPage(
             modifier = Modifier.align(Alignment.BottomCenter),
             text = item.pageNumberLocalized,
             color = textColor,
-            style = MaterialTheme.typography.bodySmall
+            style = MaterialTheme.typography.bodySmall,
+            fontFamily = FontFamily(Font(resource = Res.font.naskh))
         )
     }
 }
@@ -406,7 +492,7 @@ private fun ColorDot(
         modifier = Modifier
             .size(50.dp)
             .background(color, CircleShape)
-            .border(2.dp, MaterialTheme.colorScheme.outline, CircleShape)
+            .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
             .clickable { onColorPicked(item) }
     )
 }
@@ -433,9 +519,9 @@ private fun OptionsButtonsBar(
         Column {
             Spacer(modifier = Modifier.height(16.dp))
             SearchCard(
-                enabled = true,
+                enabled = false,
                 "",
-                "Search",
+                stringResource(Res.string.search),
                 {},
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp).clickable {
                     onSearchClick()

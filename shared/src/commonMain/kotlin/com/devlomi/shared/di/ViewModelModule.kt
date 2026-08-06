@@ -16,7 +16,7 @@ fun viewModelModule() = module {
     }
 
     viewModel<DownloadViewModel> {
-        DownloadViewModel(get(), get(), get(), get(),get())
+        DownloadViewModel(get(), get(), get(), get(), get())
     }
 
     viewModel<MainViewModel> {
@@ -24,7 +24,7 @@ fun viewModelModule() = module {
     }
 
     viewModel<QuranPageViewModel> {
-        QuranPageViewModel(get(), get(), get(), get(), get(), get())
+        QuranPageViewModel(get(), get(), get(), get())
     }
 
     viewModel<SearchViewModel> {
@@ -35,7 +35,7 @@ fun viewModelModule() = module {
         SettingsViewModel(get())
     }
     viewModel<SurasViewModel> {
-        SurasViewModel(get(),get())
+        SurasViewModel(get(), get())
     }
 
 }

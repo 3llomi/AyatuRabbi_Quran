@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ayaturabbi.shared.generated.resources.Res
 import ayaturabbi.shared.generated.resources.ic_search
+import com.devlomi.shared.ui.cairoFont
 import org.jetbrains.compose.resources.vectorResource
 
 @Composable
@@ -44,13 +45,14 @@ fun SearchCard(
                 fontSize = 16.sp,
                 color = Color.Black,
                 // use your Cairo regular mapping here
-                fontFamily = FontFamily.Default
+                fontFamily = cairoFont()
             ),
+
             placeholder = {
                 Text(
                     text = placeholder,
                     color = Color(0xFF8F8F8F),
-                    fontFamily = FontFamily.Default
+                    fontFamily = cairoFont()
                 )
             },
             trailingIcon = {

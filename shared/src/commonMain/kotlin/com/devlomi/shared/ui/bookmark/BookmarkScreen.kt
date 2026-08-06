@@ -20,22 +20,26 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ayaturabbi.shared.generated.resources.Res
+import ayaturabbi.shared.generated.resources.cancel
+import ayaturabbi.shared.generated.resources.delete
+import ayaturabbi.shared.generated.resources.delete_bookmark_confirmation
+import ayaturabbi.shared.generated.resources.delete_bookmark_message
 import ayaturabbi.shared.generated.resources.ic_article
 import ayaturabbi.shared.generated.resources.ic_bookmark
 import ayaturabbi.shared.generated.resources.ic_clear
 import ayaturabbi.shared.generated.resources.ic_note
 import ayaturabbi.shared.generated.resources.ic_reading_quran
+import ayaturabbi.shared.generated.resources.saved_bookmarks
+import ayaturabbi.shared.generated.resources.yes
 import com.devlomi.shared.data.db.bookmark.Bookmark
+import com.devlomi.shared.ui.suras.DialogActions
 import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
 
@@ -45,7 +49,6 @@ fun BookmarksScreen(
     state: BookmarkState,
     onEvent: (BookmarkEvents) -> Unit
 ) {
-    var pendingDelete by remember { mutableStateOf<Bookmark?>(null) }
 
     Box(
         modifier = Modifier
@@ -73,32 +76,31 @@ fun BookmarksScreen(
                             onEvent(BookmarkEvents.OnClick(bookmark))
                         },
                         onDeleteClick = {
-                            pendingDelete = bookmark
+                            onEvent(BookmarkEvents.OnDelete(bookmark))
                         }
                     )
                 }
             }
         }
 
-        if (pendingDelete != null) {
+        if (state.deleteBookmarkDialogState.isVisible) {
             AlertDialog(
-                onDismissRequest = { pendingDelete = null },
-                title = { Text("Delete bookmark?") },
-                text = { Text("Are you sure you want to delete this bookmark?") },
+                onDismissRequest = { onEvent(BookmarkEvents.DeleteDialogAction(DialogActions.OnDismiss)) },
+                title = { Text(stringResource(Res.string.delete_bookmark_confirmation)) },
+                text = { Text(stringResource(Res.string.delete_bookmark_message)) },
                 dismissButton = {
                     TextButton(
-                        onClick = { pendingDelete = null },
+                        onClick = { onEvent(BookmarkEvents.DeleteDialogAction(DialogActions.OnDismiss)) },
                         colors = textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)
-                    ) { Text("Cancel") }
+                    ) { Text(stringResource(Res.string.cancel)) }
                 },
                 confirmButton = {
                     TextButton(
                         onClick = {
-                            pendingDelete?.let{BookmarkEvents.OnDelete(it)}
-                            pendingDelete = null
+                            onEvent(BookmarkEvents.DeleteDialogAction(DialogActions.OnConfirm(null)))
                         },
                         colors = textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)
-                    ) { Text("Yes") }
+                    ) { Text(stringResource(Res.string.yes)) }
                 }
             )
         }
@@ -114,7 +116,7 @@ private fun BookmarksTitle(modifier: Modifier = Modifier) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "Saved Bookmarks",
+            text = stringResource(Res.string.saved_bookmarks),
             color = MaterialTheme.colorScheme.onBackground,
             style = MaterialTheme.typography.titleMedium,
             textAlign = TextAlign.Center
@@ -191,7 +193,7 @@ private fun BookmarkItem(
             )
         ) {
             Text(
-                text = "Delete",
+                text = stringResource(Res.string.delete),
                 style = MaterialTheme.typography.bodyMedium
             )
             androidx.compose.foundation.layout.Spacer(Modifier.size(8.dp))
