@@ -35,11 +35,11 @@ import androidx.compose.material.icons.filled.ColorLens
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.ZoomIn
-import androidx.compose.material3.BottomSheet
 import androidx.compose.material3.ButtonDefaults.textButtonColors
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -90,6 +90,7 @@ import ayaturabbi.shared.generated.resources.save
 import ayaturabbi.shared.generated.resources.search
 import ayaturabbi.shared.generated.resources.surah
 import ayaturabbi.shared.generated.resources.text
+import com.devlomi.shared.ui.components.AndroidBackHandler
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.stringResource
 
@@ -125,14 +126,17 @@ fun QuranPageScreen(
 
     val zoomBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    LaunchedEffect(state.showZoomSheet) {
-        if (!state.showZoomSheet) {
-            zoomBottomSheetState.hide()
-        } else if (!zoomBottomSheetState.isVisible) {
-            zoomBottomSheetState.show()
+    AndroidBackHandler {
+        if (state.showZoomSheet){
+            onEvent(QuranPageEvents.OnZoomDone)
+        }else if(state.showColorsPanel){
+            onEvent(QuranPageEvents.OnColorClick)
+        }else if(state.showOptionsPanel){
+            onEvent(QuranPageEvents.OnPageClick)
+        }else{
+            onEvent(QuranPageEvents.OnBackPressed)
         }
     }
-
 
 
     Box(
@@ -147,14 +151,14 @@ fun QuranPageScreen(
                     state = pagerState,
                     modifier = Modifier.fillMaxSize()
                 ) { index ->
-                    QuranPage(
-                        item = state.quranPages[index],
-                        scale = state.pageScale,
-                        useWhiteColor = state.useWhiteColor,
-                        onTap = {
-                            onEvent(QuranPageEvents.OnPageClick)
-                        }
-                    )
+                        QuranPage(
+                            item = state.quranPages[index],
+                            scale = state.pageScale,
+                            useWhiteColor = state.useWhiteColor,
+                            onTap = {
+                                onEvent(QuranPageEvents.OnPageClick)
+                            }
+                        )
                 }
             }
         }
@@ -215,22 +219,14 @@ fun QuranPageScreen(
         }
     }
 
-    // Share options as bottom sheet
     val shareBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    LaunchedEffect(state.shareTypeDialogState.isVisible) {
-        if (!state.shareTypeDialogState.isVisible) {
-            shareBottomSheetState.hide()
-        } else if (!shareBottomSheetState.isVisible) {
-            shareBottomSheetState.show()
-        }
-    }
-
-    BottomSheet(
-        state = shareBottomSheetState,
-        onDismissRequest = {
-            onEvent(QuranPageEvents.OnShareDialogAction(DialogActions.OnDismiss))
-        }
-    ) {
+    if (state.shareTypeDialogState.isVisible) {
+        ModalBottomSheet(
+            sheetState = shareBottomSheetState,
+            onDismissRequest = {
+                onEvent(QuranPageEvents.OnShareDialogAction(DialogActions.OnDismiss))
+            }
+        ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = stringResource(Res.string.choose_share_type),
@@ -296,21 +292,16 @@ fun QuranPageScreen(
             }
         }
     }
-
-    // Bookmark note as bottom sheet
-    val bookmarkBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    LaunchedEffect(state.bookmarkDialogState.isVisible) {
-        if (!state.bookmarkDialogState.isVisible) {
-            bookmarkBottomSheetState.hide()
-        } else if (!bookmarkBottomSheetState.isVisible) {
-            bookmarkBottomSheetState.show()
-        }
     }
 
-    BottomSheet(
-        state = bookmarkBottomSheetState,
-        onDismissRequest = { onEvent(QuranPageEvents.OnBookmarkDialogAction(DialogActionsWithQuery.OnDismiss)) }
-    ) {
+    val bookmarkBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    if (state.bookmarkDialogState.isVisible) {
+        ModalBottomSheet(
+            sheetState = bookmarkBottomSheetState,
+            onDismissRequest = {
+                onEvent(QuranPageEvents.OnBookmarkDialogAction(DialogActionsWithQuery.OnDismiss))
+            }
+        ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = stringResource(Res.string.add_note),
@@ -358,12 +349,13 @@ fun QuranPageScreen(
             }
         }
     }
+    }
 
-    //TODO MOVE THIS TO VM STATE?
-    BottomSheet(
-        state = zoomBottomSheetState,
-        onDismissRequest = { onEvent(QuranPageEvents.OnZoomDone) },
-    ) {
+    if (state.showZoomSheet) {
+        ModalBottomSheet(
+            sheetState = zoomBottomSheetState,
+            onDismissRequest = { onEvent(QuranPageEvents.OnZoomDone) },
+        ) {
         Column(
             modifier = Modifier.padding(vertical = 16.dp, horizontal = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -391,6 +383,7 @@ fun QuranPageScreen(
                 }
             }
         }
+    }
     }
 }
 
@@ -534,29 +527,8 @@ private fun OptionsButtonsBar(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 ActionIcon(
-                    icon = Icons.AutoMirrored.Filled.MenuBook,
-                    onClick = onSurasClick,
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
-                ActionIcon(
-                    icon = Icons.Default.ZoomIn,
-                    onClick = onZoomClick,
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
-                ActionIcon(
-                    icon = if (isBookmarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
-                    onClick = onBookmarkClick,
-                    onLongClick = onBookmarkLongClick,
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
-                ActionIcon(
-                    icon = Icons.Default.ColorLens,
-                    tint = if (isColorPanelVisible) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface,
-                    onClick = onColorClick
-                )
-                ActionIcon(
-                    icon = Icons.Default.CollectionsBookmark,
-                    onClick = onBookmarkedPagesClick,
+                    icon = Icons.Default.Settings,
+                    onClick = onSettingsClick,
                     tint = MaterialTheme.colorScheme.onSurface
                 )
                 ActionIcon(
@@ -565,8 +537,29 @@ private fun OptionsButtonsBar(
                     tint = MaterialTheme.colorScheme.onSurface
                 )
                 ActionIcon(
-                    icon = Icons.Default.Settings,
-                    onClick = onSettingsClick,
+                    icon = Icons.Default.CollectionsBookmark,
+                    onClick = onBookmarkedPagesClick,
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+                ActionIcon(
+                    icon = Icons.Default.ColorLens,
+                    tint = if (isColorPanelVisible) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface,
+                    onClick = onColorClick
+                )
+                ActionIcon(
+                    icon = if (isBookmarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
+                    onClick = onBookmarkClick,
+                    onLongClick = onBookmarkLongClick,
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+                ActionIcon(
+                    icon = Icons.Default.ZoomIn,
+                    onClick = onZoomClick,
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+                ActionIcon(
+                    icon = Icons.AutoMirrored.Filled.MenuBook,
+                    onClick = onSurasClick,
                     tint = MaterialTheme.colorScheme.onSurface
                 )
             }

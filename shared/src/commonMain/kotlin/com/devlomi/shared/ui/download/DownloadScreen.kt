@@ -22,8 +22,10 @@ import androidx.compose.ui.unit.dp
 import ayaturabbi.shared.generated.resources.Res
 import ayaturabbi.shared.generated.resources.app_icon
 import ayaturabbi.shared.generated.resources.cancel
+import ayaturabbi.shared.generated.resources.cancel_confirmation
 import ayaturabbi.shared.generated.resources.download
 import ayaturabbi.shared.generated.resources.download_failed
+import ayaturabbi.shared.generated.resources.download_required_files_message
 import ayaturabbi.shared.generated.resources.download_required_files_title
 import ayaturabbi.shared.generated.resources.downloading_files
 import ayaturabbi.shared.generated.resources.yes
@@ -43,16 +45,22 @@ fun DownloadScreen(
         AlertDialog(
             onDismissRequest = { },
             title = { Text(stringResource(Res.string.download_required_files_title)) },
-            text = { Text("Required Quran files must be downloaded before continuing.") },
+            text = { Text(stringResource(Res.string.download_required_files_message)) },
             confirmButton = {
-                TextButton(onClick = {
-                    onEvent(DownloadEvents.StartDownloadAction(DialogActions.OnConfirm<Nothing>()))
-                }, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)) { Text(stringResource(Res.string.download)) }
+                TextButton(
+                    onClick = {
+                        onEvent(DownloadEvents.StartDownloadAction(DialogActions.OnConfirm<Nothing>()))
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)
+                ) { Text(stringResource(Res.string.download)) }
             },
             dismissButton = {
-                TextButton(onClick = {
-                    onEvent(DownloadEvents.StartDownloadAction(DialogActions.OnDismiss))
-                }, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)) { Text(stringResource(Res.string.cancel)) }
+                TextButton(
+                    onClick = {
+                        onEvent(DownloadEvents.StartDownloadAction(DialogActions.OnDismiss))
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)
+                ) { Text(stringResource(Res.string.cancel)) }
             }
         )
     }
@@ -61,16 +69,22 @@ fun DownloadScreen(
         AlertDialog(
             onDismissRequest = { },
             title = { Text(stringResource(Res.string.cancel)) },
-            text = { Text("Are you sure you want to cancel") },
+            text = { Text(stringResource(Res.string.cancel_confirmation)) },
             confirmButton = {
-                TextButton(onClick = {
-                    onEvent(DownloadEvents.CancelDownloadAction(DialogActions.OnConfirm(null)))
-                }, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)) { Text(stringResource(Res.string.yes)) }
+                TextButton(
+                    onClick = {
+                        onEvent(DownloadEvents.CancelDownloadAction(DialogActions.OnConfirm(null)))
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)
+                ) { Text(stringResource(Res.string.yes)) }
             },
             dismissButton = {
-                TextButton(onClick = {
-                    onEvent(DownloadEvents.CancelDownloadAction(DialogActions.OnDismiss))
-                }, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)) { Text(stringResource(Res.string.cancel)) }
+                TextButton(
+                    onClick = {
+                        onEvent(DownloadEvents.CancelDownloadAction(DialogActions.OnDismiss))
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)
+                ) { Text(stringResource(Res.string.cancel)) }
             }
         )
     }
@@ -122,7 +136,7 @@ fun DownloadScreen(
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Retry")
+                    Text(stringResource(Res.string.download))
                 }
             }
 

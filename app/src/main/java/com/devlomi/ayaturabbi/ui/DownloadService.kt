@@ -115,7 +115,7 @@ class DownloadService : ScopedService() {
                         .setContentText(getString(R.string.downloaded, 0))
 //                        .setSmallIcon(R.drawable.ic_noti)//TODO
                         .setSmallIcon(R.drawable.ic_note)//TODO
-//                        .setProgress(MAX_PROGRESS, 0, false)//TODO
+                        .setProgress(MAX_PROGRESS, 0, false)
                         .setSilent(true)
 
                 ServiceCompat.startForeground(

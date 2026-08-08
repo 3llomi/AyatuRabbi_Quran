@@ -165,7 +165,7 @@ private fun BookmarkItem(
 
         // tv_note: top 8, end 16, right icon
         TrailingIconTextRow(
-            text = bookmark.note?.takeIf { it.isNotBlank() } ?: "لا يوجد",
+            text = bookmark.note ?: "",
             icon = Res.drawable.ic_note,
             tint = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier

@@ -1,8 +1,13 @@
 package com.devlomi.shared.ui
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -16,7 +21,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import ayaturabbi.shared.generated.resources.Res
+import ayaturabbi.shared.generated.resources.share_app_text
 import co.touchlab.kermit.Logger
+import com.devlomi.shared.common.getAppLink
 import com.devlomi.shared.ui.bookmark.BookmarkNavigationEvents
 import com.devlomi.shared.ui.main.MainViewModel
 import com.devlomi.shared.ui.bookmark.BookmarksScreen
@@ -37,6 +45,9 @@ import com.devlomi.shared.ui.settings.SettingsViewModel
 import com.devlomi.shared.ui.suras.SurasNavigationEvent
 import com.devlomi.shared.ui.suras.SurasScreen
 import com.devlomi.shared.ui.suras.SurasViewModel
+import kotlinx.coroutines.runBlocking
+import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -44,7 +55,8 @@ fun App(
     hideSystemUi: (Boolean) -> Unit,
     onShareText: (String) -> Unit = {},
     onShareImage: (String) -> Unit = {},
-    onShareApp: () -> Unit = {}
+    onShareApp: (text: String) -> Unit = {},
+    exitApp: () -> Unit = {}
 ) {
     val sharedViewModel = koinViewModel<MainViewModel>()
     val sharedState = sharedViewModel.state.collectAsStateWithLifecycle().value
@@ -55,7 +67,9 @@ fun App(
     AppTheme {
         Box(
             modifier = Modifier.background(MaterialTheme.colorScheme.background)
-                .safeDrawingPadding()
+                .systemBarsPadding()
+            //.safeDrawingPadding()//TODO use systemBarsPadding or safeDrawingPadding()?
+
         ) {
             SetWindowFlag(sharedState.keepScreenOn)
             //hide system bars if the user presses the recent button or minimized the app
@@ -82,6 +96,30 @@ fun App(
             NavHost(
                 navController = navController,
                 startDestination = initialScreen,
+                enterTransition = {
+                    slideIntoContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Start,
+                        animationSpec = tween(250)
+                    ) + fadeIn(animationSpec = tween(250))
+                },
+                exitTransition = {
+                    slideOutOfContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Start,
+                        animationSpec = tween(250)
+                    ) + fadeOut(animationSpec = tween(250))
+                },
+                popEnterTransition = {
+                    slideIntoContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.End,
+                        animationSpec = tween(250)
+                    ) + fadeIn(animationSpec = tween(250))
+                },
+                popExitTransition = {
+                    slideOutOfContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.End,
+                        animationSpec = tween(250)
+                    ) + fadeOut(animationSpec = tween(250))
+                }
             ) {
                 composable(Screen.Download.route) {
                     val viewModel = koinViewModel<DownloadViewModel>()
@@ -119,7 +157,7 @@ fun App(
                         pageNumberResult?.let { pageNumber ->
                             if (pageNumber != -1) {
                                 Logger.d { "OnPageNumberChange navBackStackEntry $pageNumber" }
-                                viewModel.onEvent(QuranPageEvents.OnPageChanged(pageNumber-1))//TODO HANDLE -1 IN VM?
+                                viewModel.onEvent(QuranPageEvents.OnPageChanged(pageNumber - 1))//TODO HANDLE -1 IN VM?
                                 // 4. Clear it so it doesn't re-trigger on configuration changes
                                 backStackEntry.savedStateHandle.set<Int?>(
                                     Screen.QuranPage.PAGE_NUMBER_ARG,
@@ -151,8 +189,13 @@ fun App(
                             is QuranPageNavigationEvent.ShareImage -> {
                                 onShareImage(it.imagePath)
                             }
+
                             is QuranPageNavigationEvent.ShareText -> {
                                 onShareText(it.text)
+                            }
+
+                            QuranPageNavigationEvent.BackPressed -> {
+                                exitApp()
                             }
                         }
                     }
@@ -183,8 +226,8 @@ fun App(
                 composable(Screen.Search.route) {
                     val viewModel = koinViewModel<SearchViewModel>()
                     val state = viewModel.state.collectAsStateWithLifecycle().value
-                    ObserveAsEvent(viewModel.navigationEvents){
-                        when(it){
+                    ObserveAsEvent(viewModel.navigationEvents) {
+                        when (it) {
                             is SearchNavigationEvents.BackToQuranPageWithPageNumber -> {
                                 Logger.d { "BackToQuranPageWithPageNumber ${it.pageNumber}" }
                                 navController.previousBackStackEntry?.savedStateHandle?.set(
@@ -217,8 +260,13 @@ fun App(
                 composable(Screen.Settings.route) {
                     val viewModel = koinViewModel<SettingsViewModel>()
                     val state = viewModel.state.collectAsStateWithLifecycle().value
-                    ObserveAsEvent(viewModel.navigationEvents){
-                        onShareApp()
+                    ObserveAsEvent(viewModel.navigationEvents) {
+                        val text = runBlocking {
+                            val appLink = getAppLink()
+                            getString(Res.string.share_app_text, appLink)
+                        }
+                        onShareApp(text)
+
                     }
                     SettingsScreen(state, onEvent = viewModel::onEvent)
                 }

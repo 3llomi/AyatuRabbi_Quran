@@ -12,7 +12,6 @@ class SettingsRepository(private val sharedPreferences: CommonPreferences) {
 
     fun hasDownloadedFiles(): Boolean = sharedPreferences.getBoolean("files_downloaded", false)
 
-    //TODO SAVE DEVICE WIDTH WHEN THE APP LAUNCHES FOR THE FIRST TIME
     //ALSO PERHAPS REMOVE THE IF STATEMENT
     fun saveDeviceWidth(properWidth: Int) {
         if (sharedPreferences.contains("width")) return

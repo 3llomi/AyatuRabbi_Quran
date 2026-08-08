@@ -19,7 +19,6 @@ class QuranPageDataSource(
         const val PAGES_COUNT = 604
     }
 
-    //TODO INIT THIS IN APP
     suspend fun init() {
         surahsNames = getStringArray(Res.array.surah_names).toTypedArray()
         ajzaaNumbersText = getStringArray(Res.array.ajzaa_number_text).toTypedArray()

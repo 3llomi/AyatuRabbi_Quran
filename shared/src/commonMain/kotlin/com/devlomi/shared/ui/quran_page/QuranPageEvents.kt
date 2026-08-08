@@ -21,6 +21,7 @@ sealed class QuranPageEvents {
     data object OnPageClick : QuranPageEvents()
     data object OnColorClick : QuranPageEvents()
     data object OnBookmarkLongClick : QuranPageEvents()
+    data object OnBackPressed : QuranPageEvents()
     data class OnShareDialogAction(val action: DialogActions) : QuranPageEvents()
     data class OnBookmarkDialogAction(val action: DialogActionsWithQuery) : QuranPageEvents()
 

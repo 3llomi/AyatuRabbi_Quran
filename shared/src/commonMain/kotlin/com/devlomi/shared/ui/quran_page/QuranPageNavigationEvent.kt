@@ -5,6 +5,7 @@ sealed class QuranPageNavigationEvent {
     data object ToBookmarks : QuranPageNavigationEvent()
     data object ToSearch : QuranPageNavigationEvent()
     data object ToSettings : QuranPageNavigationEvent()
+    data object BackPressed : QuranPageNavigationEvent()
     data class ShareText(val text: String ) : QuranPageNavigationEvent()
     data class ShareImage(val imagePath: String) : QuranPageNavigationEvent()
 }

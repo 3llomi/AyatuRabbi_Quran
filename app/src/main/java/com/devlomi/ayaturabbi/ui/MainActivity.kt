@@ -11,10 +11,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import com.devlomi.ayaturabbi.extensions.deviceWidthPixels
 import com.devlomi.ayaturabbi.util.isApi33OrAbove
+import com.devlomi.shared.data.settings.SettingsRepository
+import com.devlomi.shared.domain.ProperSizeCalc
 import com.devlomi.shared.ui.App
-import com.google.firebase.BuildConfig
 import me.zhanghai.android.systemuihelper.SystemUiHelper
+import org.koin.android.ext.android.inject
 import java.io.File
 
 
@@ -22,7 +25,8 @@ class MainActivity : AppCompatActivity() {
 
 
     private lateinit var uiHelper: SystemUiHelper
-
+    private val settingsRepository: SettingsRepository by inject()
+    private val properSizeCalc: ProperSizeCalc by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +37,8 @@ class MainActivity : AppCompatActivity() {
             SystemUiHelper.FLAG_IMMERSIVE_STICKY
         )
 
+        val properWidth = properSizeCalc.getProperWidth(deviceWidthPixels())
+        settingsRepository.saveDeviceWidth(properWidth)
 
         setContent {
             App(
@@ -44,7 +50,13 @@ class MainActivity : AppCompatActivity() {
                     }
                 },
                 onShareText = { shareText(it) },
-                onShareImage = { shareImage(it) }
+                onShareImage = { shareImage(it) },
+                onShareApp = {
+                    shareText(it)
+                },
+                exitApp = {
+                    finish()
+                }
             )
         }
         requestNotificationsPermissions()

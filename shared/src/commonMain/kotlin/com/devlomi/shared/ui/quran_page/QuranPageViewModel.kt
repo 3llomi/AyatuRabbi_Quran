@@ -80,6 +80,9 @@ class QuranPageViewModel(
             QuranPageEvents.OnBookmarkLongClick -> showBookmarkDialog()
             is QuranPageEvents.OnShareDialogAction -> handleShareDialogAction(event.action)
             is QuranPageEvents.OnBookmarkDialogAction -> handleBookmarkDialogAction(event.action)
+            is QuranPageEvents.OnBackPressed -> viewModelScope.launch {
+                navigationChannel.send(QuranPageNavigationEvent.BackPressed)
+            }
         }
     }
 

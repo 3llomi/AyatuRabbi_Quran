@@ -14,12 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-/*
-//TODO REMOVE THIS NOTICE
-Due to compilation issues on iosX64 target in Xcode, we couldn't use the shared getFile extension function for downloading files from Firebase Storage.
-So, we had to implement the download logic separately for Android and iOS platforms.
-This could be fixed when moving to an ARM-based Mac, as the iosX64 target will be deprecated in favor of iosSimulatorArm64.
- */
+
 class DownloadRepository(
     private val firebaseFileDownloader: FirebaseFileDownloader,
     private val extractAndCopyFiles: ExtractAndCopyFiles,
