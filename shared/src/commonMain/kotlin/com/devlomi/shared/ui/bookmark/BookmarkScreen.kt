@@ -36,6 +36,7 @@ import ayaturabbi.shared.generated.resources.ic_note
 import ayaturabbi.shared.generated.resources.ic_reading_quran
 import ayaturabbi.shared.generated.resources.saved_bookmarks
 import ayaturabbi.shared.generated.resources.yes
+import com.devlomi.shared.common.DateFormatter
 import com.devlomi.shared.data.db.bookmark.Bookmark
 import com.devlomi.shared.ui.suras.DialogActions
 import org.jetbrains.compose.resources.DrawableResource
@@ -109,7 +110,6 @@ fun BookmarksScreen(
 
 @Composable
 private fun BookmarksTitle(modifier: Modifier = Modifier) {
-    // XML: centered title + drawableRight bookmark icon + 8dp gap
     androidx.compose.foundation.layout.Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.Center,
@@ -175,7 +175,7 @@ private fun BookmarkItem(
 
         // tv_date: start 16, aligned left near top block
         Text(
-            text = bookmark.timestamp.toString(),//TODO GET CREATED AT INSTEAD
+            text = DateFormatter.formatDate(bookmark.timestamp),
             color = MaterialTheme.colorScheme.onBackground,
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.padding(start = 16.dp)

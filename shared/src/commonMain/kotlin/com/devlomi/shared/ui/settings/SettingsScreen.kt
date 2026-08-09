@@ -39,6 +39,7 @@ import ayaturabbi.shared.generated.resources.screen_lock_prevent
 import ayaturabbi.shared.generated.resources.share_app
 import ayaturabbi.shared.generated.resources.version
 import ayaturabbi.shared.generated.resources.website
+import com.devlomi.shared.common.getAppLink
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -97,8 +98,6 @@ fun SettingsScreen(
             icon = Res.drawable.ic_share,
             tint = MaterialTheme.colorScheme.onBackground,
             onClick = {
-                //TODO share app link
-//                onShareApp("Download Ayatu Rabbi App, the easiest app for Reciting Quran \n$appLink")
                 onEvent(SettingsEvents.OnShareAppClick)
             }
         )
@@ -135,7 +134,7 @@ fun SettingsScreen(
             icon = Res.drawable.ic_star,
             topMargin = 16.dp,
             onClick = {
-                openUrl(urlHandler = uriHandler, link = "")//TODO APPLINK
+                openUrl(urlHandler = uriHandler, link = getAppLink())
 
             }
         )

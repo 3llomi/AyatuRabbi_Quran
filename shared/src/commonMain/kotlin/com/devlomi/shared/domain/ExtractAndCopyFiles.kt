@@ -7,11 +7,15 @@ import com.devlomi.shared.unpackZip
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.copyTo
 import io.github.vinceglb.filekit.createDirectories
+import io.github.vinceglb.filekit.delete
 import io.github.vinceglb.filekit.exists
 import io.github.vinceglb.filekit.isDirectory
 import io.github.vinceglb.filekit.list
 import io.github.vinceglb.filekit.name
 import io.github.vinceglb.filekit.path
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.withContext
 import okio.FileSystem
 import okio.Path.Companion.toPath
 import okio.SYSTEM
@@ -21,22 +25,16 @@ class ExtractAndCopyFiles(
 ) {
     suspend fun execute(width: Int, filePath: String) {
         val zipFile: okio.Path = filePath.toPath()
-        val destDir: okio.Path = dirConstants.getQuranDataTempPath().toPath()
-        Logger.d { "Unzipping file :${zipFile.name} - to ${destDir.name}" }
-        FileSystem.SYSTEM.unpackZip(zipFile, destDir)
+        val destDirPath: okio.Path = dirConstants.getQuranDataTempPath().toPath()
+        Logger.d { "Unzipping file :${zipFile.name} - to ${destDirPath.name}" }
+        FileSystem.SYSTEM.unpackZip(zipFile, destDirPath)
         Logger.d { "Unzipping Completed - attempting to copy files" }
         copyFiles(width)
-        //TODO DELETE TEMP AND DATA.ZIP FILE
-//        PlatformFile(filePath).copyTo(
-//            PlatformFile(, "quran_data.zip"),
-//        )
-
-//        copyFiles(width)
-
+        deleteRecursively(PlatformFile(destDirPath.toString()))
+        PlatformFile(filePath).delete(mustExist = false)
     }
 
     private suspend fun copyFiles(width: Int) {
-
         val temp = PlatformFile(dirConstants.getQuranDataTempPath())
         val filesDir = PlatformFile(dirConstants.getFilesPath())
         PlatformFile(filesDir, "db").createDirectories()
@@ -62,15 +60,35 @@ class ExtractAndCopyFiles(
                 DBFileNames.quranDbPath
             )
         )
+
         Logger.d { "Copying folder width $width" }
 
-        //TODO RECURSIVE
         copyDirRecursive(
             PlatformFile(temp, "width_$width"),
             PlatformFile(filesDir, "quran_images"),
         )
 
 
+    }
+
+    suspend fun deleteRecursively(file: PlatformFile): Boolean {
+        return withContext(Dispatchers.IO) {
+            try {
+                if (file.isDirectory()) {
+                    // List all children and delete them first
+                    val children = file.list()
+                    for (child in children) {
+                        val success = deleteRecursively(child)
+                        if (!success) return@withContext false
+                    }
+                }
+                // Delete the empty directory or individual file
+                file.delete(mustExist = false)
+                true
+            } catch (e: Exception) {
+                false
+            }
+        }
     }
 
     private suspend fun copyDirRecursive(src: PlatformFile, dst: PlatformFile) {

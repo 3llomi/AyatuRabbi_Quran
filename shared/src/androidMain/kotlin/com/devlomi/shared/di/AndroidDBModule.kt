@@ -1,6 +1,6 @@
 package com.devlomi.shared.di
 
-import com.devlomi.shared.data.db.ayahinfo.DBFactory
+import com.devlomi.shared.data.db.DBFactory
 import com.devlomi.shared.data.settings.SettingsRepository
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module

@@ -13,9 +13,9 @@ actual class FirebaseFileDownloader {
         storageRefPath: String,
         filePath: String,
         onProgress: (progress: Int) -> Unit
-    ): Result<String> {
+    ): String {
         val file = File(filePath)
-        return suspendCancellableCoroutine {
+        return suspendCancellableCoroutine { continuation ->
             task = FirebaseStorage.getInstance().getReference(storageRefPath).getFile(file)
             task?.addOnProgressListener {
 
@@ -26,11 +26,13 @@ actual class FirebaseFileDownloader {
                 val progress = progressDouble.toInt()
                 onProgress(progress)
             }?.addOnCompleteListener {
+                Logger.d { "addOnCompleteListener ${it.isSuccessful}" }
                 if (it.isSuccessful) {
-                    Result.success(filePath)
+                    continuation.resumeWith(Result.success(filePath))
                 } else {
-                    it.exception?.let { Result.failure(it) }
-                        ?: run { Result.failure(Exception("Unknown Error")) }
+                    it.exception?.let {
+                        continuation.resumeWith(Result.failure(it))
+                    } ?: run { continuation.resumeWith(Result.failure(Exception("Unknown Error"))) }
                 }
 
             }

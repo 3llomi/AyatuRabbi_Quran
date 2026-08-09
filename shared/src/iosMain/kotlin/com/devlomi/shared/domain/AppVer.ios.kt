@@ -1,5 +1,5 @@
 package com.devlomi.shared.domain
 
 actual fun appVer(): String {
-    return "1.0.5"
+    return "1.0.0"
 }

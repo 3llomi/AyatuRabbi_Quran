@@ -1,9 +1,10 @@
 package com.devlomi.shared.data.quran_datasource
 
+import com.devlomi.shared.common.DirConstants
 
 
 class QuranImagesDataSource (
-    private val quranImagesPathProvider: QuranImagePathProvider
+    private val dirConstants: DirConstants
 ) {
     companion object {
         const val EXTENSION = ".png"
@@ -15,7 +16,7 @@ class QuranImagesDataSource (
     fun getQuranImagesPathForPage(pageNumber: Int): String {
         val number = getNumber(pageNumber)
         val fileName = "$PAGE_PREFIX${number}$EXTENSION"
-        val path = "${quranImagesPathProvider.getQuranImageBasePath()}/$fileName"
+        val path = "${dirConstants.getQuranImageBasePath()}/$fileName"
         return path
     }
 

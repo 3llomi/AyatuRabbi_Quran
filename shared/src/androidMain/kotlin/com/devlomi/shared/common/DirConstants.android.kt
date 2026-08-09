@@ -15,4 +15,7 @@ actual class DirConstants(private val context: Context) {
     actual fun getQuranDataTempPath(): String{
         return File(context.cacheDir, "quran_data").absolutePath
     }
+    actual fun getQuranImageBasePath(): String {
+        return File(context.filesDir, "quran_images").path
+    }
 }

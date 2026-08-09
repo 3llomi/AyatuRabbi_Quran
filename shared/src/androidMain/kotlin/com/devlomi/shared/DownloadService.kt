@@ -48,7 +48,6 @@ class DownloadService : ScopedService() {
     //TODO RESOLVE CRASH:
     // Reason: A foreground service of FOREGROUND_SERVICE_TYPE_SHORT_SERVICE did not stop within a timeout: ComponentInfo{com.devlomi.ayaturabbi/com.devlomi.ayaturabbi.ui.download.DownloadService}
     val downloadRepository: DownloadRepository by inject()
-    val extractAndCopyFiles: ExtractAndCopyFiles by inject()
 
 
     private var notification: NotificationCompat.Builder? = null
@@ -145,14 +144,14 @@ class DownloadService : ScopedService() {
                         .setContentText(getString(R.string.downloaded, 0))
                         .setSmallIcon(R.drawable.ic_note)//TODO
 //                        .setSmallIcon(R.drawable.ic_note)//TODO
-//                        .setProgress(MAX_PROGRESS, 0, false)//TODO
-//                        .setSilent(true)//TODO
+                        .setProgress(MAX_PROGRESS, 0, false)
+                        .setSilent(true)
 
                 ServiceCompat.startForeground(
                     this,
                     NOTIFICATION_ID,
                     notification!!.build(),
-                    ServiceInfo.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE//TODO DATA SYNC
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
                 )
 
                 val width = intent?.getIntExtra(IntentConstants.EXTRA_WIDTH, 1260)!!

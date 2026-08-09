@@ -1,22 +1,28 @@
 package com.devlomi.shared.di
 
 import com.devlomi.shared.data.db.ayahinfo.AyahInfoDB
-import com.devlomi.shared.data.db.ayahinfo.DBFactory
+import com.devlomi.shared.data.db.DBFactory
 import com.devlomi.shared.data.db.bookmark.BookmarkDB
 import com.devlomi.shared.data.db.quran_ar.QuranDB
 import org.koin.dsl.module
 
 
 fun iosDBModule() = module {
-    single<com.devlomi.shared.data.db.ayahinfo.AyahInfoDB> {
-        _root_ide_package_.com.devlomi.shared.data.db.ayahinfo.DBFactory("").createAyahInfoDB()
+    single<DBFactory>{
+        DBFactory(get())
     }
-    single<com.devlomi.shared.data.db.quran_ar.QuranDB> {
-        _root_ide_package_.com.devlomi.shared.data.db.ayahinfo.DBFactory("").createQuranDB()
+    single<AyahInfoDB> {
+        val dbFactory: DBFactory = get()
+        dbFactory.createAyahInfoDB()
+    }
+    single<QuranDB> {
+        val dbFactory: DBFactory = get()
+        dbFactory.createQuranDB()
     }
 
-    single<com.devlomi.shared.data.db.bookmark.BookmarkDB> {
-        _root_ide_package_.com.devlomi.shared.data.db.ayahinfo.DBFactory("").createBookmarkDB()
+    single<BookmarkDB> {
+        val dbFactory: DBFactory = get()
+        dbFactory.createBookmarkDB()
     }
 
 }

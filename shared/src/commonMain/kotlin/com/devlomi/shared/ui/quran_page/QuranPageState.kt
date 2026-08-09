@@ -16,8 +16,6 @@ data class QuranPageState(
     val pageScale: Float = 0f,
     val pageScaleSliderValue: Float = 0f,
     val showZoomSheet: Boolean = false,
-    //TODO IS IT THE SAME AS PAGE SCALE? IF YES REMOVE IT
-    val zoomPercentage: Float = 40f,
     val shareTypeDialogState: DialogState = DialogState(),
     val bookmarkDialogState: InputDialogState = InputDialogState(),
 

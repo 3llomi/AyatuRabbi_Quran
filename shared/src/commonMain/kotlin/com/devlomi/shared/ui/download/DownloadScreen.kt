@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
@@ -93,11 +95,12 @@ fun DownloadScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
             painterResource(Res.drawable.app_icon),
-            modifier = Modifier.size(150.dp).align(Alignment.CenterHorizontally),
+            modifier = Modifier.size(150.dp).offset(y = (-50).dp),
             contentDescription = null
         )
 
@@ -106,14 +109,19 @@ fun DownloadScreen(
             is DownloadingResource.Loading -> {
                 Text(
                     text = stringResource(Res.string.downloading_files),
+                    color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.padding(bottom = 12.dp)
                 )
 
                 LinearProgressIndicator(
                     progress = { state.downlaodState.progress / 100f },
+                    trackColor = MaterialTheme.colorScheme.onBackground,
+                    color = MaterialTheme.colorScheme.secondary,
+
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 12.dp)
+                        .height(24.dp)
+                        .padding(vertical = 12.dp)
                 )
 
                 Button(
@@ -128,7 +136,10 @@ fun DownloadScreen(
             }
 
             is DownloadingResource.Error -> {
-                Text(stringResource(Res.string.download_failed))
+                Text(
+                    stringResource(Res.string.download_failed),
+                    color = MaterialTheme.colorScheme.onBackground
+                )
                 //retry button
                 Button(
                     onClick = {
@@ -136,7 +147,10 @@ fun DownloadScreen(
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(stringResource(Res.string.download))
+                    Text(
+                        stringResource(Res.string.download),
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
                 }
             }
 
@@ -155,7 +169,7 @@ fun DownloadScreenPreview(
     DownloadScreen(
         state = DownloadScreenState(
             downlaodState = DownloadingResource.Loading(50),
-            showConfirmDownloadDialog = true
+            showConfirmDownloadDialog = false
         ),
         onEvent = {}
     )

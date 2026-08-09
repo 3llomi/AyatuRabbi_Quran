@@ -1,10 +1,9 @@
-package com.devlomi.shared
+package com.devlomi.shared.common
 
 import platform.Foundation.NSLocale
 import platform.Foundation.NSNumber
 import platform.Foundation.NSNumberFormatter
 import platform.Foundation.NSNumberFormatterNoStyle
-import platform.Foundation.NSNumberFormatterStyle
 
 actual object DecimalFormat {
     actual fun format(value: Int, locale: String): String {

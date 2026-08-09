@@ -22,7 +22,6 @@ import kotlinx.coroutines.launch
 
 class DownloadViewModel(
     private val settingsRepository: SettingsRepository,
-    private val properSizeCalc: ProperSizeCalc,
     private val commonDownloadService: CommonDownloadService,
     private val downloadRepository: DownloadRepository,
     private val dirConstants: DirConstants
@@ -57,6 +56,7 @@ class DownloadViewModel(
         when (event) {
             is DownloadEvents.OnStartDownload -> {
                 _state.update { it.copy(showConfirmDownloadDialog = false) }
+                startDownload()
             }
             is DownloadEvents.OnCancel ->{
                 _state.update { it.copy(showConfirmCancelDownloadDialog = true) }
@@ -80,10 +80,7 @@ class DownloadViewModel(
                 when (event.action) {
                     is DialogActions.OnConfirm<*> -> {
                         _state.update { it.copy(showConfirmDownloadDialog = false) }
-                        val deviceWidth = settingsRepository.deviceWidth()
-                        val properWidth = properSizeCalc.getProperWidth(deviceWidth)
-                        val path = dirConstants.getDownloadTempPath("data.zip")
-                        commonDownloadService.download(properWidth, path)
+                        startDownload()
                     }
 
                     DialogActions.OnDismiss -> {
@@ -92,5 +89,11 @@ class DownloadViewModel(
                 }
             }
         }
+    }
+
+    private fun startDownload() {
+        val deviceWidth = settingsRepository.deviceWidth()
+        val path = dirConstants.getDownloadTempPath("data.zip")
+        commonDownloadService.download(deviceWidth, path)
     }
 }

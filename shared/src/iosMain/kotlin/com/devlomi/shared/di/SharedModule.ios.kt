@@ -1,7 +1,6 @@
 package com.devlomi.shared.di
 
 import com.devlomi.shared.CommonPreferences
-import com.devlomi.shared.data.quran_datasource.QuranImagePathProvider
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
@@ -12,10 +11,4 @@ actual val platformModule: Module = module {
         CommonPreferences()
     }
 
-    single<QuranImagePathProvider> {
-        QuranImagePathProvider()
-    }
-//    single<FileUnzipper> {
-//        FileUnzipper()
-//    }
 }

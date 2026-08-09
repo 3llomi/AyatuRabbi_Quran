@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -37,9 +38,9 @@ import ayaturabbi.shared.generated.resources.invalid_juzoa
 import ayaturabbi.shared.generated.resources.invalid_page
 import ayaturabbi.shared.generated.resources.juzoa_number
 import ayaturabbi.shared.generated.resources.page_number
-import ayaturabbi.shared.generated.resources.search_for_ayah
 import ayaturabbi.shared.generated.resources.go
 import ayaturabbi.shared.generated.resources.cancel
+import ayaturabbi.shared.generated.resources.search_for_surah
 import com.devlomi.shared.domain.model.Surah
 import com.devlomi.shared.ui.components.SearchCard
 import org.jetbrains.compose.resources.painterResource
@@ -60,7 +61,7 @@ fun SurasScreen(
 
             // layout_search margins 32/24/32
             SearchCard(
-                placeholder = stringResource(Res.string.search_for_ayah),
+                placeholder = stringResource(Res.string.search_for_surah),
                 value = state.query,
                 onValueChange = { onEvent(SurasEvents.OnQueryChange(it)) },
                 modifier = Modifier
@@ -156,8 +157,8 @@ fun SurasScreen(
 
     if (state.juzoaNumberDialogState.isVisible) {
         NumberInputDialog(
-            value = state.pageNumberDialogState.text,
-            showError = state.pageNumberDialogState.showError,
+            value = state.juzoaNumberDialogState.text,
+            showError = state.juzoaNumberDialogState.showError,
             title = stringResource(Res.string.go_to_juzoa),
             hint = stringResource(Res.string.juzoa_number),
             errorText = stringResource(Res.string.invalid_juzoa),
@@ -207,7 +208,7 @@ private fun SurahItem(
                     .background(MaterialTheme.colorScheme.secondary)
             )
             Text(
-                text = surah.surahNumber.toString(),//TODO surahNumberArabic
+                text = surah.surahNumber.toString(),
                 color = MaterialTheme.colorScheme.onSecondary
             )
         }
@@ -236,6 +237,7 @@ private fun NumberInputDialog(
                     onValueChange = {
                         onChange(it)
                     },
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number),
                     singleLine = true,
                     placeholder = { Text(hint) }
                 )

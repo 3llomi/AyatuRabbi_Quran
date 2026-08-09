@@ -16,7 +16,7 @@ fun viewModelModule() = module {
     }
 
     viewModel<DownloadViewModel> {
-        DownloadViewModel(get(), get(), get(), get(), get())
+        DownloadViewModel(get(), get(), get(), get())
     }
 
     viewModel<MainViewModel> {

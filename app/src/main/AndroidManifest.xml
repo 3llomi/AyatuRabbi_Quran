@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"/>
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
@@ -17,9 +18,8 @@
         android:theme="@style/AppTheme"
         tools:replace="android:supportsRtl">
 
-<!--        TODO CHANGE TO DATA SYNC-->
         <service
-            android:foregroundServiceType="shortService"
+            android:foregroundServiceType="dataSync"
             android:name="com.devlomi.shared.DownloadService"
             android:enabled="true"
             android:exported="false" />

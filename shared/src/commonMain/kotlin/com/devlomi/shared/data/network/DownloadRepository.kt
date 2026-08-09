@@ -34,22 +34,24 @@ class DownloadRepository(
     suspend fun download(width: Int, path: String): Result<String> {
         file = PlatformFile(path)
         Logger.d { "PlatformFile Path ${file?.path}" }
-        //TODO DOWNLOAD NOT COMPLETING
-        extractAndCopyFiles.execute(width, file!!.path)
-        Logger.d { "Files Copied, attemtping to set downlaod finished" }
-        settingsRepository.setDownloadFinished(true)
-        _downloadResource.value = DownloadingResource.Success
-        return Result.success("Download and extraction successful")
+//        TODO DOWNLOAD NOT COMPLETING
+//        extractAndCopyFiles.execute(width, file!!.path)
+//        Logger.d { "Files Copied, attemtping to set downlaod finished" }
+//        settingsRepository.setDownloadFinished(true)
+//        _downloadResource.value = DownloadingResource.Success
+//        return Result.success("Download and extraction successful")
         try {
             val result =
-                firebaseFileDownloader.downlaodFile(
-                    "quran_files/data_${width}.zip",
-                    file!!.path
-                ) {
-                    if (downloadResource.value !is DownloadingResource.Success && downloadResource.value !is DownloadingResource.Error) {
-                        _downloadResource.value = DownloadingResource.Loading(it)
-                    }
+                runCatching {
+                    firebaseFileDownloader.downlaodFile(
+                        "quran_files/data_${width}.zip",
+                        file!!.path
+                    ) {
+                        if (downloadResource.value !is DownloadingResource.Success && downloadResource.value !is DownloadingResource.Error) {
+                            _downloadResource.value = DownloadingResource.Loading(it)
+                        }
 
+                    }
                 }
             if (result.isSuccess) {
                 Logger.d { "Result Success" }

@@ -72,6 +72,8 @@ kotlin {
 //        }
 //    }
 
+
+
     iosArm64 {
         binaries.framework {
             baseName = xcfName
@@ -96,22 +98,22 @@ kotlin {
         }
     }
 
-//    swiftPMDependencies {
-//        // Import FirebaseAnalytics into your Kotlin code
-//        swiftPackage(
-//            url = url("https://github.com/firebase/firebase-ios-sdk.git"),
-//            version = from("11.3.0"),
-//            products = listOf(product("FirebaseStorage")),
-//        )
-//        // swift-protobuf is a transitive Firebase dependency,
-//        // so you only need to include it
-//        // if you want to use a specific version
-//        swiftPackage(
-//            url = url("https://github.com/apple/swift-protobuf.git"),
-//            version = exact("1.37.0"),
-//            products = listOf(),
-//        )
-//    }
+    swiftPMDependencies {
+        // Import FirebaseAnalytics into your Kotlin code
+        swiftPackage(
+            url = url("https://github.com/firebase/firebase-ios-sdk.git"),
+            version = from("11.3.0"),
+            products = listOf(product("FirebaseStorage")),
+        )
+        // swift-protobuf is a transitive Firebase dependency,
+        // so you only need to include it
+        // if you want to use a specific version
+        swiftPackage(
+            url = url("https://github.com/apple/swift-protobuf.git"),
+            version = exact("1.37.0"),
+            products = listOf(),
+        )
+    }
 
     // Source set declarations.
     // Declaring a target automatically creates a source set with the same name. By default, the

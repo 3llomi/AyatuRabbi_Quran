@@ -157,7 +157,7 @@ fun App(
                         pageNumberResult?.let { pageNumber ->
                             if (pageNumber != -1) {
                                 Logger.d { "OnPageNumberChange navBackStackEntry $pageNumber" }
-                                viewModel.onEvent(QuranPageEvents.OnPageChanged(pageNumber - 1))//TODO HANDLE -1 IN VM?
+                                viewModel.onEvent(QuranPageEvents.OnPageChanged(pageNumber - 1))
                                 // 4. Clear it so it doesn't re-trigger on configuration changes
                                 backStackEntry.savedStateHandle.set<Int?>(
                                     Screen.QuranPage.PAGE_NUMBER_ARG,
