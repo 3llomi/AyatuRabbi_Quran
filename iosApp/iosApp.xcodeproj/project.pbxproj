@@ -7,12 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		CEC3CCC13005451000D6344B /* KMPNativeCoroutinesAsync in Frameworks */ = {isa = PBXBuildFile; productRef = CEC3CCC03005451000D6344B /* KMPNativeCoroutinesAsync */; };
-		CEC3CCC33005451000D6344B /* KMPNativeCoroutinesCore in Frameworks */ = {isa = PBXBuildFile; productRef = CEC3CCC23005451000D6344B /* KMPNativeCoroutinesCore */; };
-		CEC3CCC63006B90500D6344B /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = CEC3CCC53006B90500D6344B /* ZIPFoundation */; };
-		CEC4199C3007D670009A1668 /* KMPObservableViewModelCore in Frameworks */ = {isa = PBXBuildFile; productRef = CEC4199B3007D670009A1668 /* KMPObservableViewModelCore */; };
-		CEC4199E3007D670009A1668 /* KMPObservableViewModelSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = CEC4199D3007D670009A1668 /* KMPObservableViewModelSwiftUI */; };
-		CEC419C53007FCAD009A1668 /* SwiftUIPager in Frameworks */ = {isa = PBXBuildFile; productRef = CEC419C43007FCAD009A1668 /* SwiftUIPager */; };
 		CEC419DE300BACAD009A1668 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = CEC419DD300BACAD009A1668 /* FirebaseStorage */; };
 		CEC5AA1122334455009A1668 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = CEC419E3300D05CE009A1668 /* libsqlite3.tbd */; };
 /* End PBXBuildFile section */
@@ -36,13 +30,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CEC5AA1122334455009A1668 /* libsqlite3.tbd in Frameworks */,
-				CEC3CCC33005451000D6344B /* KMPNativeCoroutinesCore in Frameworks */,
-				CEC3CCC13005451000D6344B /* KMPNativeCoroutinesAsync in Frameworks */,
-				CEC4199C3007D670009A1668 /* KMPObservableViewModelCore in Frameworks */,
-				CEC419C53007FCAD009A1668 /* SwiftUIPager in Frameworks */,
-				CEC4199E3007D670009A1668 /* KMPObservableViewModelSwiftUI in Frameworks */,
 				CEC419DE300BACAD009A1668 /* FirebaseStorage in Frameworks */,
-				CEC3CCC63006B90500D6344B /* ZIPFoundation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -95,12 +83,6 @@
 			);
 			name = iosApp;
 			packageProductDependencies = (
-				CEC3CCC03005451000D6344B /* KMPNativeCoroutinesAsync */,
-				CEC3CCC23005451000D6344B /* KMPNativeCoroutinesCore */,
-				CEC3CCC53006B90500D6344B /* ZIPFoundation */,
-				CEC4199B3007D670009A1668 /* KMPObservableViewModelCore */,
-				CEC4199D3007D670009A1668 /* KMPObservableViewModelSwiftUI */,
-				CEC419C43007FCAD009A1668 /* SwiftUIPager */,
 				CEC419DD300BACAD009A1668 /* FirebaseStorage */,
 			);
 			productName = iosApp;
@@ -133,10 +115,6 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				CEC3CCBE300536CE00D6344B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
-				CEC3CCBF3005451000D6344B /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */,
-				CEC3CCC43006B90500D6344B /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
-				CEC4199A3007D670009A1668 /* XCRemoteSwiftPackageReference "KMP-ObservableViewModel" */,
-				CEC419C33007FCAD009A1668 /* XCRemoteSwiftPackageReference "SwiftUIPager" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = CEC3CCA63005119000D6344B /* Products */;
@@ -411,71 +389,9 @@
 				version = 11.3.0;
 			};
 		};
-		CEC3CCBF3005451000D6344B /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://www.github.com/rickclephas/KMP-NativeCoroutines.git";
-			requirement = {
-				kind = exactVersion;
-				version = 1.0.4;
-			};
-		};
-		CEC3CCC43006B90500D6344B /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://www.github.com/weichsel/ZIPFoundation.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.9.20;
-			};
-		};
-		CEC4199A3007D670009A1668 /* XCRemoteSwiftPackageReference "KMP-ObservableViewModel" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://www.github.com/rickclephas/KMP-ObservableViewModel.git";
-			requirement = {
-				kind = exactVersion;
-				version = 1.0.5;
-			};
-		};
-		CEC419C33007FCAD009A1668 /* XCRemoteSwiftPackageReference "SwiftUIPager" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://www.github.com/fermoya/SwiftUIPager.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.5.0;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		CEC3CCC03005451000D6344B /* KMPNativeCoroutinesAsync */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CEC3CCBF3005451000D6344B /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */;
-			productName = KMPNativeCoroutinesAsync;
-		};
-		CEC3CCC23005451000D6344B /* KMPNativeCoroutinesCore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CEC3CCBF3005451000D6344B /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */;
-			productName = KMPNativeCoroutinesCore;
-		};
-		CEC3CCC53006B90500D6344B /* ZIPFoundation */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CEC3CCC43006B90500D6344B /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
-			productName = ZIPFoundation;
-		};
-		CEC4199B3007D670009A1668 /* KMPObservableViewModelCore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CEC4199A3007D670009A1668 /* XCRemoteSwiftPackageReference "KMP-ObservableViewModel" */;
-			productName = KMPObservableViewModelCore;
-		};
-		CEC4199D3007D670009A1668 /* KMPObservableViewModelSwiftUI */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CEC4199A3007D670009A1668 /* XCRemoteSwiftPackageReference "KMP-ObservableViewModel" */;
-			productName = KMPObservableViewModelSwiftUI;
-		};
-		CEC419C43007FCAD009A1668 /* SwiftUIPager */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CEC419C33007FCAD009A1668 /* XCRemoteSwiftPackageReference "SwiftUIPager" */;
-			productName = SwiftUIPager;
-		};
 		CEC419DD300BACAD009A1668 /* FirebaseStorage */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = CEC3CCBE300536CE00D6344B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;

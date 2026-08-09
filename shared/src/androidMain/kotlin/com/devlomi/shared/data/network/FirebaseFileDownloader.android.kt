@@ -39,7 +39,7 @@ actual class FirebaseFileDownloader {
         }
     }
 
-    actual suspend fun cancel() {
+    actual fun cancel() {
         task?.cancel()
     }
 }

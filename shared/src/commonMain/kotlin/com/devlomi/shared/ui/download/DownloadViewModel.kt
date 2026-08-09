@@ -58,7 +58,8 @@ class DownloadViewModel(
                 _state.update { it.copy(showConfirmDownloadDialog = false) }
                 startDownload()
             }
-            is DownloadEvents.OnCancel ->{
+
+            is DownloadEvents.OnCancel -> {
                 _state.update { it.copy(showConfirmCancelDownloadDialog = true) }
             }
 
@@ -76,6 +77,7 @@ class DownloadViewModel(
 
                 }
             }
+
             is DownloadEvents.StartDownloadAction -> {
                 when (event.action) {
                     is DialogActions.OnConfirm<*> -> {
@@ -94,6 +96,8 @@ class DownloadViewModel(
     private fun startDownload() {
         val deviceWidth = settingsRepository.deviceWidth()
         val path = dirConstants.getDownloadTempPath("data.zip")
-        commonDownloadService.download(deviceWidth, path)
+        viewModelScope.launch {
+            commonDownloadService.download(deviceWidth, path)
+        }
     }
 }

@@ -67,11 +67,10 @@ class DownloadService : ScopedService() {
         notificationManager = NotificationManagerCompat.from(this)
         lifecycleScope.launch {
             downloadRepository.downloadResource.collectLatest {
-                Logger.d { "DownlaodService Changed - Service ${it.toString()}" }
+                Logger.d { "DownlaodService Changed - Service $it" }
                 if (it is DownloadingResource.Loading) {
                     if (!downloadCancelled) {
                         updateNotificationProgress(it.progress)
-                        _downloadState.value = it
                     }
                 }
             }
@@ -95,11 +94,6 @@ class DownloadService : ScopedService() {
     }
 
     companion object {
-        //TODO REMOVE THIS STATE SINCE I'TS MOVED TO DOWNLOAD REPOSITORY?
-        private val _downloadState = MutableStateFlow<DownloadingResource>(DownloadingResource.None)
-        val downloadState: StateFlow<DownloadingResource>
-            get() = _downloadState
-
         fun start(width: Int, filePath: String, context: Context) {
             val intent = Intent(context, DownloadService::class.java)
             intent.action = IntentConstants.ACTION_START_DOWNLOAD
@@ -175,7 +169,6 @@ class DownloadService : ScopedService() {
             downloadRepository.cancelDownload()
         }
         cancel("Cancelled by user")
-        _downloadState.value = DownloadingResource.Error(UserCancelledException())
         stopService()
     }
 
@@ -212,77 +205,22 @@ class DownloadService : ScopedService() {
         // 	at kotlinx.coroutines.CancellableContinuationImpl.resumeWith(CancellableContinuationImpl.kt:359)
         downloadJob = launch(IO) {
             try {
-                Log.d("DownloadService", "Downloading... at filePath ${filePath}")
-
                 val result = downloadRepository.download(width, filePath)
-                if (result.isSuccess){
+                if (result.isSuccess) {
                     stopService()
-                    Logger.d { "Downlaod Success - Download Service" }
-                }else{
+                } else {
                     Logger.e { "Downlaod Error - Download Service ${result?.exceptionOrNull()?.message}" }
                     throw result.exceptionOrNull() ?: Exception("Download Error")
                 }
-                val temp = File("$cacheDir/quran_data/")
-
-                Log.d("DownloadService", "Unzipping")
-//                FileUnzipper.unZipFile(filePath,temp.path)//TODO UNCOMMENT THIS LINE WHEN TESTING ON REAL DEVICE, IT CRASHES ON EMULATOR
-
-//                val zipFile: okio.Path = File(filePath).absolutePath.toPath()
-//                val destDir: okio.Path = temp.absolutePath.toPath()
-//                FileSystem.SYSTEM.unpackZip(zipFile, destDir)
-//                extractAndCopyFiles.execute(width, filePath)
-
-
-                Log.d("DownloadService", "Copying files...")
-//                copyFiles(temp, width)
-
-                Log.d("DownloadService", "Deleting temp...")
-//                temp.deleteRecursively()
-//                Log.d("DownloadService","Copied files")
-//                File(cacheDir, "data.zip").delete()
-
-
-//                withContext(Dispatchers.Main) {
-//                    _downloadState.value = DownloadingResource.Success
-//                }
-//                stopService()
 
             } catch (e: Exception) {
                 Logger.e { "Error Downloading - Downlaod Service ${e.message}" }
-                withContext(Dispatchers.Main) {
-                    _downloadState.value = DownloadingResource.Error(e)
-                }
-
                 stopService()
 
             }
         }
     }
 
-
-    private fun copyFiles(temp: File, width: Int) {
-        File(temp, DBFileNames.ayahInfoNameDbPath(width)).copyTo(
-            File(
-                filesDir,
-                DBFileNames.ayahInfoNameDbPath(width)
-            ), overwrite = true
-        )
-
-
-        File(temp, DBFileNames.quranDbPath).copyTo(
-            File(
-                filesDir,
-                DBFileNames.quranDbPath
-            ), overwrite = true
-        )
-
-
-
-        File(temp, "width_$width").copyRecursively(
-            File(filesDir, "quran_images"),
-            overwrite = true
-        )
-    }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
         cancelDownload()

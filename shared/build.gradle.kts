@@ -1,18 +1,3 @@
-import java.io.File
-import javax.xml.parsers.DocumentBuilderFactory
-import org.gradle.api.DefaultTask
-import org.gradle.api.GradleException
-import org.gradle.api.file.ConfigurableFileCollection
-import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.tasks.InputFiles
-import org.gradle.api.tasks.OutputDirectory
-import org.gradle.api.tasks.OutputFile
-import org.gradle.api.tasks.PathSensitive
-import org.gradle.api.tasks.PathSensitivity
-import org.gradle.api.tasks.TaskAction
-import org.w3c.dom.Element
-
 plugins {
     id("org.jetbrains.kotlin.multiplatform")
     id("com.android.kotlin.multiplatform.library")
@@ -21,7 +6,6 @@ plugins {
     id("com.android.lint")
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.room) apply false
-//    id("com.rickclephas.kmp.nativecoroutines") version "1.0.0-ALPHA-38"
 }
 
 
@@ -41,37 +25,9 @@ kotlin {
         }
 
 
-//        withHostTestBuilder {
-//        }
-
-//        withDeviceTestBuilder {
-//            sourceSetTreeName = "test"
-//        }.configure {
-//            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-//        }
     }
 
-    // For iOS targets, this is also where you should
-    // configure native binary output. For more information, see:
-    // https://kotlinlang.org/docs/multiplatform-build-native-binaries.html#build-xcframeworks
-
-    // A step-by-step guide on how to include this library in an XCode
-    // project can be found here:
-    // https://developer.android.com/kotlin/multiplatform/migrate
-    val xcfName = "sharedKit"
-
-//    iosX64 {
-//        binaries.framework {
-//            baseName = xcfName
-//            isStatic = true
-//            linkerOpts("-framework", "FirebaseCore")
-//            linkerOpts("-framework", "FirebaseStorage")
-//            // Suppress the duplicate libraries warning
-//            linkerOpts("-Xlinker", "-no_warn_duplicate_libraries")
-//
-//        }
-//    }
-
+    val xcfName = "Shared"
 
 
     iosArm64 {
@@ -127,7 +83,6 @@ kotlin {
             languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
         }
         commonMain {
-            kotlin.srcDir("build/generated/sharedStrings/commonMain/kotlin")
             dependencies {
 
                 implementation(libs.kotlinx.coroutines)
@@ -165,28 +120,15 @@ kotlin {
         androidMain {
             kotlin.srcDir("build/generated/sharedStrings/androidMain/kotlin")
             dependencies {
-//                implementation("dev.gitlive:firebase-storage:2.4.0")
-//                implementation("dev.gitlive:firebase-analytics:2.4.0")
                 api(libs.koin.android)
                 implementation(libs.androidx.lifecycle.service)
                 implementation(libs.androidx.room.sqlite.wrapper)
                 implementation("com.google.firebase:firebase-storage:19.1.1")
-//                implementation ("com.google.firebase:firebase-crashlytics:17.2.2")//TODO
-                implementation("com.google.firebase:firebase-analytics:17.6.0")
                 implementation(libs.compose.uiToolingPreview)
                 implementation(libs.compose.uiTooling)
-
-//                implementation("org.jetbrains.compose.runtime:runtime:1.6.11")
             }
         }
 
-//        getByName("androidDeviceTest") {
-//            dependencies {
-//                implementation("androidx.test.ext:junit:1.3.0")
-//                implementation("androidx.test:core:1.5.0")
-//                implementation("androidx.test:runner:1.5.2")
-//            }
-//        }
 
         iosMain {
             kotlin.srcDir("build/generated/sharedStrings/iosMain/kotlin")
@@ -198,7 +140,7 @@ kotlin {
                 ld: symbol(s) not found for architecture arm64
                 clang: error: linker command failed with exit code 1 (use -v to see invocation)
                  */
-                implementation("androidx.sqlite:sqlite-framework:${libs.versions.sqlite.get()}")
+//                implementation("androidx.sqlite:sqlite-framework:${libs.versions.sqlite.get()}")
                 // Add iOS-specific dependencies here. This a source set created by Kotlin Gradle
                 // Plugin (KGP) that each specific iOS target (e.g., iosX64) depends on as
                 // part of KMP’s default source set hierarchy. Note that this source set depends

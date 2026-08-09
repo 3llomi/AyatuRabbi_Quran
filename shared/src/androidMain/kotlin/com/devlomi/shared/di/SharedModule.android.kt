@@ -24,7 +24,4 @@ actual val platformModule: Module = module {
     single<DirConstants>{
         DirConstants(androidContext())
     }
-//    single<FileUnzipper> {
-//        FileUnzipper()
-//    }
 }

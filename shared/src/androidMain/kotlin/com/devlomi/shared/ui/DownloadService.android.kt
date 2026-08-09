@@ -4,7 +4,7 @@ import android.content.Context
 import com.devlomi.shared.DownloadService
 
 actual class CommonDownloadService(private val context: Context) {
-    actual fun download(width: Int, filePath: String) {
+    actual suspend fun download(width: Int, filePath: String) {
         DownloadService.start( width, filePath,context)
     }
 
