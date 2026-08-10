@@ -87,7 +87,6 @@ kotlin {
 
                 implementation(libs.kotlinx.coroutines)
                 api(libs.androidx.lifecycle.viewmodel)
-                api(libs.koin.core)
                 implementation(libs.compose.runtime)
                 implementation(libs.compose.foundation)
                 implementation(libs.compose.material3)
@@ -140,7 +139,7 @@ kotlin {
                 ld: symbol(s) not found for architecture arm64
                 clang: error: linker command failed with exit code 1 (use -v to see invocation)
                  */
-//                implementation("androidx.sqlite:sqlite-framework:${libs.versions.sqlite.get()}")
+                implementation("androidx.sqlite:sqlite-framework:${libs.versions.sqlite.get()}")
                 // Add iOS-specific dependencies here. This a source set created by Kotlin Gradle
                 // Plugin (KGP) that each specific iOS target (e.g., iosX64) depends on as
                 // part of KMP’s default source set hierarchy. Note that this source set depends

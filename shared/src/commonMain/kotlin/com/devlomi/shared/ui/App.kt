@@ -65,13 +65,16 @@ fun App(
         if (sharedState.hasDownloadedFiles) Screen.QuranPage.createRoute(-1) else Screen.Download.route
     Logger.d { "Initial Screen $initialScreen" }
     AppTheme {
+        Logger.d { "Initialized AppTheme" }
         Box(
             modifier = Modifier.background(MaterialTheme.colorScheme.background)
                 .systemBarsPadding()
             //.safeDrawingPadding()//TODO use systemBarsPadding or safeDrawingPadding()?
 
         ) {
+            Logger.d { "SetWindowFlag"}
             SetWindowFlag(sharedState.keepScreenOn)
+            Logger.d { "ObserveWindowFocusChange"}
             //hide system bars if the user presses the recent button or minimized the app
             ObserveWindowFocusChange {
                 val currentRoute = navController.currentDestination?.route
@@ -81,8 +84,10 @@ fun App(
                 hideSystemUi(it)
             }
 
+            Logger.d { "Disposing DisposableEffect(navController)" }
 
             DisposableEffect(navController) {
+                Logger.d { "DisposableEffect(navController) "}
                 val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
                     val route = destination.route
                     hideSystemUi(route?.startsWith(Screen.QuranPage.route) == true)
@@ -122,7 +127,9 @@ fun App(
                 }
             ) {
                 composable(Screen.Download.route) {
+                    Logger.d { "composable(Screen.Download.route)"}
                     val viewModel = koinViewModel<DownloadViewModel>()
+                    Logger.d { "koinViewModel<DownloadViewModel)"}
                     val state = viewModel.state.collectAsStateWithLifecycle().value
                     ObserveAsEvent(viewModel.navigationEvent) {
                         when (it) {

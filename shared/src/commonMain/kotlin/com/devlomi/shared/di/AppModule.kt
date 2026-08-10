@@ -51,10 +51,4 @@ fun appModule() = module {
         ExtractAndCopyFiles(get())
     }
 
-
-//    @Singleton
-//    fun provideQuranImagesPathFile(@ApplicationContext context: Context) =
-//        File(context.filesDir, "quran_images")
-
-
 }

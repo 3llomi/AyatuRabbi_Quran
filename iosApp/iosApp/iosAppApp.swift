@@ -6,14 +6,15 @@
 //
 
 import SwiftUI
-import sharedKit
+import Shared
 
 @main
 struct iosAppApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
 
     init() {
-        KoinKt.doInitKoinIos()
+        KoinInitIOSKt.doInitKoinIos()
+        InitQuranPageDataSourceKt.doInitQuranPageDataSource()
       }
     var body: some Scene {
         WindowGroup {
