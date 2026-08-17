@@ -1,7 +1,10 @@
 package com.devlomi.shared.data.db
 
 import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.driver.NativeSQLiteDriver
+import androidx.sqlite.execSQL
 import co.touchlab.kermit.Logger
 import com.devlomi.shared.data.db.ayahinfo.AyahInfoDB
 import com.devlomi.shared.data.db.bookmark.BookmarkDB
@@ -15,29 +18,28 @@ actual class DBFactory(private val settingsRepository: SettingsRepository) {
     actual fun createAyahInfoDB(): AyahInfoDB {
         val deviceWidth = settingsRepository.deviceWidth()
         val dbFilePath = documentDirectory() + "/" + DBFileNames.ayahInfoNameDbPath(deviceWidth)
-        Logger.d { "AyahInfoDB $dbFilePath" }
         return Room.databaseBuilder<AyahInfoDB>(
             name = dbFilePath,
-        ).setDriver(NativeSQLiteDriver())
+        ).fallbackToDestructiveMigration(true)
+            .setDriver(NativeSQLiteDriver())
             .build()
     }
 
     actual fun createQuranDB(): QuranDB {
         val dbFilePath = documentDirectory() + "/" + DBFileNames.quranDbPath
-        Logger.d { "QuranDB $dbFilePath" }
 
         return Room.databaseBuilder<QuranDB>(
             name = dbFilePath,
-        ).setDriver(NativeSQLiteDriver())
+        ).fallbackToDestructiveMigration(true).setDriver(NativeSQLiteDriver())
             .build()
     }
 
     actual fun createBookmarkDB(): BookmarkDB {
         val dbFilePath = documentDirectory() + "/" + BookmarkDB.Companion.DB_NAME
-        Logger.d { "bookmarkDB $dbFilePath" }
         return Room.databaseBuilder<BookmarkDB>(
             name = dbFilePath,
-        ).setDriver(NativeSQLiteDriver())
+        ).fallbackToDestructiveMigration(true)
+            .setDriver(NativeSQLiteDriver())
             .build()
     }
 

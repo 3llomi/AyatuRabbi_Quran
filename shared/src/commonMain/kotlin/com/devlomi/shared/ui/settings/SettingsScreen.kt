@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
@@ -40,6 +41,9 @@ import ayaturabbi.shared.generated.resources.share_app
 import ayaturabbi.shared.generated.resources.version
 import ayaturabbi.shared.generated.resources.website
 import com.devlomi.shared.common.getAppLink
+import com.devlomi.shared.platform
+import com.devlomi.shared.ui.components.IOSBackButton
+import com.devlomi.shared.ui.suras.SurasEvents
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -59,6 +63,14 @@ fun SettingsScreen(
             .verticalScroll(rememberScrollState()) // ScrollView
             .padding(start = 8.dp, top = 16.dp, end = 8.dp) // LinearLayout margins
     ) {
+        IOSBackButton(
+            modifier = Modifier.size(48.dp), onBackPressed = {
+                onEvent(SettingsEvents.OnBackClick)
+            })
+        if (platform() == "iOS") {
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
         Text(
             text = stringResource(Res.string.version),
             style = SettingsTypography.bold,

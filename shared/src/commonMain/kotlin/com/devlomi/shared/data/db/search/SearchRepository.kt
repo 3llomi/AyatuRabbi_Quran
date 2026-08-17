@@ -20,13 +20,13 @@ class SearchRepository(
         val suras = getStringArray(Res.array.surah_names)
 
         return foundResults.map {
-            val suraNumber = it.c0sura!!.toInt()
+            val suraNumber = it.c0sura.toInt()
             val surah = suras.getOrNull(suraNumber - 1) ?: ""
 
-            val foundPageNumber = ayahInfoDao.getPageNumberBySurahAndAyahNumber(suraNumber,it.c1ayah!!.toInt())
+            val foundPageNumber = ayahInfoDao.getPageNumberBySurahAndAyahNumber(suraNumber, it.c1ayah.toInt())
 
 
-            SearchResult(surah, foundPageNumber, it.c1ayah!!.toInt(), it.c2text ?: "", query)
+            SearchResult(surah, foundPageNumber, it.c1ayah.toInt(), it.c2text, query)
         }
 
     }

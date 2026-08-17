@@ -90,6 +90,7 @@ import ayaturabbi.shared.generated.resources.save
 import ayaturabbi.shared.generated.resources.search
 import ayaturabbi.shared.generated.resources.surah
 import ayaturabbi.shared.generated.resources.text
+import com.devlomi.shared.common.asComposeColor
 import com.devlomi.shared.ui.components.AndroidBackHandler
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.stringResource
@@ -112,13 +113,11 @@ fun QuranPageScreen(
 
     LaunchedEffect(state.currentIndex, state.quranPages.size) {
         if (state.quranPages.isNotEmpty() && state.currentIndex != pagerState.currentPage) {
-            Logger.d { "pagerState.scrollToPage(state.currentIndex) ${state.currentIndex}" }
             pagerState.scrollToPage(state.currentIndex)
         }
     }
 
     LaunchedEffect(pagerState.currentPage) {
-        Logger.d { "pagerState.currentPage ${pagerState.currentPage}" }
         if (state.quranPages.isNotEmpty() && pagerState.currentPage != state.currentIndex) {
             onEvent(QuranPageEvents.OnPageSwipe(pagerState.currentPage))
         }
@@ -599,14 +598,4 @@ private fun rememberFileImageBitmap(path: String): androidx.compose.runtime.Stat
             null
         }
     }
-}
-
-private fun String.asComposeColor(): Color {
-    val raw = removePrefix("#")
-    val argb = when (raw.length) {
-        6 -> (0xFF000000 or raw.toLong(16))
-        8 -> raw.toLong(16)
-        else -> 0xFF0C2942
-    }
-    return Color(argb)
 }

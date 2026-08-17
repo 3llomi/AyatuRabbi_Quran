@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
@@ -31,6 +32,7 @@ import ayaturabbi.shared.generated.resources.ic_reading_quran
 import ayaturabbi.shared.generated.resources.ic_star_ayah
 import ayaturabbi.shared.generated.resources.search_for_ayah
 import com.devlomi.shared.domain.model.SearchResult
+import com.devlomi.shared.ui.components.IOSBackButton
 import com.devlomi.shared.ui.components.SearchCard
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
@@ -43,6 +45,10 @@ fun SearchScreen(
 ) {
         Box(modifier = Modifier.fillMaxSize()) {
             Column(modifier = Modifier.fillMaxSize()) {
+                IOSBackButton(
+                    modifier = Modifier.size(48.dp), onBackPressed = {
+                        onEvent(SearchEvents.OnBackClick)
+                    })
                 // layout_search: margins 32/24/32
                 SearchCard(
                     value = state.query,

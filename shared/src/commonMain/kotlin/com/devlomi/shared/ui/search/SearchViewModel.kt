@@ -37,6 +37,11 @@ class SearchViewModel
                     )
                 }
             }
+            is SearchEvents.OnBackClick -> {
+                viewModelScope.launch {
+                    navigationChannel.send(SearchNavigationEvents.Back)
+                }
+            }
         }
     }
 

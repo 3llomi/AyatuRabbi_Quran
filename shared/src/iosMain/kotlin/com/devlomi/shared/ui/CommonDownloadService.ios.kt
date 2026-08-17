@@ -17,12 +17,10 @@ actual class CommonDownloadService(
             if (result.isSuccess) {
                 stopService()
             } else {
-                Logger.e { "Downlaod Error - Download Service ${result.exceptionOrNull()?.message}" }
                 throw result.exceptionOrNull() ?: Exception("Download Error")
             }
 
         } catch (e: Exception) {
-            Logger.e { "Error Downloading - Downlaod Service ${e.message}" }
             stopService()
         }
     }

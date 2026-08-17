@@ -59,6 +59,11 @@ class BookmarksViewModel(
                     }
                 }
             }
+            is BookmarkEvents.OnBackClick -> {
+                viewModelScope.launch {
+                    navigationChannel.send(BookmarkNavigationEvents.Back)
+                }
+            }
         }
     }
 
@@ -87,7 +92,6 @@ class BookmarksViewModel(
                     }
                 }
             } catch (e: Exception) {
-                Logger.e("BookmarksViewModel Error deleting bookmark: ${e.message}")
             }
         }
 

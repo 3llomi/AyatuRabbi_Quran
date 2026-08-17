@@ -343,7 +343,6 @@ class QuranPageViewModel(
 
     private fun setPageScale(thumbPosition: Int) {
         val scale = ProgressMapper.mapToScale(thumbPosition)
-        Logger.d { "ThumbPosition $thumbPosition - scale: $scale" }
         currentScale = scale
         _state.update { it.copy(pageScale = scale, pageScaleSliderValue = thumbPosition.toFloat()) }
     }

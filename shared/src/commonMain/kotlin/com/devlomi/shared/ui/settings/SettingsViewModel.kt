@@ -41,6 +41,11 @@ class SettingsViewModel(private val settingsRepository: SettingsRepository) :
                     navigationChannel.send(SettingsNavigationEvents.ShareApp)
                 }
             }
+            is SettingsEvents.OnBackClick -> {
+                viewModelScope.launch {
+                    navigationChannel.send(SettingsNavigationEvents.Back)
+                }
+            }
         }
     }
 

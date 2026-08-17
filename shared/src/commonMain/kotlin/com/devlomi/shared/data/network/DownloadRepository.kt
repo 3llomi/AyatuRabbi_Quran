@@ -4,6 +4,7 @@ import co.touchlab.kermit.Logger
 import com.devlomi.shared.data.network.FirebaseFileDownloader
 import com.devlomi.shared.data.settings.SettingsRepository
 import com.devlomi.shared.domain.ExtractAndCopyFiles
+import com.devlomi.shared.platform
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.delete
 import io.github.vinceglb.filekit.path
@@ -33,18 +34,15 @@ class DownloadRepository(
 
     suspend fun download(width: Int, path: String): Result<String> {
         file = PlatformFile(path)
-        Logger.d { "PlatformFile Path ${file?.path}" }
-//        TODO DOWNLOAD NOT COMPLETING
-//        extractAndCopyFiles.execute(width, file!!.path)
-//        Logger.d { "Files Copied, attemtping to set downlaod finished" }
-//        settingsRepository.setDownloadFinished(true)
-//        _downloadResource.value = DownloadingResource.Success
-//        return Result.success("Download and extraction successful")
+        _downloadResource.value = DownloadingResource.Loading(0)
         try {
+            val fileRemotePath =
+                if (platform() == "iOS") "quran_files/data_${width}_ios.zip"
+                else "quran_files/data_${width}.zip"
             val result =
                 runCatching {
                     firebaseFileDownloader.downlaodFile(
-                        "quran_files/data_${width}.zip",
+                        fileRemotePath,
                         file!!.path
                     ) {
                         if (downloadResource.value !is DownloadingResource.Success && downloadResource.value !is DownloadingResource.Error) {
@@ -54,7 +52,6 @@ class DownloadRepository(
                     }
                 }
             if (result.isSuccess) {
-                Logger.d { "Result Success" }
                 extractAndCopyFiles.execute(width, file!!.path)
                 settingsRepository.setDownloadFinished(true)
                 _downloadResource.value = DownloadingResource.Success
@@ -70,9 +67,7 @@ class DownloadRepository(
 
             }
         } catch (e: Exception) {
-            Logger.d { "Download Failure Repository ${e.message}" }
             _downloadResource.value = DownloadingResource.Error(e)
-            Logger.d { "Submitted Error Event - Download Repository ${e.message}" }
             return Result.failure(Exception(e.message))
         }
     }

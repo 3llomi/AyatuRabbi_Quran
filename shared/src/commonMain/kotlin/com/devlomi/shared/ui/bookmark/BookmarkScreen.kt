@@ -38,7 +38,9 @@ import ayaturabbi.shared.generated.resources.saved_bookmarks
 import ayaturabbi.shared.generated.resources.yes
 import com.devlomi.shared.common.DateFormatter
 import com.devlomi.shared.data.db.bookmark.Bookmark
+import com.devlomi.shared.ui.components.IOSBackButton
 import com.devlomi.shared.ui.suras.DialogActions
+import com.devlomi.shared.ui.suras.SurasEvents
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
@@ -57,6 +59,11 @@ fun BookmarksScreen(
             .background(MaterialTheme.colorScheme.background)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
+            IOSBackButton(
+                modifier = Modifier.size(48.dp), onBackPressed = {
+                    onEvent(BookmarkEvents.OnBackClick)
+                })
+
             BookmarksTitle(
                 modifier = Modifier
                     .fillMaxWidth()

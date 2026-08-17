@@ -38,7 +38,6 @@ class DownloadViewModel(
     init {
         viewModelScope.launch {
             downloadRepository.downloadResource.collect { resource ->
-                Logger.d { "DownloadViewModel ${resource.toString()}" }
                 _state.update { it.copy(downlaodState = resource) }
 
                 if (resource is DownloadingResource.Success) {
@@ -67,7 +66,6 @@ class DownloadViewModel(
                 when (event.action) {
                     is DialogActions.OnConfirm<*> -> {
                         _state.update { it.copy(showConfirmCancelDownloadDialog = false) }
-                        Logger.d { "Cancelling Downlaod VM" }
                         commonDownloadService.cancel()
                     }
 

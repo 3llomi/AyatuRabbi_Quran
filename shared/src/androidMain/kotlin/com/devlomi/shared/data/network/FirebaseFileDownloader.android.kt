@@ -20,13 +20,9 @@ actual class FirebaseFileDownloader {
             task?.addOnProgressListener {
 
                 val progressDouble = 100.0 * it.bytesTransferred / it.totalByteCount
-                Logger.d { "ProgressBytesTransferred ${it.bytesTransferred} - totalByte ${it.totalByteCount}" }
-                //get progress
-                Logger.d { "Progress $progressDouble" }
                 val progress = progressDouble.toInt()
                 onProgress(progress)
             }?.addOnCompleteListener {
-                Logger.d { "addOnCompleteListener ${it.isSuccessful}" }
                 if (it.isSuccessful) {
                     continuation.resumeWith(Result.success(filePath))
                 } else {

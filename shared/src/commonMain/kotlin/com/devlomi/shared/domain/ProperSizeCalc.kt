@@ -1,8 +1,13 @@
 package com.devlomi.shared.domain
 
-//TODO SHOULD WE DO A VARIANT FOR IOS?
+import com.devlomi.shared.platform
+
 class ProperSizeCalc {
     fun getProperWidth(deviceWidth:Int): Int {
+        //we use only 1260 on IOS
+        if (platform() == "iOS") {
+            return 1260
+        }
         return  when {
             deviceWidth <= 320 -> 320
             deviceWidth <= 480 -> 480

@@ -61,6 +61,11 @@ class SurasViewModel(
                     )
                 }
             }
+            is SurasEvents.OnBackClick ->{
+                viewModelScope.launch {
+                    navigationChannel.send(SurasNavigationEvent.Back)
+                }
+            }
 
             is SurasEvents.JuzoaNumberDialogEvents -> {
                 when (event.action) {
@@ -158,9 +163,7 @@ class SurasViewModel(
                             viewModelScope.launch {
                                 navigationChannel.send(
                                     SurasNavigationEvent.ToQuranPageWithPageNumber(
-                                        state.value.pageNumberDialogState.text.toInt().also {
-                                            Logger.d{"Navigating to page number: $it - text ${state.value.pageNumberDialogState.text}"}
-                                        }
+                                        state.value.pageNumberDialogState.text.toInt()
                                     )
                                 )
                             }

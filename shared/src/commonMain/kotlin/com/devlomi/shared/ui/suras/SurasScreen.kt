@@ -42,6 +42,7 @@ import ayaturabbi.shared.generated.resources.go
 import ayaturabbi.shared.generated.resources.cancel
 import ayaturabbi.shared.generated.resources.search_for_surah
 import com.devlomi.shared.domain.model.Surah
+import com.devlomi.shared.ui.components.IOSBackButton
 import com.devlomi.shared.ui.components.SearchCard
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -59,7 +60,12 @@ fun SurasScreen(
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
 
-            // layout_search margins 32/24/32
+
+            IOSBackButton(
+                modifier = Modifier.size(48.dp), onBackPressed = {
+                    onEvent(SurasEvents.OnBackClick)
+                })
+
             SearchCard(
                 placeholder = stringResource(Res.string.search_for_surah),
                 value = state.query,
@@ -69,7 +75,6 @@ fun SurasScreen(
                     .padding(start = 32.dp, top = 24.dp, end = 32.dp)
             )
 
-            // btn_go_to_page + btn_go_to_juzoa, top 16
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -115,7 +120,6 @@ fun SurasScreen(
                 }
             }
 
-            // rv_suras marginTop 28
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()

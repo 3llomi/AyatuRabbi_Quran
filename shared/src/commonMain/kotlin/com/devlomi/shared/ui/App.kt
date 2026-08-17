@@ -1,18 +1,20 @@
 package com.devlomi.shared.ui
 
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -23,16 +25,16 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import ayaturabbi.shared.generated.resources.Res
 import ayaturabbi.shared.generated.resources.share_app_text
-import co.touchlab.kermit.Logger
+import com.devlomi.shared.common.asComposeColor
 import com.devlomi.shared.common.getAppLink
 import com.devlomi.shared.ui.bookmark.BookmarkNavigationEvents
-import com.devlomi.shared.ui.main.MainViewModel
 import com.devlomi.shared.ui.bookmark.BookmarksScreen
 import com.devlomi.shared.ui.bookmark.BookmarksViewModel
 import com.devlomi.shared.ui.components.ObserveAsEvent
 import com.devlomi.shared.ui.download.DownloadNavigationEvent
 import com.devlomi.shared.ui.download.DownloadScreen
 import com.devlomi.shared.ui.download.DownloadViewModel
+import com.devlomi.shared.ui.main.MainViewModel
 import com.devlomi.shared.ui.quran_page.QuranPageEvents
 import com.devlomi.shared.ui.quran_page.QuranPageNavigationEvent
 import com.devlomi.shared.ui.quran_page.QuranPageScreen
@@ -40,6 +42,7 @@ import com.devlomi.shared.ui.quran_page.QuranPageViewModel
 import com.devlomi.shared.ui.search.SearchNavigationEvents
 import com.devlomi.shared.ui.search.SearchScreen
 import com.devlomi.shared.ui.search.SearchViewModel
+import com.devlomi.shared.ui.settings.SettingsNavigationEvents
 import com.devlomi.shared.ui.settings.SettingsScreen
 import com.devlomi.shared.ui.settings.SettingsViewModel
 import com.devlomi.shared.ui.suras.SurasNavigationEvent
@@ -47,7 +50,6 @@ import com.devlomi.shared.ui.suras.SurasScreen
 import com.devlomi.shared.ui.suras.SurasViewModel
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.getString
-import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -63,18 +65,17 @@ fun App(
     val navController = rememberNavController()
     val initialScreen =
         if (sharedState.hasDownloadedFiles) Screen.QuranPage.createRoute(-1) else Screen.Download.route
-    Logger.d { "Initial Screen $initialScreen" }
     AppTheme {
-        Logger.d { "Initialized AppTheme" }
+        val defaultBackgroundColor = MaterialTheme.colorScheme.background
+        var backgroundColor by remember{ mutableStateOf(defaultBackgroundColor) }
+        var currentRoute: String? by remember { mutableStateOf(null) }
+
         Box(
-            modifier = Modifier.background(MaterialTheme.colorScheme.background)
+            modifier = Modifier.background(backgroundColor)
                 .systemBarsPadding()
-            //.safeDrawingPadding()//TODO use systemBarsPadding or safeDrawingPadding()?
 
         ) {
-            Logger.d { "SetWindowFlag"}
             SetWindowFlag(sharedState.keepScreenOn)
-            Logger.d { "ObserveWindowFocusChange"}
             //hide system bars if the user presses the recent button or minimized the app
             ObserveWindowFocusChange {
                 val currentRoute = navController.currentDestination?.route
@@ -84,12 +85,11 @@ fun App(
                 hideSystemUi(it)
             }
 
-            Logger.d { "Disposing DisposableEffect(navController)" }
 
             DisposableEffect(navController) {
-                Logger.d { "DisposableEffect(navController) "}
                 val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
                     val route = destination.route
+                    currentRoute = route
                     hideSystemUi(route?.startsWith(Screen.QuranPage.route) == true)
                 }
                 navController.addOnDestinationChangedListener(listener)
@@ -127,9 +127,7 @@ fun App(
                 }
             ) {
                 composable(Screen.Download.route) {
-                    Logger.d { "composable(Screen.Download.route)"}
                     val viewModel = koinViewModel<DownloadViewModel>()
-                    Logger.d { "koinViewModel<DownloadViewModel)"}
                     val state = viewModel.state.collectAsStateWithLifecycle().value
                     ObserveAsEvent(viewModel.navigationEvent) {
                         when (it) {
@@ -163,7 +161,6 @@ fun App(
                     LaunchedEffect(pageNumberResult) {
                         pageNumberResult?.let { pageNumber ->
                             if (pageNumber != -1) {
-                                Logger.d { "OnPageNumberChange navBackStackEntry $pageNumber" }
                                 viewModel.onEvent(QuranPageEvents.OnPageChanged(pageNumber - 1))
                                 // 4. Clear it so it doesn't re-trigger on configuration changes
                                 backStackEntry.savedStateHandle.set<Int?>(
@@ -171,6 +168,14 @@ fun App(
                                     null
                                 )
                             }
+                        }
+                    }
+
+                    LaunchedEffect(state.backgroundColor,currentRoute){
+                        backgroundColor = if (currentRoute?.startsWith( Screen.QuranPage.routeWithArgs) == true) {
+                            state.backgroundColor.asComposeColor()
+                        }else{
+                            defaultBackgroundColor
                         }
                     }
 
@@ -208,7 +213,7 @@ fun App(
                     }
                     QuranPageScreen(
                         state = state,
-                        onEvent = viewModel::onEvent
+                        onEvent = viewModel::onEvent,
                     )
                 }
                 composable(Screen.Suras.route) {
@@ -217,13 +222,14 @@ fun App(
                     ObserveAsEvent(viewModel.navigationEvent) {
                         when (it) {
                             is SurasNavigationEvent.ToQuranPageWithPageNumber -> {
-                                Logger.d { "ToQuranPage with number ${it.pageNumber}" }
-
-                                Logger.d { "navController.previousBackStackEntry?.destination?.navigatorName ${navController.previousBackStackEntry?.destination?.route}" }
                                 navController.previousBackStackEntry?.savedStateHandle?.set(
                                     Screen.QuranPage.PAGE_NUMBER_ARG,
                                     it.pageNumber
                                 )
+                                navController.popBackStack()
+                            }
+
+                            SurasNavigationEvent.Back -> {
                                 navController.popBackStack()
                             }
                         }
@@ -236,11 +242,13 @@ fun App(
                     ObserveAsEvent(viewModel.navigationEvents) {
                         when (it) {
                             is SearchNavigationEvents.BackToQuranPageWithPageNumber -> {
-                                Logger.d { "BackToQuranPageWithPageNumber ${it.pageNumber}" }
                                 navController.previousBackStackEntry?.savedStateHandle?.set(
                                     Screen.QuranPage.PAGE_NUMBER_ARG,
                                     it.pageNumber
                                 )
+                                navController.popBackStack()
+                            }
+                            SearchNavigationEvents.Back -> {
                                 navController.popBackStack()
                             }
                         }
@@ -253,11 +261,13 @@ fun App(
                     ObserveAsEvent(viewModel.navigationEvents) {
                         when (it) {
                             is BookmarkNavigationEvents.ToQuranPageWithPageNumber -> {
-                                Logger.d { "ToQuranPage with number ${it.pageNumber}" }
                                 navController.previousBackStackEntry?.savedStateHandle?.set(
                                     Screen.QuranPage.PAGE_NUMBER_ARG,
                                     it.pageNumber
                                 )
+                                navController.popBackStack()
+                            }
+                            BookmarkNavigationEvents.Back -> {
                                 navController.popBackStack()
                             }
                         }
@@ -268,12 +278,18 @@ fun App(
                     val viewModel = koinViewModel<SettingsViewModel>()
                     val state = viewModel.state.collectAsStateWithLifecycle().value
                     ObserveAsEvent(viewModel.navigationEvents) {
-                        val text = runBlocking {
-                            val appLink = getAppLink()
-                            getString(Res.string.share_app_text, appLink)
+                        when (it) {
+                            SettingsNavigationEvents.Back -> {
+                                navController.popBackStack()
+                            }
+                            SettingsNavigationEvents.ShareApp -> {
+                                val text = runBlocking {
+                                    val appLink = getAppLink()
+                                    getString(Res.string.share_app_text, appLink)
+                                }
+                                onShareApp(text)
+                            }
                         }
-                        onShareApp(text)
-
                     }
                     SettingsScreen(state, onEvent = viewModel::onEvent)
                 }

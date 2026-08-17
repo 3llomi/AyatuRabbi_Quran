@@ -13,7 +13,7 @@ import com.devlomi.shared.data.db.quran_ar.entities.VersesContentEntity
 @Database(
     entities = [
         ArabicTextEntity::class, ShareTextEntity::class, VersesContentEntity::class
-    ], version = 1, exportSchema = false
+    ], version = 2, exportSchema = false
 )
 @ConstructedBy(QuranDBConstructor::class)
 abstract class QuranDB : RoomDatabase() {

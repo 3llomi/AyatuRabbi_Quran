@@ -84,10 +84,22 @@ actual object ShareImageBackground {
         if (h.length == 6 || h.length == 8) {
             try {
                 val hasAlpha = h.length == 8
-                val a = if (hasAlpha) h.substring(0, 2).toInt(16) else 255
-                val r = if (hasAlpha) h.substring(2, 4).toInt(16) else h.substring(0, 2).toInt(16)
-                val g = if (hasAlpha) h.substring(if (hasAlpha) 4 else 2, if (hasAlpha) 6 else 4).toInt(16) else 0
-                val b = if (hasAlpha) h.substring(if (hasAlpha) 6 else 4, if (hasAlpha) 8 else 6).toInt(16) else 0
+                val a: Int
+                val r: Int
+                val g: Int
+                val b: Int
+
+                if (hasAlpha) {
+                    a = h.substring(0, 2).toInt(16)
+                    r = h.substring(2, 4).toInt(16)
+                    g = h.substring(4, 6).toInt(16)
+                    b = h.substring(6, 8).toInt(16)
+                } else {
+                    a = 255
+                    r = h.substring(0, 2).toInt(16)
+                    g = h.substring(2, 4).toInt(16)
+                    b = h.substring(4, 6).toInt(16)
+                }
 
                 val af = a.toDouble() / 255.0
                 val rf = r.toDouble() / 255.0

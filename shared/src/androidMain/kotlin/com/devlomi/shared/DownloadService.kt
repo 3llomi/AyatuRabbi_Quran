@@ -45,8 +45,6 @@ import kotlin.getValue
 
 
 class DownloadService : ScopedService() {
-    //TODO RESOLVE CRASH:
-    // Reason: A foreground service of FOREGROUND_SERVICE_TYPE_SHORT_SERVICE did not stop within a timeout: ComponentInfo{com.devlomi.ayaturabbi/com.devlomi.ayaturabbi.ui.download.DownloadService}
     val downloadRepository: DownloadRepository by inject()
 
 
@@ -67,7 +65,6 @@ class DownloadService : ScopedService() {
         notificationManager = NotificationManagerCompat.from(this)
         lifecycleScope.launch {
             downloadRepository.downloadResource.collectLatest {
-                Logger.d { "DownlaodService Changed - Service $it" }
                 if (it is DownloadingResource.Loading) {
                     if (!downloadCancelled) {
                         updateNotificationProgress(it.progress)
@@ -103,7 +100,6 @@ class DownloadService : ScopedService() {
         }
 
         fun stop(context: Context) {
-            Logger.d { "Cancellign Download" }
             Intent(context, DownloadService::class.java).apply {
                 action = IntentConstants.ACTION_CANCEL_DOWNLOAD
                 context.startService(
@@ -121,7 +117,6 @@ class DownloadService : ScopedService() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        Logger.d { "OnStartCommand action ${intent?.action}" }
         intent?.action?.let { action ->
             if (action == IntentConstants.ACTION_START_DOWNLOAD) {
 
@@ -136,8 +131,7 @@ class DownloadService : ScopedService() {
                     NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
                         .setContentTitle(getString(R.string.downloading_quran_files))
                         .setContentText(getString(R.string.downloaded, 0))
-                        .setSmallIcon(R.drawable.ic_note)//TODO
-//                        .setSmallIcon(R.drawable.ic_note)//TODO
+                        .setSmallIcon(R.drawable.ic_noti)
                         .setProgress(MAX_PROGRESS, 0, false)
                         .setSilent(true)
 
@@ -153,7 +147,6 @@ class DownloadService : ScopedService() {
                 startDownloading(width, filePath)
 
             } else if (action == IntentConstants.ACTION_CANCEL_DOWNLOAD) {
-                Logger.d { "INTENT ACTION CANCEL DOWNLOAD" }
                 cancelDownload()
             }
         }
@@ -197,24 +190,16 @@ class DownloadService : ScopedService() {
     private fun startDownloading(width: Int, filePath: String) {
         downloadCancelled = false
         downloadJob?.cancel()
-        //TODO RESOLVE A CRASH WHERE THE DOWNLOAD IS CANCELLED AND THE USER STARTS ANOTHER DOWNLOAD, IT CRASHES THE APP
-        // java.lang.IllegalStateException: Already resumed, but proposed with update Success(/data/user/0/com.devlomi.ayaturabbi/cache/data.zip)
-        // 	at kotlinx.coroutines.CancellableContinuationImpl.alreadyResumedError(CancellableContinuationImpl.kt:556)
-        // 	at kotlinx.coroutines.CancellableContinuationImpl.resumeImpl$kotlinx_coroutines_core(CancellableContinuationImpl.kt:521)
-        // 	at kotlinx.coroutines.CancellableContinuationImpl.resumeImpl$kotlinx_coroutines_core$default(CancellableContinuationImpl.kt:493)
-        // 	at kotlinx.coroutines.CancellableContinuationImpl.resumeWith(CancellableContinuationImpl.kt:359)
         downloadJob = launch(IO) {
             try {
                 val result = downloadRepository.download(width, filePath)
                 if (result.isSuccess) {
                     stopService()
                 } else {
-                    Logger.e { "Downlaod Error - Download Service ${result?.exceptionOrNull()?.message}" }
                     throw result.exceptionOrNull() ?: Exception("Download Error")
                 }
 
             } catch (e: Exception) {
-                Logger.e { "Error Downloading - Downlaod Service ${e.message}" }
                 stopService()
 
             }

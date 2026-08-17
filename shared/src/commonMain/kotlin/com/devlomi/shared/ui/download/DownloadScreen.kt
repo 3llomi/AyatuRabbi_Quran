@@ -17,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,6 +32,7 @@ import ayaturabbi.shared.generated.resources.download_required_files_message
 import ayaturabbi.shared.generated.resources.download_required_files_title
 import ayaturabbi.shared.generated.resources.downloading_files
 import ayaturabbi.shared.generated.resources.yes
+import co.touchlab.kermit.Logger
 import com.devlomi.shared.data.network.DownloadingResource
 import com.devlomi.shared.ui.suras.DialogActions
 import org.jetbrains.compose.resources.painterResource

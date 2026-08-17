@@ -7,7 +7,6 @@ import platform.Foundation.NSNumberFormatterNoStyle
 
 actual object DecimalFormat {
     actual fun format(value: Int, locale: String): String {
-        //TODO TEST
         val formatter = NSNumberFormatter().apply {
             numberStyle = NSNumberFormatterNoStyle // Integer format
             this.locale = NSLocale(localeIdentifier = locale)

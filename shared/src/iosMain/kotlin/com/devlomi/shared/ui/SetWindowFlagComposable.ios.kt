@@ -1,10 +1,11 @@
 package com.devlomi.shared.ui
 
 import androidx.compose.runtime.Composable
+import platform.UIKit.UIApplication
 
 @Composable
 actual fun SetWindowFlag(keepScreenOn: Boolean) {
-    //No Op on iOS
+    UIApplication.sharedApplication.idleTimerDisabled = keepScreenOn
 }
 
 @Composable

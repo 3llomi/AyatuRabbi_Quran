@@ -26,9 +26,7 @@ class ExtractAndCopyFiles(
     suspend fun execute(width: Int, filePath: String) {
         val zipFile: okio.Path = filePath.toPath()
         val destDirPath: okio.Path = dirConstants.getQuranDataTempPath().toPath()
-        Logger.d { "Unzipping file :${zipFile.name} - to ${destDirPath.name}" }
         FileSystem.SYSTEM.unpackZip(zipFile, destDirPath)
-        Logger.d { "Unzipping Completed - attempting to copy files" }
         copyFiles(width)
         deleteRecursively(PlatformFile(destDirPath.toString()))
         PlatformFile(filePath).delete(mustExist = false)
@@ -40,19 +38,13 @@ class ExtractAndCopyFiles(
         PlatformFile(filesDir, "db").createDirectories()
         PlatformFile(filesDir, "quran_images").createDirectories()
         filesDir.createDirectories(false)
-        Logger.d { "Copying ayah info name db path ${filesDir.path} - temp ${temp.path}" }
-        PlatformFile(temp, DBFileNames.ayahInfoNameDbPath(width)).also {
-            Logger.d { "SRC AYAH INFO ${it.path}" }
-        }.copyTo(
+        PlatformFile(temp, DBFileNames.ayahInfoNameDbPath(width)).copyTo(
             PlatformFile(
                 filesDir,
                 DBFileNames.ayahInfoNameDbPath(width)
-            ).also {
-                Logger.d { "Ayah INfo Path ${it.path}" }
-            },
+            ),
         )
 
-        Logger.d { "Copying quranDbPath" }
 
         PlatformFile(temp, DBFileNames.quranDbPath).copyTo(
             PlatformFile(
@@ -61,7 +53,6 @@ class ExtractAndCopyFiles(
             )
         )
 
-        Logger.d { "Copying folder width $width" }
 
         copyDirRecursive(
             PlatformFile(temp, "width_$width"),

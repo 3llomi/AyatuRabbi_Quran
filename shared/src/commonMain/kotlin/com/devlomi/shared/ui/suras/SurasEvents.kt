@@ -7,6 +7,7 @@ sealed class SurasEvents {
     data class OnQueryChange(val query: String) : SurasEvents()
     object OnGoToJuzoaClick : SurasEvents()
     object OnGoToPageClick : SurasEvents()
+    object OnBackClick : SurasEvents()
     data class PageNumberDialogEvents(val action: DialogActionsWithQuery): SurasEvents()
     data class JuzoaNumberDialogEvents(val action: DialogActionsWithQuery) : SurasEvents()
 }
